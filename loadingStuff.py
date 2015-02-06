@@ -21,12 +21,18 @@ lines = [line.strip().split() for line in open('isoMasses.txt')]
 def populateDict():
     listLen=len(listStuff)
     #iDict[e][0]==proton number
-    iDict['None']=[0,{0:0}]
+    iDict['None']=[0,{0:[0]}]
+    # counter=0
     for i in range(listLen):
         iDict[listStuff[i]]=[i,{}]
+        # counter+=1
+        # if counter >=5:
+        #     break
         for j in lines:
             if i == int(j[0]):
-                iDict[listStuff[i]][1][int(j[1])]=float(j[2])
+                iDict[listStuff[i]][1][int(j[1])]=[float(j[2])]
+                # print iDict[listStuff[i]][1][int(j[1])]
+                # iDict[listStuff[i]][1][int(j[1])]+=[float(j[2])]
     return iDict
 
 

@@ -38,18 +38,18 @@ def checkIsoExistence(key1,a1,key2,a2):
 
 print "Populating dictionary"
 iDict=populateDict()
-print "Loading excited states"
-isoVal=getIsoVal()
+# print "Loading excited states"
+# isoVal=getIsoVal()
 # print isoVal
+print iDict['He']
 
-
-filterList=[]
-for e in isoVal:
-    if '_' not in e[0] and not e[0].isdigit():
-        boolVal=e[1] in iDict[e[0]][1]
-        if boolVal:
-            print e, boolVal
-            filterList+=[e]
+# filterList=[]
+# for e in isoVal:
+#     if '_' not in e[0] and not e[0].isdigit():
+#         boolVal=e[1] in iDict[e[0]][1]
+#         if boolVal:
+#             print e, boolVal
+#             filterList+=[e]
 
 def reaction(key1,a1,key2,a2):
     #Think about meoizing
@@ -69,7 +69,7 @@ def reaction(key1,a1,key2,a2):
 
     aVal=aTot
     pVal=pTot
-    initialMass=iDict[key1][1][a1]+iDict[key2][1][a2]
+    initialMass=iDict[key1][1][a1][0]+iDict[key2][1][a2][0]
     eCoef=938.41
     reactionList=[]
     rKey=getKey(pRes)
@@ -88,7 +88,8 @@ def reaction(key1,a1,key2,a2):
         #Ending of ignore block
 
         if aRes in iDict[rKey][1] and aEject in iDict[eKey][1]:
-            finalMass=iDict[eKey][1][aEject]+iDict[rKey][1][aRes]
+            print eKey,aEject,iDict[eKey][1][aEject]
+            finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             newVal=[eKey,aEject,rKey,aRes,Q]
             newValP=[rKey,aRes,eKey,aEject,Q]#Avoiding repetition
@@ -234,11 +235,11 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
 
     print react
     mFactor=938.41
-    miF=iDict[key1][1][a1]*mFactor
-    mtF=iDict[key2][1][a2]*mFactor
+    miF=iDict[key1][1][a1][0]*mFactor
+    mtF=iDict[key2][1][a2][0]*mFactor
 
-    meF=iDict[eject][1][aEject]*mFactor
-    mrF=iDict[res][1][aRes]*mFactor
+    meF=iDict[eject][1][aEject][0]*mFactor
+    mrF=iDict[res][1][aRes][0]*mFactor
 
     Q=react[-1]
     # print c,ang,miF,mtF,meF,mrF,Q
