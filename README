@@ -1,0 +1,12 @@
+
+The isotope-navigator is intended to be a command line interface program
+(for now) for making quick and easy calculations for nuclear reactions.
+
+Given a reaction it gives the possible binary final reactions, and the
+respective Q values, it sorts the output in terms of the Q values. Given
+an angle and beam energy, it gives the energy of either the ejectile or
+the resiual nucleus.
+
+Currently, it has a limited isotope database which includes the masses
+and it will include soon the levels of excitation.
+
