@@ -1,37 +1,9 @@
 from math import *
-from readExcited import *
+from loadingStuff import *
 #important constant
 c=3*10**8
 
 #utility functions for nuclear physics reactions
-
-#Isotope dictionary
-iDict={}
-
-listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
-           'Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca',
-           'Sc','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn',
-           'Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr',
-           'Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn',
-           'Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd',
-           'Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb',
-           'Lu','Hf','Ta','W','Re','Os',
-           'Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn',
-           'Fr','Ra','Ac','Th','Pa','U','Np','Pu','Am','Cm',
-           'Bk','Cf','Es','Fm','Md','No','Lr',
-           'Rf','Db','Sg','Bh','Hs','Mt','Ds','Rg',
-           'Cn','Uut','Fl','Uup','Lv','Uus','Uuo']
-
-lines = [line.strip().split() for line in open('isoMasses.txt')]
-def populateDict():
-    listLen=len(listStuff)
-    #iDict[e][0]==proton number
-    iDict['None']=[0,{0:0}]
-    for i in range(listLen):
-        iDict[listStuff[i]]=[i,{}]
-        for j in lines:
-            if i == int(j[0]):
-                iDict[listStuff[i]][1][int(j[1])]=float(j[2])
 
 def getKey(pNum):
     for e in iDict:
@@ -65,7 +37,7 @@ def checkIsoExistence(key1,a1,key2,a2):
     return True
 
 print "Populating dictionary"
-populateDict()
+iDict=populateDict()
 print "Loading excited states"
 isoVal=getIsoVal()
 # print isoVal
