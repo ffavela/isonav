@@ -38,7 +38,7 @@ def checkIsoExistence(key1,a1,key2,a2):
 
 print "Populating dictionary"
 iDict=populateDict()
-print "Loading excited states"
+
 
 # print isoVal
 # print iDict['He']
@@ -80,7 +80,7 @@ def reaction(key1,a1,key2,a2):
         #Ending of ignore block
 
         if aRes in iDict[rKey][1] and aEject in iDict[eKey][1]:
-            print eKey,aEject,iDict[eKey][1][aEject]
+            # print eKey,aEject,iDict[eKey][1][aEject]
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             newVal=[eKey,aEject,rKey,aRes,Q]

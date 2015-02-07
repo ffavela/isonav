@@ -19,23 +19,46 @@ listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
            'Cn','Uut','Fl','Uup','Lv','Uus','Uuo']
 
 lines = [line.strip().split() for line in open('isoMasses.txt')]
-def populateDict():
+def populateDict1():
     listLen=len(listStuff)
     #iDict[e][0]==proton number
     iDict['None']=[0,{0:[0]}]
-    # counter=0
     for i in range(listLen):
         iDict[listStuff[i]]=[i,{}]
-        # counter+=1
-        # if counter >=5:
-        #     break
         for j in lines:
             if i == int(j[0]):
                 iDict[listStuff[i]][1][int(j[1])]=[float(j[2])]
-                # print iDict[listStuff[i]][1][int(j[1])]
-                # iDict[listStuff[i]][1][int(j[1])]+=[float(j[2])]
     return iDict
 
+def populateDict2(iDict):
+    listLen=len(listStuff)
+    #iDict[e][0]==proton number
+    enxList=putIsoData()
+    for i in range(listLen):
+        for j in lines:
+            if i == int(j[0]):
+                fName=getFileName(enxList,listStuff[i],int(j[1]))
+                if not fName:
+                    # iDict[listStuff[i]][1][int(j[1])].append([])
+                    continue
+                fName="excitedData/"+fName
+                pDPart=enxParse(fName)
+                iDict[listStuff[i]][1][int(j[1])].append(pDPart)
+                # if j <=3:
+                #     print iDict[listStuff[i]][1][int(j[1])]
+    return iDict
+
+def getFileName(aList,key,iso):
+    for e in aList:
+        if e[0]==key and e[1]==iso:
+            return e[2]
+    return False
+
+def populateDict():
+    iDict=populateDict1()
+    iDict=populateDict2(iDict)
+    return iDict
+    
 def putIsoData():
     isoVal=getIsoVal()
     filterList=[]
@@ -44,7 +67,7 @@ def putIsoData():
         if '_' not in e[0] and not e[0].isdigit():
             boolVal=e[1] in iDict[e[0]][1]
             if boolVal:
-                print e, boolVal
+                # print e, boolVal
                 filterList+=[e]
     return filterList
 
@@ -56,7 +79,7 @@ def index(string,char):
     return -1
 
 def getIsoVal():
-    return [[f[3:index(f,'.')],int(f[0:3])] for f in listdir('excitedData')\
+    return [[f[3:index(f,'.')],int(f[0:3]),f] for f in listdir('excitedData')\
             if isfile(join('excitedData',f))] 
 
 # print isoVal
