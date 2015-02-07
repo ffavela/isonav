@@ -38,18 +38,10 @@ def checkIsoExistence(key1,a1,key2,a2):
 
 print "Populating dictionary"
 iDict=populateDict()
-# print "Loading excited states"
-# isoVal=getIsoVal()
-# print isoVal
-print iDict['He']
+print "Loading excited states"
 
-# filterList=[]
-# for e in isoVal:
-#     if '_' not in e[0] and not e[0].isdigit():
-#         boolVal=e[1] in iDict[e[0]][1]
-#         if boolVal:
-#             print e, boolVal
-#             filterList+=[e]
+# print isoVal
+# print iDict['He']
 
 def reaction(key1,a1,key2,a2):
     #Think about meoizing

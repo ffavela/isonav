@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import isfile, join
+from enxParser import *
 
 #Isotope dictionary
 iDict={}
@@ -35,6 +36,17 @@ def populateDict():
                 # iDict[listStuff[i]][1][int(j[1])]+=[float(j[2])]
     return iDict
 
+def putIsoData():
+    isoVal=getIsoVal()
+    filterList=[]
+    for e in isoVal:
+        #Ignoring weird enx files
+        if '_' not in e[0] and not e[0].isdigit():
+            boolVal=e[1] in iDict[e[0]][1]
+            if boolVal:
+                print e, boolVal
+                filterList+=[e]
+    return filterList
 
 def index(string,char):
     """Finds the index of the first char that is found"""
