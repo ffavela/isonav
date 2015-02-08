@@ -1,6 +1,9 @@
 from os import listdir
 from os.path import isfile, join
+import pickle
+import os.path
 from enxParser import *
+
 
 #Isotope dictionary
 iDict={}
@@ -55,8 +58,14 @@ def getFileName(aList,key,iso):
     return False
 
 def populateDict():
-    iDict=populateDict1()
-    iDict=populateDict2(iDict)
+    if os.path.isfile("isoDict.pkl"):
+        print "Dictionary file exists, loading it"
+        iDict = pickle.load(open("isoDict.pkl", "rb" ))
+    else:
+        print "Dictionary file does not exist, creating it"
+        iDict=populateDict1()
+        iDict=populateDict2(iDict)
+        pickle.dump(iDict,open("isoDict.pkl","wb"))
     return iDict
     
 def putIsoData():
