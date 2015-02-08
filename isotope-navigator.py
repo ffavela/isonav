@@ -207,7 +207,7 @@ def checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes):
     retList=nReaction(key1,a1,key2,a2)
     for ret in retList:
         if reactionStuffa==ret[:-1] or reactionStuffb==ret[:-1]:
-            print "Reaction is valid"
+            # print "Reaction is valid"
             return ret
     print "Reaction is invalid"
     return False
@@ -224,41 +224,36 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
     if eject=='None' or res=='None':
         print "Reaction must have at least 2 final elements"
         return False
-
-    print react
-    mFactor=938.41
-    miF=iDict[key1][1][a1][0]*mFactor
-    mtF=iDict[key2][1][a2][0]*mFactor
-
-    meF=iDict[eject][1][aEject][0]*mFactor
-    mrF=iDict[res][1][aRes][0]*mFactor
-
     Q=react[-1]
-    # print c,ang,miF,mtF,meF,mrF,Q
-    Pi=sqrt(2*miF*ELab)/c
-    Vcm=Pi*c**2/(miF+mtF)
-    Etied=(Pi*c)**2/(2*(miF+mtF))
-    Edisp=ELab-Etied
-    # print Pi,Vcm,Etied,Edisp
-    Ef=Edisp+Q
 
-    if Ef<0:
-        print "Not enough energy for reaction"
-        return False
+    miF=getMass(key1,a1)
+    mtF=getMass(key2,a2)
 
-    Po=sqrt(2*Ef*meF*mrF/(meF+mrF))/c
-    veo=Po*c**2/meF
-    vRo=Po*c**2/mrF
-    # print Ef,Po,veo,vRo
+    meF=getMass(eject,aEject)
+    mrF=getMass(res,aRes)
 
+    veo,vRo,Vcm,meF,mrF,Edisp=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Q)
+    popLevels=getPopLevels(key2,a2,Edisp)
+    print "Pop levels for ",key2,a2," are ",popLevels
     print "The final values for",eject,"are"
     solution=solveNum(ang,veo,vRo,Vcm,meF,mrF)
     print solution
+
+    print "The excited level solutions are"
+
+    #######
+    exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Q)
+    #####
 
     print "The final values for",res,"are"
     solution=solveNum(ang,vRo,veo,Vcm,mrF,meF)
     print solution
 
+    print "The excited level solutions are"
+
+    #######
+    exLevReact(popLevels,ang,mtF,miF,mrF,meF,res,eject,aEject,aRes,ELab,Q)
+    #####
 
 def solveNum(ang,veo,vRo,Vcm,meF,mrF):
     thEject=0
@@ -317,3 +312,66 @@ def numberReact(key1,a1):
                 print 0
             else:
                 print len(nR)
+
+def getPopLevels(eName,iso,aE):
+    levels=[]
+    if not checkDictIso(eName,iso):
+        return [1]
+    for e in iDict[eName][1][iso][1]:
+        # print e, iDict[eName][1][iso][1][e][0]
+        lE=iDict[eName][1][iso][1][e][0]
+        if lE>aE:
+            return levels
+        # if iDict[eName][1][iso][1][e][0]==aE:
+        levels.append([e,lE])
+    return levels
+
+def checkDictIso(eName,iso):
+    if len(iDict[eName][1][iso])<=1:
+        return False
+    else:
+        return True
+
+
+def getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Q):
+    # print react
+
+    # print c,ang,miF,mtF,meF,mrF,Q
+    Pi=sqrt(2*miF*ELab)/c
+    Vcm=Pi*c**2/(miF+mtF)
+    Etied=(Pi*c)**2/(2*(miF+mtF))
+    Edisp=ELab-Etied
+    # print Pi,Vcm,Etied,Edisp
+    Ef=Edisp+Q
+
+    if Ef<0:
+        print "Not enough energy for reaction"
+        return False
+
+    Po=sqrt(2*Ef*meF*mrF/(meF+mrF))/c
+    veo=Po*c**2/meF
+    vRo=Po*c**2/mrF
+    # print Ef,Po,veo,vRo
+    return veo,vRo,Vcm,meF,mrF,Edisp
+
+def getMass(k,iso):
+    mFactor=938.41
+    return iDict[k][1][iso][0]*mFactor
+
+def getLevelE(k,iso,level):
+    if not checkDictIso(k,iso):
+        return 0
+    return iDict[k][1][iso][1][level][0]
+
+#Still work to be done, assuming the nucleus only gets increased mass
+#when the reaction occurs (no fission or gammas for now)
+def exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Q):
+
+    for e in popLevels:
+        veo,vRo,Vcm,meF,mrF,Edisp=getCoef(miF,mtF+e[1],meF,mrF,\
+                                          eject,aEject,res,aRes,ELab,Q)
+        print e[0],solveNum(ang,veo,vRo,Vcm,meF,mrF)
+    
+
+
+print getLevelE('Li',8,3)

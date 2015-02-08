@@ -27,8 +27,3 @@ def levelParseOne(stringLine):
        and line[1]=="L" and isNumeric(line[2]):
         return line
     return False
-
-# enxParse("excitedData/008Li.enx")#Weird numeration case
-# enxParse("excitedData/012C.enx")
-# enxParse("excitedData/008Be.enx")
-# enxParse("excitedData/040Ar.enx")
