@@ -1,7 +1,8 @@
 from math import *
 from loadingStuff import *
 #important constant
-c=3*10**8
+# c=3*10**8
+c=299792458
 
 #utility functions for nuclear physics reactions
 
@@ -24,9 +25,6 @@ def printElemList():
         i+=1
 
 def checkIsoExistence(key1,a1,key2,a2):
-    # if key1=='None' or key2=='None':
-    #     print "Decay reaction"
-    #     return "Decay"
     if key1 not in iDict or key2 not in iDict:
         print "Error: keys have to be in the dictionary"
         return False
@@ -39,9 +37,6 @@ def checkIsoExistence(key1,a1,key2,a2):
 print "Populating dictionary"
 iDict=populateDict()
 
-
-# print isoVal
-# print iDict['He']
 
 def reaction(key1,a1,key2,a2):
     #Think about meoizing
@@ -80,14 +75,12 @@ def reaction(key1,a1,key2,a2):
         #Ending of ignore block
 
         if aRes in iDict[rKey][1] and aEject in iDict[eKey][1]:
-            # print eKey,aEject,iDict[eKey][1][aEject]
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             newVal=[eKey,aEject,rKey,aRes,Q]
             newValP=[rKey,aRes,eKey,aEject,Q]#Avoiding repetition
             if newVal not in reactionList and newValP not in reactionList:
                 reactionList.append(newVal)
-                # print eKey,aEject,rKey,aRes,Q
             aRes-=1
             aEject+=1
         else:
@@ -207,10 +200,24 @@ def checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes):
     retList=nReaction(key1,a1,key2,a2)
     for ret in retList:
         if reactionStuffa==ret[:-1] or reactionStuffb==ret[:-1]:
-            # print "Reaction is valid"
             return ret
     print "Reaction is invalid"
     return False
+
+def pSReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
+    react=sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab,ang)
+    # print react
+    if react==False:
+        return
+    print "The normal solution is"
+    print react[0]
+    if react[1]==False and 'None' not in [key1,key2]:
+        return
+    if react[1]!=False:
+        print "The excited levels are"
+        for j in react[1]:
+            print j
+
 
 def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
@@ -225,7 +232,6 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
         print "Reaction must have at least 2 final elements"
         return False
     Q=react[-1]
-    # print "Q after assignment =", Q
 
     miF=getEMass(key1,a1)
     mtF=getEMass(key2,a2)
@@ -235,19 +241,23 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
 
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
     popLevels=getPopLevels(res,aRes,Ef)
-    # print "Pop levels for ",key2,a2," are ",popLevels
-    # print "The final values for",eject,"are"
-    # print Q
-    print "Normal solution is"
-    solution=solveNum(ang,veo,vRo,Vcm,meF,mrF)
-    print solution
+    # print "Normal solution is"
+    solution=[]
+    solution.append(solveNum(ang,veo,vRo,Vcm,meF,mrF))
 
-    print "The excited level in *",res, " solutions for ",eject, " are"
-
-    #######
-    exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
+    levelList=exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
+    solution.append(levelList)
+    return solution
+    # if levList == False:
+    #     return
+    # for e in levList:
+    #     print e
     #####
 
+    # print "Checking for second solution again"
+    # secSol=checkSecSol(miF,mtF,meF,mrF,ELab)
+    # print "secSol#########"
+    # print secSol
     # print "The final values for",res,"are"
     # print Q
     # solution=solveNum(ang,vRo,veo,Vcm,mrF,meF)
@@ -256,34 +266,47 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
     # print "The excited level solutions are"
 
     # #######
-    # exLevReact(popLevels,ang,mtF,miF,mrF,meF,res,eject,aEject,aRes,Ef)
+    # exLevReact(popLevels,ang,mtF,miF,mrF,meF,res,eject,aEject,aRes,ELab)
     # #####
+
+def checkSecSol(miF,mtF,meF,mrF,ELab):
+    Q=getQVal(miF,mtF,meF,mrF)
+    if Q<0:
+        Ethres=-Q*(mrF+meF)/(mrF+meF-miF)
+        Emax=-Q*mrF/(mrF-miF)
+        print "Ethres,Emax"
+        print Ethres,Emax
+        if Ethres<ELab<Emax:
+            print "Possible second solution"
+            thetaM=acos(sqrt(-(mrF+meF)*(mrF*Q+(mrF-miF)*ELab)/(miF*meF*ELab)))
+            return thetaM
+    return False
 
 def solveNum(ang,veo,vRo,Vcm,meF,mrF):
     thEject=0
     dTh=0.2
     ang=radians(ang)
     tolerance=0.0001
-    ELabEject=0
     while True:
         thEject+=dTh
         veoy=veo*sin(thEject)
         veoz=veo*cos(thEject)
         vRoy=vRo*sin(pi-thEject)
         vRoz=vRo*cos(pi-thEject)
-        # print veoy,veoz,vRoy,vRoz
-        
+         
         #They actually have to be zero
         ### deltaPy=(veoy*meF-vRoy*mrF)*1.0/c**2
         ### deltaPz=(veoz*meF+vRoz*mrF)*1.0/c**2
         # print deltaPy,deltaPz
-        
+        if (veoz+Vcm)==0:
+            print "No solution was found, div by zero"
+            print "#####################################################"
+            return False
         thEjectLab=atan(veoy/(veoz+Vcm))
         ELabEject=meF*(veoy**2+(veoz+Vcm)**2)/(2*c**2)
         theResLab=atan(vRoy/(vRoz+Vcm))
         ELabResid=mrF*(vRoy**2+(vRoz+Vcm)**2)/(2*c**2)
 
-        # print thEject,thEjectLab,ELabEject,theResLab,ELabResid
         diff=ang-thEjectLab
         if abs(diff)<tolerance:
             break
@@ -301,12 +324,22 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
 #['F', 15, 'Ne', 27, -46.60144060000274]
 # In "The final values for Ne are"
 #When sReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],50.0,30)
-#Is used in the lop
+#Is used in the loop
 def xtremeTest(key1,a1,key2,a2,E=10,ang=30):
     reactions=nReaction(key1,a1,key2,a2)
     for e in reactions:
         print "Reaction is: ",e
-        sReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
+        react=sReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
+        if react==False:
+            continue
+        print "The normal solution is"
+        print react[0]
+        if react[1]==False and 'None' not in [key1,key2]:
+            return
+        if react[1]!=False:
+                print "The excited levels are"
+                for j in react[1]:
+                    print j
 
 def numberReact(key1,a1):
     for e in iDict:
@@ -323,11 +356,9 @@ def getPopLevels(eName,iso,aE):
     if not checkDictIso(eName,iso):
         return [1]
     for e in iDict[eName][1][iso][1]:
-        # print e, iDict[eName][1][iso][1][e][0]
         lE=iDict[eName][1][iso][1][e][0]
         if lE>aE:
             return levels
-        # if iDict[eName][1][iso][1][e][0]==aE:
         levels.append([e,lE])
     return levels
 
@@ -339,18 +370,11 @@ def checkDictIso(eName,iso):
 
 
 def getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
-    # print react
     Q=getQVal(miF,mtF,meF,mrF)
-    # print "Q= ",Q
-    # print c,ang,miF,mtF,meF,mrF,Q
     Pi=sqrt(2*miF*ELab)/c
     Vcm=Pi*c**2/(miF+mtF)
     Etied=(Pi*c)**2/(2*(miF+mtF))
-    # print "Pi= ",Pi
-    # print "miF,ELab"
-    # print miF,ELab
     Edisp=ELab-Etied
-    # print Pi,Vcm,Etied,Edisp
     Ef=Edisp+Q
 
     if Ef<0:
@@ -360,7 +384,6 @@ def getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
     Po=sqrt(2*Ef*meF*mrF/(meF+mrF))/c
     veo=Po*c**2/meF
     vRo=Po*c**2/mrF
-    #print Ef,Po,veo,vRo
     return veo,vRo,Vcm,Ef
 
 def getEMass(k,iso):
@@ -375,9 +398,7 @@ def getLevelE(k,iso,level):
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
 def exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
-    # print "The popLevels are"
-    # for e in popLevels:
-    #     print e
+    levList=[]
     for e in popLevels:
         if e[1] == False and e[0] != 1:
             print "Entered false for e[1] en exLevReact"
@@ -388,23 +409,16 @@ def exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
                                           res,\
                                           aRes,\
                                           ELab)
-        # print "Ef= ",Ef
         if not veo:
             return False
 
         Q=getQVal(miF,mtF,meF,mrF+e[1])
-        # print "L,El,Q,sol"
-        print e[0],e[1],solveNum(ang,veo,vRo,Vcm,meF,mrF)
+        numSol=solveNum(ang,veo,vRo,Vcm,meF,mrF)
+        # print e,numSol
+        levList.append([e,numSol])
+    return levList
     
 
 def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
-
-
-print getLevelE('Li',8,3)
-
-print "2H eMass, ",getEMass('H',2)
-print "14N eMass, ",getEMass('N',14)
-
-# print getQVal()
