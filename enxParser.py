@@ -22,7 +22,11 @@ def isNumeric(string):
         return False
 
 def levelParseOne(stringLine):
-    line=stringLine.split()
+    if len(stringLine)>=4:
+        line=stringLine[3:].split()
+    else:
+        line=stringLine.split()
+    # line=stringLine.split()
     if len(line)>=3 and isNumeric(line[0]) \
        and line[1]=="L" and isNumeric(line[2]):
         return line
