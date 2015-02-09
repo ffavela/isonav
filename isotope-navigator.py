@@ -242,7 +242,7 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
     solution=solveNum(ang,veo,vRo,Vcm,meF,mrF)
     print solution
 
-    print "The excited level solutions, for", "  are"
+    print "The excited level in *",res, " solutions for ",eject, " are"
 
     #######
     exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
