@@ -3,5 +3,6 @@
 *~
 *.pkl
 *.pyc
+*.zip
 ensdf2
 excitedData
