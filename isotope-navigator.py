@@ -138,7 +138,6 @@ def QStable(key1,a1):
     decays=[val for val in decayCand if val[-1]<0]
     return decays
 
-
 #Print out the first unstable elements
 #(in terms of Q)
 def firstQPos(val=5):
@@ -204,70 +203,20 @@ def checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes):
     print "Reaction is invalid"
     return False
 
-def pSReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
-    react=sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab,ang)
-    # print react
-    if react==False:
-        return
-    print "The normal solution is"
-    print react[0]
-    if react[1]==False and 'None' not in [key1,key2]:
-        return
-    if react[1]!=False:
-        print "The excited levels are"
-        for j in react[1]:
-            print j
-
-
-def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.0,ang=10):
+def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
-    if ELab<=0:
-        print "Lab energy has to be positive"
-        return False
-
-    if not react:
-        return False
-
-    if eject=='None' or res=='None':
-        print "Reaction must have at least 2 final elements"
+    if not checkArguments(ELab,react,eject,res):
         return False
     Q=react[-1]
-
-    miF=getEMass(key1,a1)
-    mtF=getEMass(key2,a2)
-
-    meF=getEMass(eject,aEject)
-    mrF=getEMass(res,aRes)
-
+    miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
-    popLevels=getPopLevels(res,aRes,Ef)
+    if veo==False:
+        return False
     # print "Normal solution is"
-    solution=[]
-    solution.append(solveNum(ang,veo,vRo,Vcm,meF,mrF))
-
-    levelList=exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
-    solution.append(levelList)
+    s1=solveNum(ang,veo,vRo,Vcm,meF,mrF)
+    s2=solveNum(ang,vRo,veo,Vcm,mrF,meF)
+    solution=[s1,s2]
     return solution
-    # if levList == False:
-    #     return
-    # for e in levList:
-    #     print e
-    #####
-
-    # print "Checking for second solution again"
-    # secSol=checkSecSol(miF,mtF,meF,mrF,ELab)
-    # print "secSol#########"
-    # print secSol
-    # print "The final values for",res,"are"
-    # print Q
-    # solution=solveNum(ang,vRo,veo,Vcm,mrF,meF)
-    # print solution
-
-    # print "The excited level solutions are"
-
-    # #######
-    # exLevReact(popLevels,ang,mtF,miF,mrF,meF,res,eject,aEject,aRes,ELab)
-    # #####
 
 def checkSecSol(miF,mtF,meF,mrF,ELab):
     Q=getQVal(miF,mtF,meF,mrF)
@@ -313,33 +262,24 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
         if dTh>0 and diff<0 or dTh<0 and diff>0:
             dTh *= -1.0/2
         if thEject>=pi:
-            print "No solution was found"
-            print "#####################################################"
+            # print "No solution was found"
+            # print "#####################################################"
             return False
 
     return [degrees(thEjectLab),ELabEject,degrees(theResLab),\
             ELabResid]
 
-#Fails for xtremeTest('H',2,'Ar',40)
-#['F', 15, 'Ne', 27, -46.60144060000274]
-# In "The final values for Ne are"
-#When sReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],50.0,30)
-#Is used in the loop
-def xtremeTest(key1,a1,key2,a2,E=10,ang=30):
+def xTremeTest(key1,a1,key2,a2,E=10,ang=30):
     reactions=nReaction(key1,a1,key2,a2)
     for e in reactions:
-        print "Reaction is: ",e
+        if 'None' in e:
+            continue
         react=sReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
         if react==False:
-            continue
-        print "The normal solution is"
+            break
+        print e
         print react[0]
-        if react[1]==False and 'None' not in [key1,key2]:
-            return
-        if react[1]!=False:
-                print "The excited levels are"
-                for j in react[1]:
-                    print j
+        print react[1]
 
 def numberReact(key1,a1):
     for e in iDict:
@@ -397,13 +337,30 @@ def getLevelE(k,iso,level):
 
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
-def exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
+def exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,eVal=1):
+    if eVal==1:
+        k=res
+        aVal=aRes
+    else:
+        k=eject
+        aVal=aEject
+
+    popLevels=getPopLevels(k,aVal,Ef)
+    if len(popLevels)<=1:
+        popLevels=[[1,0.0]]
     levList=[]
     for e in popLevels:
+        # print e
         if e[1] == False and e[0] != 1:
             print "Entered false for e[1] en exLevReact"
             continue
-        veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF+e[1],\
+        if eVal==1:
+            mEject=meF
+            mRes=mrF+e[1]
+        else:
+            mEject=meF+e[1]
+            mRes=mrF
+        veo,vRo,Vcm,Ef=getCoef(miF,mtF,mEject,mRes,\
                                           eject,\
                                           aEject,\
                                           res,\
@@ -412,13 +369,83 @@ def exLevReact(popLevels,ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
         if not veo:
             return False
 
-        Q=getQVal(miF,mtF,meF,mrF+e[1])
-        numSol=solveNum(ang,veo,vRo,Vcm,meF,mrF)
+        Q=getQVal(miF,mtF,mEject,mRes)
+        numSol=solveNum(ang,veo,vRo,Vcm,mEject,mRes)
         # print e,numSol
         levList.append([e,numSol])
+        if numSol==False:
+            break
     return levList
     
-
 def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
+
+def iso2String(k,iso,eVal=''):
+    return eVal+str(iso)+k
+
+def xReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
+    react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
+    if not checkArguments(ELab,react,eject,res):
+        return False
+    Q=react[-1]
+
+    miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
+    veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
+    if veo==False:
+        return False
+    lL=[]
+    c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
+    lL.append([c,exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,0)])
+
+    c=[iso2String(eject,aEject,''),iso2String(res,aRes,'*')]
+    lL.append([c,exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,1)])
+
+    c=[iso2String(res,aRes,'*'),iso2String(eject,aEject,'')]
+    lL.append([c,exLevReact(ang,miF,mtF,mrF,meF,res,aRes,eject,aEject,ELab,Ef,0)])
+
+    c=[iso2String(res,aRes,''),iso2String(eject,aEject,'*')]
+    lL.append([c,exLevReact(ang,miF,mtF,mrF,meF,res,aRes,eject,aEject,ELab,Ef,1)])
+
+    return lL
+
+def pXReaction(xReact):
+    for e in xReact:
+        print e[0]
+        for ee in e[1]:
+            print ee
+
+def xXTremeTest(key1,a1,key2,a2,E=10,ang=30):
+    reactions=nReaction(key1,a1,key2,a2)
+    for e in reactions:
+        print e
+        if 'None' in e:
+            continue
+        react=xReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
+        if react==False:
+            break
+        print e
+        pXReaction(react)
+
+def checkArguments(ELab,react,eject,res):
+    if ELab<=0:
+        print "Lab energy has to be positive"
+        return False
+
+    if not react:
+        return False
+
+    if eject=='None' or res=='None':
+        print "Reaction must have at least 2 final elements"
+        return False
+
+    return True
+
+def getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes):
+    miF=getEMass(key1,a1)
+    mtF=getEMass(key2,a2)
+
+    meF=getEMass(eject,aEject)
+    mrF=getEMass(res,aRes)
+    return miF,mtF,meF,mrF
+
