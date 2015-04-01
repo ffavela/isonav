@@ -18,6 +18,9 @@ def getPnum(key):
 def getNnum(key,a):
     return a-getPnum(key)
 
+def getMass(key,a):
+    return iDict[key][1][a][0]
+
 def printElemList():
     i=0
     for e in listStuff:
@@ -49,6 +52,21 @@ def coulombE(e1,a1,e2,a2):
     rMin=nRadius(a1)+nRadius(a2)
     return z1*z2*alpha*hc/rMin
 
+def thresholdE(e1,a1,e2,a2,e3,a3,e4,a4):
+    miF=getMass(e1,a1)
+    mtF=getMass(e2,a2)
+    meF=getMass(e3,a3)
+    mrF=getMass(e4,a4)
+    eCoef=938.41
+
+    Q=getQVal(miF,mtF,meF,mrF)*eCoef
+    if Q<=0:
+        Ethres=-Q*(mrF+meF)/(mrF+meF-miF)
+    else:
+        Ethres=0
+    # print miF,mtF,meF,mrF,Q
+    return Ethres
+
 def reaction(key1,a1,key2,a2):
     #Think about meoizing
     isoExist=checkIsoExistence(key1,a1,key2,a2)
@@ -67,7 +85,7 @@ def reaction(key1,a1,key2,a2):
 
     aVal=aTot
     pVal=pTot
-    initialMass=iDict[key1][1][a1][0]+iDict[key2][1][a2][0]
+    initialMass=getMass(key1,a1)+getMass(key2,a2)
     eCoef=938.41
     reactionList=[]
     rKey=getKey(pRes)
@@ -89,8 +107,9 @@ def reaction(key1,a1,key2,a2):
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             # coulE=coulombE(eKey,aEject,rKey,aRes)
-            newVal=[eKey,aEject,rKey,aRes,Q]
-            newValP=[rKey,aRes,eKey,aEject,Q]#Avoiding repetition
+            Ethres=thresholdE(key1,a1,key2,a2,eKey,aEject,rKey,aRes)
+            newVal=[eKey,aEject,rKey,aRes,Ethres,Q]
+            newValP=[rKey,aRes,eKey,aEject,Ethres,Q]#Avoiding repetition
             if newVal not in reactionList and newValP not in reactionList:
                 reactionList.append(newVal)
             aRes-=1
@@ -130,7 +149,7 @@ def nReaction(key1,a1,key2,a2):
         return False
     #Sort the list elements in terms of their 
     #Q value
-    ls.sort(key=lambda x: x[4],reverse=True)
+    ls.sort(key=lambda x: x[5],reverse=True)
     return ls
 
 
@@ -144,20 +163,20 @@ def latexNReaction(key1,a1,key2,a2):
     print ' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&',
     maxVal=len(reacList)
     for r in reacList:
-        if r==reacList[4]:
+        if r==reacList[5]:
             fStr='MeV'
         else:
             fStr='MeV\\\\'
 
         r[1]=str(r[1])
         r[3]=str(r[3])
-        r[4]=str(round(r[4],2))
+        r[5]=str(round(r[5],2))
      
         if r[0]=='None':
-            print ' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[4]+fStr
+            print ' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[5]+fStr
             continue
 
-        print '& ^{'+r[1]+'}\!'+r[0]+'+'+' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[4]+fStr
+        print '& ^{'+r[1]+'}\!'+r[0]+'+'+' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[5]+fStr
     print '\end{eqnarray*}'
 
 
@@ -167,7 +186,7 @@ def QDecay(key1,a1):
     decayCand=nReaction(key1,a1,'None',0)
     if decayCand==False:
         return False
-    decays=[val for val in decayCand if val[4]>0]
+    decays=[val for val in decayCand if val[5]>0]
     return decays
 
 #Prints out all the possible neg Q's
@@ -175,7 +194,7 @@ def QStable(key1,a1):
     decayCand=nReaction(key1,a1,'None',0)
     if decayCand==False:
         return False
-    decays=[val for val in decayCand if val[4]<0]
+    decays=[val for val in decayCand if val[5]<0]
     return decays
 
 #Print out the first unstable elements
@@ -238,7 +257,8 @@ def checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes):
     reactionStuffb=[res,aRes,eject,aEject]
     retList=nReaction(key1,a1,key2,a2)
     for ret in retList:
-        if reactionStuffa==ret[:-1] or reactionStuffb==ret[:-1]:
+        #Excluding the threshold and the QValue
+        if reactionStuffa==ret[:-2] or reactionStuffb==ret[:-2]:
             return ret
     print "Reaction is invalid"
     return False
@@ -247,7 +267,7 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
     if not checkArguments(ELab,react,eject,res):
         return False
-    Q=react[4]
+    Q=react[5]
     miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
     if veo==False:
@@ -430,7 +450,7 @@ def xReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
     if not checkArguments(ELab,react,eject,res):
         return False
-    Q=react[4]
+    Q=react[5]
 
     miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
