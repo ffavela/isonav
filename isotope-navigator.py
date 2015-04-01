@@ -37,6 +37,17 @@ def checkIsoExistence(key1,a1,key2,a2):
 print "Populating dictionary"
 iDict=populateDict()
 
+def nRadius(A):
+    #In fermis
+    return 1.2*A**(1.0/3.0)
+    
+def coulombE(e1,a1,e2,a2):
+    alpha=1/137.036 #fine structure
+    hc=197.33 #MeV-fm
+    z1=getPnum(e1)
+    z2=getPnum(e2)
+    rMin=nRadius(a1)+nRadius(a2)
+    return z1*z2*alpha*hc/rMin
 
 def reaction(key1,a1,key2,a2):
     #Think about meoizing
@@ -77,6 +88,7 @@ def reaction(key1,a1,key2,a2):
         if aRes in iDict[rKey][1] and aEject in iDict[eKey][1]:
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
+            # coulE=coulombE(eKey,aEject,rKey,aRes)
             newVal=[eKey,aEject,rKey,aRes,Q]
             newValP=[rKey,aRes,eKey,aEject,Q]#Avoiding repetition
             if newVal not in reactionList and newValP not in reactionList:
@@ -121,13 +133,41 @@ def nReaction(key1,a1,key2,a2):
     ls.sort(key=lambda x: x[4],reverse=True)
     return ls
 
+
+##Printing latex fiendly nReaction
+def latexNReaction(key1,a1,key2,a2):
+    reacList=nReaction(key1,a1,key2,a2)
+    sa1=str(a1)
+    sa2=str(a2)
+    print """\\begin{eqnarray*} """
+    
+    print ' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&',
+    maxVal=len(reacList)
+    for r in reacList:
+        if r==reacList[4]:
+            fStr='MeV'
+        else:
+            fStr='MeV\\\\'
+
+        r[1]=str(r[1])
+        r[3]=str(r[3])
+        r[4]=str(round(r[4],2))
+     
+        if r[0]=='None':
+            print ' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[4]+fStr
+            continue
+
+        print '& ^{'+r[1]+'}\!'+r[0]+'+'+' ^{'+r[3]+'}\!'+r[2]+'&Q='+r[4]+fStr
+    print '\end{eqnarray*}'
+
+
 #Not yet perfect, only uses Q
 #Not any beta decays
 def QDecay(key1,a1):
     decayCand=nReaction(key1,a1,'None',0)
     if decayCand==False:
         return False
-    decays=[val for val in decayCand if val[-1]>0]
+    decays=[val for val in decayCand if val[4]>0]
     return decays
 
 #Prints out all the possible neg Q's
@@ -135,7 +175,7 @@ def QStable(key1,a1):
     decayCand=nReaction(key1,a1,'None',0)
     if decayCand==False:
         return False
-    decays=[val for val in decayCand if val[-1]<0]
+    decays=[val for val in decayCand if val[4]<0]
     return decays
 
 #Print out the first unstable elements
@@ -207,7 +247,7 @@ def sReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
     if not checkArguments(ELab,react,eject,res):
         return False
-    Q=react[-1]
+    Q=react[4]
     miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
     if veo==False:
@@ -235,6 +275,8 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
     thEject=0
     dTh=0.2
     ang=radians(ang)
+    if ang>pi/2:
+        ang-=pi
     tolerance=0.0001
     while True:
         thEject+=dTh
@@ -247,7 +289,7 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
         ### deltaPy=(veoy*meF-vRoy*mrF)*1.0/c**2
         ### deltaPz=(veoz*meF+vRoz*mrF)*1.0/c**2
         # print deltaPy,deltaPz
-        if (veoz+Vcm)==0:
+        if (veoz+Vcm)==0 or (vRoz+Vcm)==0:
             print "No solution was found, div by zero"
             print "#####################################################"
             return False
@@ -388,7 +430,7 @@ def xReaction(key1,a1,key2,a2,eject,aEject,res,aRes,ELab=2.9,ang=30):
     react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
     if not checkArguments(ELab,react,eject,res):
         return False
-    Q=react[-1]
+    Q=react[4]
 
     miF,mtF,meF,mrF=getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes)
     veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
@@ -417,15 +459,26 @@ def pXReaction(xReact):
 
 def xXTremeTest(key1,a1,key2,a2,E=10,ang=30):
     reactions=nReaction(key1,a1,key2,a2)
+    rStuff=[]
     for e in reactions:
-        print e
+        # print e
         if 'None' in e:
             continue
         react=xReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
         if react==False:
             break
-        print e
-        pXReaction(react)
+        # print e
+        # pXReaction(react)
+        rStuff.append([e,react])
+    return rStuff
+
+def pXXTremeTest(XXList):
+    for e in XXList:
+        print e[0]
+        for ee in e[1]:
+            print ee[0]
+            for states in ee[1]:
+                print states
 
 def checkArguments(ELab,react,eject,res):
     if ELab<=0:
@@ -449,3 +502,56 @@ def getAllEMasses(key1,a1,key2,a2,eject,aEject,res,aRes):
     mrF=getEMass(res,aRes)
     return miF,mtF,meF,mrF
 
+#Given an energy, beam energy, angle, a list of reactions and a
+#tolerance it returns values to hint where it might be from
+def fReact(E,bE,angle,rList,tol=140):
+    for iR in rList:
+        print "######################"
+        print iR
+        print "######################"
+        XXList=xXTremeTest(iR[0],iR[1],iR[2],iR[3],bE,angle)
+        # pXXTremeTest(XXList)
+        pFReact(E,tol,XXList)
+
+def pFReact(E,tol,XXList):
+    for e in XXList:
+        for ee in e[1]:
+            for states in ee[1]:
+                if states[1]==False:
+                    continue
+                if abs(states[1][1]-E)<=tol:
+                    print e[0],ee[0],states
+
+def findOE(Eang,ang,r):
+    E=Eang
+    Emax=2*Eang
+    dE=0.01
+    tolerance=0.0001
+    while True:
+        sR= sReaction(r[0],r[1],r[2],r[3],r[0],r[1],r[2],r[3],E,ang)
+        diff=Eang-sR[0][1]
+        if abs(diff)<tolerance:
+            break
+        if dE>0 and diff<0 or dE<0 and diff>0:
+            dE*=-1.0/2
+        if E>Emax:
+            return False
+        E+=dE
+    return E
+    
+def rutherford0(z1,z2,E1,theta):
+    hc=197.33 #MeV-fm
+    alpha=1/137.036
+    theta=radians(theta)
+    dSigma=(z1*z2*alpha*hc/(4*E1))**2/sin(theta/2)**4
+    # converting to mb
+    dSigma*=10
+    return dSigma
+
+def rutherford1(s1,s2,E1,theta):
+    z1=getPnum(s1)
+    z2=getPnum(s2)
+    return rutherford0(z1,z2,E1,theta)
+
+def nEvents(Ni,aDens,dSigma,dOmega):
+    return Ni*aDens*dSigma*dOmega
