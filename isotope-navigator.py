@@ -575,3 +575,24 @@ def rutherford1(s1,s2,E1,theta):
 
 def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
+
+#This is still in testing
+def stoppingPowerD(e1,e2,a2,E,I):
+    z1=getPnum(e1)
+    z2=getPnum(e2)
+    A=getMass(e2,a2)
+    #In MeV/cm
+    return -z1**2*z2*log(2195*E/I)/(A*E)
+
+#This is also still in testing    
+def stoppingPowerI(e1,e2,a2,E,I,L):
+    #L in microns (10**-4 cm)
+    x=0
+    L=L*10**(-4)
+    dx=L/10
+    while x<L or E<=0:
+        E+=stoppingPowerD(e1,e2,a2,E,I)*dx
+        x+=dx
+    return E
+        
+    
