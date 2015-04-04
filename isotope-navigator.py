@@ -107,7 +107,10 @@ def reaction(key1,a1,key2,a2):
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             # coulE=coulombE(eKey,aEject,rKey,aRes)
-            Ethres=thresholdE(key1,a1,key2,a2,eKey,aEject,rKey,aRes)
+            if 'None' in [key1,key2,eKey,rKey]:
+                Ethres='None'
+            else:
+                Ethres=thresholdE(key1,a1,key2,a2,eKey,aEject,rKey,aRes)
             newVal=[eKey,aEject,rKey,aRes,Ethres,Q]
             newValP=[rKey,aRes,eKey,aEject,Ethres,Q]#Avoiding repetition
             if newVal not in reactionList and newValP not in reactionList:
@@ -186,7 +189,7 @@ def QDecay(key1,a1):
     decayCand=nReaction(key1,a1,'None',0)
     if decayCand==False:
         return False
-    decays=[val for val in decayCand if val[5]>0]
+    decays=[val[0:4]+[val[5]] for val in decayCand if val[5]>0]
     return decays
 
 #Prints out all the possible neg Q's
