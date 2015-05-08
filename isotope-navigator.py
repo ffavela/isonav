@@ -27,6 +27,47 @@ def printElemList():
         print i,e
         i+=1
 
+def parseIso(s):
+    sLen=len(s)
+    x=''
+    if sLen==0:
+        return False
+    if s[0]=="*":
+        x="*"
+        s=s[1:]
+        sLen-=1
+    index=0
+    while s[index] in range(10):
+        index+=1
+    if index==0:
+        isoNo=0
+    else:
+        isoNo=int(s[0:index+1])
+    
+#Center of mass velocity stuff
+def comVel(k1,a1,k2,a2,E1):
+    m1=getEMass(k1,a1)
+    m2=getEMass(k2,a2)
+    v1=sqrt(2*E1/m1)
+    v2=0 #assuming it is still
+    Vcom=(v1*m1+v2*m2)/(m1+m2)
+    v1p=v1-Vcom
+    v2p=v2-Vcom
+    return v1p,v2p,Vcom
+
+def comE(k1,a1,k2,a2,E1):
+    vels=comVel(k1,a1,k2,a2,E1)
+    me1=getEMass(k1,a1)
+    me2=getEMass(k2,a2)
+    #Alternative way
+    # mu=me1*me2/(me1+me2)
+    # rVel=vels[0]-vels[1]
+    # print 1.0/2.0*mu*rVel**2
+    E1com=vels[0]**2*me1/2
+    E2com=vels[1]**2*me2/2
+    Ecom=E1com+E2com
+    return E1com,E2com,Ecom
+
 def checkIsoExistence(key1,a1,key2,a2):
     if key1 not in iDict or key2 not in iDict:
         print "Error: keys have to be in the dictionary"
@@ -43,6 +84,17 @@ iDict=populateDict()
 def nRadius(A):
     #In fermis
     return 1.2*A**(1.0/3.0)
+
+def mirror(e,a):
+    # if not checkDictIso(e,a):
+    #     return False
+    pNumber=getNnum(e,a)
+    nNumber=getPnum(e)
+    ma=pNumber+nNumber
+    me=getKey(pNumber)
+    return me,ma
+    
+# def gamow
     
 def coulombE(e1,a1,e2,a2):
     alpha=1/137.036 #fine structure
@@ -480,6 +532,40 @@ def pXReaction(xReact):
         for ee in e[1]:
             print ee
 
+def tabXEject(key1,a1,key2,a2,eject,aEject,res,aRes,ELabs=[2.8,2.9],ang=30):
+    react=checkReaction(key1,a1,key2,a2,eject,aEject,res,aRes)
+    gList=[]
+    for energy in ELabs:
+        gList.append(xEject(xReaction(key1,a1,key2,a2,eject,aEject,res,aRes,\
+                                      energy,ang)))
+    return gList
+    
+class prettyfloat(float):
+    def __repr__(self):
+        return "%0.2f" % self
+
+def pTabXEject(key1,a1,key2,a2,eject,aEject,res,aRes,ELabs=[2.8,2.9],ang=30):
+    # ELabs=[1.41685, 1.4665065, 1.520496, 1.5788185, 1.641474, 1.7084625, 1.779784, 1.8554385, 1.935426, 2.0197465, 2.1084, 2.2013865, 2.298706, 2.4003585, 2.506344, 2.6166625, 2.731314, 2.8502985, 2.973616, 3.1012665, 3.23325, 3.3695665]
+    # ELabs=[2.2013865,2.298706,2.4003585,2.506344,2.6166625,2.731314,2.87461536,2.973616,3.1012665,3.3695665]
+    # ELabs=[2.1084,2.2013865,2.298706,2.4003585,2.506344,2.6166625,2.731314,2.87461536,2.973616,3.1012665,3.26016666,3.3695665]
+    levE=tabXEject(key1,a1,key2,a2,eject,aEject,res,aRes,ELabs,ang)
+    for l in levE:
+        ll=map(prettyfloat, l)
+        # print ll
+        # print('\t'.join(map(str,ll)))
+        print "%.2f\t "*len(l) % tuple(l)
+
+def xEject(xReact,mCount=6):
+    xList=[]
+    count=0
+    for e in xReact[1][1]:
+        xList.append(e[1][1])
+        if count>=mCount:
+            break
+        count+=1
+    return xList
+    # print xReact[1]
+
 def xXTremeTest(key1,a1,key2,a2,E=10,ang=30):
     reactions=nReaction(key1,a1,key2,a2)
     rStuff=[]
@@ -502,6 +588,22 @@ def pXXTremeTest(XXList):
             print ee[0]
             for states in ee[1]:
                 print states
+
+def xXTremeTestSame(key1,a1,key2,a2,E=10,ang=30):
+    reactions=[[key1,a1,key2,a2,0,0]]
+    rStuff=[]
+    for e in reactions:
+        # print e
+        if 'None' in e:
+            continue
+        react=xReaction(key1,a1,key2,a2,e[0],e[1],e[2],e[3],E,ang)
+        if react==False:
+            break
+        # print e
+        # pXReaction(react)
+        rStuff.append([e,react])
+    return rStuff
+
 
 def checkArguments(ELab,react,eject,res):
     if ELab<=0:
@@ -576,8 +678,77 @@ def rutherford1(s1,s2,E1,theta):
     z2=getPnum(s2)
     return rutherford0(z1,z2,E1,theta)
 
+def rutherfordLab0(s1,s2,E1,thetaL):
+    """ Returns the rutherford value in the lab frame"""
+    z1=getPnum(s1)
+    z2=getPnum(s2)
+    #This has to be fixed
+    K=1.0/7.0
+    #see m. cottereau and f. lefebvres recuel de problemes...
+    theta=solveAng(thetaL,K)
+    dSigmaL=rutherford0(z1,z2,E1,theta)*\
+        (1+K**2+2*K*cos(theta))**(3.0/2.0)/(1+K*cos(theta))
+    return dSigmaL
+
+def solveAng(thetaL,ratio):
+    """ Returns the CM angle """
+    thetaL=radians(thetaL)
+    tgThetaL=tan(thetaL)
+    thetaCM=0
+    def myFunct(thetaCM,KE):
+        return sin(thetaCM)/(cos(thetaCM)+ratio)
+    tolerance=0.0001
+    dTh=0.05
+    # i=0
+    while True:
+        fVal=myFunct(thetaCM,ratio)
+        # if i>=20:
+        #     break
+        # print "fVal is:",fVal
+        # i+=1
+        diff=tgThetaL-fVal
+        if abs(diff)<tolerance:
+            break
+        if dTh>0 and diff<0 or dTh<0 and diff>0:
+            dTh *= -1.0/2
+            # print "Sign switch"
+        if thetaCM>=pi:
+            # print "No solution was found"
+            return False
+        thetaCM+=dTh
+    thetaL=degrees(atan(fVal))
+    return degrees(thetaCM)
+    # return thetaL
+
+
 def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
+
+def getdOmega(r,R):
+    return (r/(2*R))**2
+
+#Converts current into # of charges
+def current2Part(current):
+    C=6.2415093E18
+    return C*current*10**(-6)
+
+#Gets the product of #Projectiles*#Targets
+def getT(ps,ts,E,angle,Nr,dOmega):
+    return Nr/(rutherfordLab0(ps,ts,E,angle)*dOmega)
+
+def getdSigma(Nn,dOmega,T):
+   return Nn/(dOmega*T) 
+
+#Returns density in part/cm**2, T increases with time as well as nPart
+#so time cancels out, just put the average current, and remember that
+#there are 5mm collimators and that not all of the original beam gets to
+#the jet.
+def getDensityIncmSquare(T,current):
+    #Current in micro Amperes
+    nPart=current2Part(current)
+    mBarn2cm2=1E-27
+    return T/(mBarn2cm2*nPart)
+    
 
 #This is still in testing
 def stoppingPowerD(e1,e2,a2,E,I):
