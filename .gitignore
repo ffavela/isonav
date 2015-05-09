@@ -4,5 +4,7 @@
 *.pkl
 *.pyc
 *.zip
+alphaData2.tsv
+csCalculation.py
 ensdf2
 excitedData
