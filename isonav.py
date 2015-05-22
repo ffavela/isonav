@@ -2,7 +2,9 @@ from math import *
 from loadingStuff import *
 #important constant
 # c=3*10**8
-c=299792458
+c=299792458 #in m/s
+cfm=c*10**(15) #in fm/s
+# cfm=1 #in fm/s
 
 #utility functions for nuclear physics reactions
 
@@ -94,15 +96,14 @@ def mirror(e,a):
     me=getKey(pNumber)
     return me,ma
     
-# def gamow
     
 def coulombE(e1,a1,e2,a2):
     alpha=1/137.036 #fine structure
-    hc=197.33 #MeV-fm
+    hbc=197.33 #MeV-fm
     z1=getPnum(e1)
     z2=getPnum(e2)
     rMin=nRadius(a1)+nRadius(a2)
-    return z1*z2*alpha*hc/rMin
+    return z1*z2*alpha*hbc/rMin
 
 def thresholdE(e1,a1,e2,a2,e3,a3,e4,a4):
     miF=getMass(e1,a1)
@@ -207,6 +208,16 @@ def nReaction(key1,a1,key2,a2):
     ls.sort(key=lambda x: x[5],reverse=True)
     return ls
 
+#Printing it nicely for a spreadsheet.
+def tNReaction(key1,a1,key2,a2):
+    rList=nReaction(key1,a1,key2,a2)
+    for e in rList:
+        if e[4]=='None':
+            print str(e[1])+e[0]+'\t'+str(e[3])+e[2]+'\t',e[4],'\t',"{0:0.2f}".format(float(e[5]))
+        else:
+            print str(e[1])+e[0]+'\t'+str(e[3])+e[2]+'\t',"{0:0.2f}".format(float(e[4])),'\t',"{0:0.2f}".format(float(e[5]))
+
+            # print str(e[1])+e[0]+'\t'+str(e[3])+e[2]+'\t',float(e[4]),'\t',float(e[5])
 
 ##Printing latex fiendly nReaction
 def latexNReaction(key1,a1,key2,a2):
@@ -663,22 +674,25 @@ def findOE(Eang,ang,r):
             return False
         E+=dE
     return E
-    
-def rutherford0(z1,z2,E1,theta):
-    hc=197.33 #MeV-fm
+
+#It prints the CS in mb
+def rutherford0(z1,z2,Ecm,theta):
+    hbc=197.33 #MeV-fm
     alpha=1/137.036
     theta=radians(theta)
-    dSigma=(z1*z2*alpha*hc/(4*E1))**2/sin(theta/2)**4
+    dSigma=(z1*z2*alpha*hbc/(4*Ecm))**2/sin(theta/2)**4
     # converting to mb
     dSigma*=10
     return dSigma
-
-def rutherford1(s1,s2,E1,theta):
+#in mb
+def rutherford1(s1,s2,Ecm,theta):
     z1=getPnum(s1)
     z2=getPnum(s2)
-    return rutherford0(z1,z2,E1,theta)
+    return rutherford0(z1,z2,Ecm,theta)
 
-def rutherfordLab0(s1,s2,E1,thetaL):
+##WARNING for now it only works for deuterons in Nitrogen
+#in mb
+def rutherfordLab0(s1,s2,Ecm,thetaL):
     """ Returns the rutherford value in the lab frame"""
     z1=getPnum(s1)
     z2=getPnum(s2)
@@ -686,7 +700,7 @@ def rutherfordLab0(s1,s2,E1,thetaL):
     K=1.0/7.0
     #see m. cottereau and f. lefebvres recuel de problemes...
     theta=solveAng(thetaL,K)
-    dSigmaL=rutherford0(z1,z2,E1,theta)*\
+    dSigmaL=rutherford0(z1,z2,Ecm,theta)*\
         (1+K**2+2*K*cos(theta))**(3.0/2.0)/(1+K*cos(theta))
     return dSigmaL
 
@@ -725,7 +739,7 @@ def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
 
 def getdOmega(r,R):
-    return (r/(2*R))**2
+    return pi*(r/R)**2
 
 #Converts current into # of charges
 def current2Part(current):
@@ -733,6 +747,7 @@ def current2Part(current):
     return C*current*10**(-6)
 
 #Gets the product of #Projectiles*#Targets
+#in part/mb
 def getT(ps,ts,E,angle,Nr,dOmega):
     return Nr/(rutherfordLab0(ps,ts,E,angle)*dOmega)
 
@@ -749,6 +764,190 @@ def getDensityIncmSquare(T,current):
     mBarn2cm2=1E-27
     return T/(mBarn2cm2*nPart)
     
+#Binding Energy
+def getBE(s,A):
+    z=getPnum(s)
+    em=getEMass(s,A)
+    #proton mass
+    pm=getEMass("H",1)
+    #neutron mass
+    nm=getEMass("n",1)
+    return em-z*pm-(A-z)*nm
+
+#Binding Energy per nucleon
+def getBEperNucleon(s,A):
+    return getBE(s,A)/A
+
+#Using the liquid drop model for the binding energy
+#Values taken from A. Das and T. Ferbel book
+def getLDBE(s,A,a1=15.6,a2=16.8,a3=0.72,a4=23.3,a5=34):
+    #All the coeficients are in MeV
+    Z=getPnum(s)
+    N=getNnum(s,A)
+    if N%2==0 and Z%2==0:#Even even case
+        a5*=-1 #Greater stability
+    elif (A%2)==1:#Odd even case
+        a5=0
+    BE=-a1*A+a2*A**(2.0/3.0)+a3*Z**2/A**(1.0/3.0)+a4*(N-Z)**2/A+a5*A**(-3.0/4.0)
+    return BE
+
+#Binding energy per nucleon using LD
+def getLDBEperNucleon(s,A):
+    return getLDBE(s,A)/A
+
+#Using the LD model to get the eMass
+def getLDEMass(s,A):
+    Z=getPnum(s)
+    #proton mass
+    pm=getEMass("H",1)
+    #neutron mass
+    nm=getEMass("n",1)
+    return Z*pm+(A-Z)*nm+getLDBE(s,A)
+
+#Using the LD model to get the mass
+def getLDMass(s,A):
+    eCoef=938.41
+    return getLDEMass(s,A)/eCoef
+
+#de Broglie wavelength in angstrom
+def deBroglie(element,A,E):
+    hc=1.23984193 #MeV-pm
+    em=getEMass(element,A)
+    p=sqrt(2*em*E) #a "c" from here goes to the hc
+    return hc/p/100 # 1/100 to convert to angstrom
+
+#reduced de Broglie wavelength in angstrom
+def reducedDeBroglie(element,A,E):
+    return deBroglie(element,A,E)/(2*pi)
+
+#Compton wavelength
+def comptonW(em):
+    hc=1.23984193 #MeV-pm
+    return hc/em*1000 #*1000 to convert to fm
+
+#Reduced Compton wavelength
+def rComptonW(em):
+    hbc=197.33 #MeV-fm
+    return hbc/em
+
+#Hard sphere classical total CS
+#All this was taken from Griffiths
+def hardSphereCTCS(target,A):
+    a=nRadius(A)
+    return pi*a**2/100 #1/100 barn conversion.
+
+#Hard sphere quantum total CS
+#Note; this is an approximation from an expansion.
+def hardSphereQTCS(target,A):
+    a=nRadius(A)
+    return 4*pi*a**2/100 #1/100 barn conversion.
+
+#soft sphere differential CS
+def softSphereDCS(sp,ap,st,at,V0=50):
+    a=nRadius(at)
+    em=getEMass(sp,ap)
+    hbc=197.33 #MeV-fm
+    return (2*em*V0*a**3/(3*hbc**2))**2
+
+#soft sphere total CS
+def softSphereTCS(sp,ap,st,at,V0=50):
+    return 4*pi*softSphereDCS(sp,ap,st,at,V0)
+
+#soft sphere using the second Born approximation
+def softSphereDSBorn(sp,ap,st,at,V0=50):
+    a=nRadius(at)
+    em=getEMass(sp,ap)
+    hbc=197.33 #MeV-fm
+    firstC=2*em*V0*a**3/(3*hbc**2)
+    secondC=1-4*em*V0*a**2/(5*hbc**2)
+    return (firstC*secondC)**2
+
+#soft sphere using the second Born approximation for total CS
+def softSphereTSBorn(sp,ap,st,at,V0=50):
+    return 4*pi*softSphereDSBorn(sp,ap,st,at)
+
+
+#Using the Yukawa potential
+def yukawaDCS(sp,ap,st,E,theta,beta,mu):
+    hbc=197.33 #MeV-fm
+    eMass=getEMass(sp,ap)
+    theta=radians(theta)
+    k=sqrt(2*eMass*E/hbc)
+    kappa=2*k*sin(theta/2)
+    return (-2*eMass*beta/(hbc**2*(mu**2+kappa**2)))**2
+    
+#Getting the total CS for the Yukawa potential, Griffiths 11.12 Note;
+#this is still in testing
+def yukawaTCS(sp,ap,st,E,theta,beta,mu):
+    hbc=197.33 #MeV-fm
+    eMass=getEMass(sp,ap)
+    theta=radians(theta)
+    k=sqrt(2*eMass*E/hbc)
+    kappa=2*k*sin(theta/2)
+    return pi*(4*eMass*beta/(mu*hbc))**2/((mu*kappa)**2+8*eMass*E)
+
+#Using gamow factor according to krane eq. 8.17
+def gamowAlpha(s1,a1):
+    sEject="He"
+    aEject=4
+    decay=findDecay(s1,a1,sEject,aEject)
+    if decay != 'None':
+        Q=decay[4]
+    else:
+        return 'None'
+
+    hbc=197.33 #MeV-fm
+    alpha=1/137.036
+
+    B=getB(s1,a1,sEject,aEject)
+    em=getEMass(sEject,aEject) #Most probably alpha part mass
+    z1=getPnum(s1)
+    z2=getPnum(sEject)
+
+    x=Q/B
+    #Both equations should give the same... but they don't!!
+    #See Krane pg 253, eq. 8.16
+    # G=sqrt(2*em/Q)*alpha*z1*z2*(pi/2-2*x**2)
+    G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
+    return G
+
+#Gets the half life using the Gamow factor
+def gamowHL(s1,a1):
+    sEject="He"
+    aEject=4
+    decay=findDecay(s1,a1,sEject,aEject)
+    # Q=6
+    if decay != 'None':
+        Q=decay[4]
+    else:
+        return 'None'
+
+    ln2=0.693
+    a=nRadius(a1)
+    V0=35
+    em=getEMass(s1,a1)
+    G=gamowAlpha(s1,a1)
+    tHalf=ln2*a/cfm*sqrt(em/(V0+Q))*e**(2*G)
+    return tHalf
+
+
+def findDecay(s1,a1,sEject,aEject):
+    rList=QDecay(s1,a1)
+    for e in rList:
+        if sEject==e[0] and aEject==e[1]:
+            return e
+    #Take care of this case
+    return 'None'
+
+#For alpha decay is the barrier penetration energy for decay (in MeV),
+#normally alpha
+def getB(s1,a1,sEject,aEject):
+    alpha=1/137.036 #fine structure
+    hbc=197.33 #MeV-fm
+    a=nRadius(a1)
+    z1=getPnum(s1)
+    z2=getPnum(sEject)
+    return alpha*hbc*z1*z2/a
 
 #This is still in testing
 def stoppingPowerD(e1,e2,a2,E,I):
