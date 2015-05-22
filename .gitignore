@@ -4,6 +4,8 @@
 *.pkl
 *.pyc
 *.zip
+*.tsv
+printDensity.py
 alphaData2.tsv
 csCalculation.py
 ensdf2
