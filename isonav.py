@@ -546,6 +546,15 @@ def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
 
+def getIsoQVal(iso1,iso2,iso3,iso4):
+    # checkReaction(iso1,iso2,iso3,iso4)
+    m1=getEMass(iso1)
+    m2=getEMass(iso2)
+    m3=getEMass(iso3)
+    m4=getEMass(iso4)
+    Q=(m1+m2-m3-m4)
+    return Q
+
 def iso2String(k,iso,eVal=''):
     return eVal+str(iso)+k
 
@@ -958,6 +967,15 @@ def yukawaTCS(isop,isot,E,theta,beta,mu):
     kappa=2*k*sin(theta/2)
     return pi*(4*eMass*beta/(mu*hbc))**2/((mu*kappa)**2+8*eMass*E)
 
+#Using krane pg 248 eq 8.72
+def getTAlpha(radIso):
+    A,k=getIso(radIso)
+    daughterIso=str(A-4)+getKey(getPnum(k)-2)
+    # print daughterIso
+    Q=getIsoQVal('0None',radIso,'4He',daughterIso)
+    TAlpha=Q*(1-4/A)
+    return TAlpha
+
 #Using gamow factor according to krane eq. 8.17
 def gamowAlpha(iso1):
     isoEject="4He"
@@ -965,7 +983,7 @@ def gamowAlpha(iso1):
     # aEject,sEject=getIso(isoEject)
     decay=findDecay(iso1,isoEject)
     if decay != 'None':
-        Q=decay[4]
+        Q=decay[2]
     else:
         return 'None'
 
@@ -980,24 +998,26 @@ def gamowAlpha(iso1):
     x=Q/B
     #Both equations should give the same... but they don't!!
     #See Krane pg 253, eq. 8.16
-    # G=sqrt(2*em/Q)*alpha*z1*z2*(pi/2-2*x**2)
-    G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
+    G=sqrt(2*em/Q)*alpha*z1*z2*(pi/2-2*sqrt(x))
+    # G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
     return G
 
-#Gets the half life using the Gamow factor
+#Gets the half life using the Gamow factor. It sometimes matches
+#experimental vals and sometimes it is way off!
+#TODO; add the option to change the QVal for example.
 def gamowHL(iso1):
     isoEject="4He"
     a1,s1=getIso(iso1)
     decay=findDecay(iso1,isoEject)
     # Q=6
     if decay != 'None':
-        Q=decay[4]
+        Q=decay[2]
     else:
         return 'None'
 
     ln2=0.693
     a=nRadius(iso1)
-    V0=35
+    V0=35 #50
     em=getEMass(iso1)
     G=gamowAlpha(iso1)
     tHalf=ln2*a/cfm*sqrt(em/(V0+Q))*e**(2*G)
@@ -1006,9 +1026,12 @@ def gamowHL(iso1):
 
 def findDecay(iso1,ejectIso):
     rList=QDecay(iso1)
-    aEject,sEject=getIso(ejectIso)
+    # aEject,sEject=getIso(ejectIso)
+    # for e in rList:
+    #     if sEject==e[0] and aEject==e[1]:
+    #         return e
     for e in rList:
-        if sEject==e[0] and aEject==e[1]:
+        if ejectIso in e:
             return e
     #Take care of this case
     return 'None'
@@ -1022,6 +1045,8 @@ def getB(iso1,isoEject):
     z1=getPnum(iso1)
     z2=getPnum(isoEject)
     return alpha*hbc*z1*z2/a
+
+
 
 #This is still in testing
 def stoppingPowerD(iso1,iso2,E,I):
