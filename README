@@ -10,12 +10,12 @@ the resiual nucleus.
 Currently, it has a limited isotope database which includes the masses
 and it will include soon the levels of excitation.
 
-You have to download the database for to work, the can be downloaded
-dictionary from:
+You have to download the database for it to work, the dictionary can be
+downloaded from:
 
 https://mega.co.nz/#!XEkj3JqY!RqtOKDo6W4DKg02unABHh27856mJuC46cq_pkS1f72c
 
-It's only part of the ensdf files loaded into a python dictionary.
+Part of the ensdf files where loaded into a python dictionary.
 
 Also a txt file called isoMasses.txt has to be downloaded.
 
