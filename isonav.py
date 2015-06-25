@@ -76,7 +76,7 @@ def checkIsoExistence(iso1,iso2):
         return False
     return True
 
-print "Populating dictionary"
+print "#Populating dictionary"
 iDict=populateDict()
 
 def nRadius(iso):
@@ -665,6 +665,13 @@ def pXXTremeTest(XXList):
             for states in ee[1]:
                 print states
 
+def pSpecialXXTremeTest(XXList,reactStuff,lev):
+    pass
+    for e in XXList:
+        print 
+        # if e[0]==reactStuff:
+        #     print e[1][0]
+
 #Commenting this for now
 # def xXTremeTestSame(key1,a1,key2,a2,E=10,ang=30):
 #     iso1=str(a1)+key1
@@ -761,12 +768,13 @@ def rutherford0(iso1,iso2,Ecm,theta):
 
 ##WARNING for now it only works for deuterons in Nitrogen: fixed
 #in mb
-def rutherfordLab0(iso1,iso2,Ecm,thetaL):
+def rutherfordLab0(iso1,iso2,ELab,thetaL):
     """ Returns the rutherford value in the lab frame"""
     # z1=getPnum(iso1)
     # z2=getPnum(iso2)
     # #This has to be fixed
     # K=1.0/7.0
+    Ecm=comE(iso1,iso2,ELab)[2] #Taking the 3rd argument
     K=getMass(iso1)/getMass(iso2)
     #see m. cottereau and f. lefebvres recuel de problemes...
     theta=solveAng(thetaL,K)
@@ -823,6 +831,9 @@ def getT(ps,ts,E,angle,Nr,dOmega):
 
 def getdSigma(Nn,dOmega,T):
    return Nn/(dOmega*T) 
+
+def getdSigma2(pIso,tIso,Nruth,Nnucl,ELab,angle):
+    return 1.0*Nnucl/Nruth*rutherfordLab0(pIso,tIso,ELab,angle)
 
 #Returns density in part/cm**2, T increases with time as well as nPart
 #so time cancels out, just put the average current, and remember that
@@ -1003,8 +1014,9 @@ def gamowAlpha(iso1):
     return G
 
 #Gets the half life using the Gamow factor. It sometimes matches
-#experimental vals and sometimes it is way off!
-#TODO; add the option to change the QVal for example.
+#experimental vals and sometimes it is way off!  TODO; add the option to
+#change the QVal for example. Also include the hbc*l*(l+1)/emR**2 in the
+#energy. And the possibility to change V0.
 def gamowHL(iso1):
     isoEject="4He"
     a1,s1=getIso(iso1)

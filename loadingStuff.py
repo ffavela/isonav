@@ -59,10 +59,10 @@ def getFileName(aList,key,iso):
 
 def populateDict():
     if os.path.isfile("isoDict.pkl"):
-        print "Dictionary file exists, loading it"
+        print "#Dictionary file exists, loading it"
         iDict = pickle.load(open("isoDict.pkl", "rb" ))
     else:
-        print "Dictionary file does not exist, creating it"
+        print "#Dictionary file does not exist, creating it"
         iDict=populateDict1()
         iDict=populateDict2(iDict)
         pickle.dump(iDict,open("isoDict.pkl","wb"))

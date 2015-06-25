@@ -14,6 +14,8 @@ onlySymbol=re.compile('[A-Z][a-z]?')
 def getIso(s):
     if isinstance(s,int):
         return s,None
+    elif s=="a" or s=="alpha" or s=="Alpha":
+        return 4,"He"
     elif s=="n" or s=="1n":
         return 1,"n"
     elif s=="p":#Isotopes of hydrogen
