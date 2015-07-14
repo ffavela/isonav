@@ -35,28 +35,28 @@ def printElemList():
         i+=1
 
 #Center of mass velocity stuff
-def comVel(iso1,iso2,E1):
+def getVelcm(iso1,iso2,E1):
     m1=getEMass(iso1)
     m2=getEMass(iso2)
     v1=sqrt(2*E1/m1)
     v2=0 #assuming it is still
-    Vcom=(v1*m1+v2*m2)/(m1+m2)
-    v1p=v1-Vcom
-    v2p=v2-Vcom
-    return v1p,v2p,Vcom
+    Vcm=(v1*m1+v2*m2)/(m1+m2)
+    v1p=v1-Vcm
+    v2p=v2-Vcm
+    return v1p,v2p,Vcm
 
-def comE(iso1,iso2,E1):
-    vels=comVel(iso1,iso2,E1)
+def getEcm(iso1,iso2,E1):
+    vels=getVelcm(iso1,iso2,E1)
     me1=getEMass(iso1)
     me2=getEMass(iso2)
     #Alternative way
     # mu=me1*me2/(me1+me2)
     # rVel=vels[0]-vels[1]
     # print 1.0/2.0*mu*rVel**2
-    E1com=vels[0]**2*me1/2
-    E2com=vels[1]**2*me2/2
-    Ecom=E1com+E2com
-    return E1com,E2com,Ecom
+    E1cm=vels[0]**2*me1/2
+    E2cm=vels[1]**2*me2/2
+    Ecm=E1cm+E2cm
+    return E1cm,E2cm,Ecm
 
 def checkIsoExistence(iso1,iso2):
     a1,key1=getIso(iso1)
@@ -756,7 +756,7 @@ def rutherford0(iso1,iso2,Ecm,theta):
 
 def rutherfordLab0(iso1,iso2,ELab,thetaL):
     """ Returns the rutherford value in the lab frame"""
-    Ecm=comE(iso1,iso2,ELab)[2] #Taking the 3rd argument
+    Ecm=getEcm(iso1,iso2,ELab)[2] #Taking the 3rd argument
     K=getMass(iso1)/getMass(iso2)
     #see m. cottereau and f. lefebvres recuel de problemes...
     theta=solveAng(thetaL,K)
