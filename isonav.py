@@ -36,8 +36,6 @@ def printElemList():
 
 #Center of mass velocity stuff
 def comVel(iso1,iso2,E1):
-    # iso1=str(a1)+k1
-    # iso2=str(a2)+k2
     m1=getEMass(iso1)
     m2=getEMass(iso2)
     v1=sqrt(2*E1/m1)
@@ -48,9 +46,6 @@ def comVel(iso1,iso2,E1):
     return v1p,v2p,Vcom
 
 def comE(iso1,iso2,E1):
-    # iso1=str(a1)+k1
-    # iso2=str(a2)+k2
-
     vels=comVel(iso1,iso2,E1)
     me1=getEMass(iso1)
     me2=getEMass(iso2)
@@ -96,26 +91,23 @@ def mirror(iso):
 def coulombE(iso1,iso2):
     alpha=1/137.036 #fine structure
     hbc=197.33 #MeV-fm
-    # iso1=str(a1)+e1
-    # iso2=str(a2)+e2
     z1=getPnum(iso1)
     z2=getPnum(iso2)
     rMin=nRadius(iso1)+nRadius(iso2)
     return z1*z2*alpha*hbc/rMin
 
 def thresholdE(iso1,iso2,iso3,iso4):
-    miF=getMass(iso1)
-    mtF=getMass(iso2)
-    meF=getMass(iso3)
-    mrF=getMass(iso4)
+    mp=getMass(iso1)
+    mt=getMass(iso2)
+    me=getMass(iso3)
+    mr=getMass(iso4)
     eCoef=938.41
 
-    Q=getQVal(miF,mtF,meF,mrF)*eCoef
+    Q=getQVal(mp,mt,me,mr)*eCoef
     if Q<=0:
-        Ethres=-Q*(mrF+meF)/(mrF+meF-miF)
+        Ethres=-Q*(mr+me)/(mr+me-mp)
     else:
         Ethres=0
-    # print miF,mtF,meF,mrF,Q
     return Ethres
 
 def reaction(iso1,iso2):
@@ -162,13 +154,10 @@ def reaction(iso1,iso2):
             ejectIso=str(aEject)+eKey
             resIso=str(aRes)+rKey
 
-            # coulE=coulombE(eKey,aEject,rKey,aRes)
             if 'None' in [key1,key2,eKey,rKey]:
                 Ethres='None'
             else:
                 Ethres=thresholdE(iso1,iso2,ejectIso,resIso)
-            # newVal=[eKey,aEject,rKey,aRes,Ethres,Q]
-            # newValP=[rKey,aRes,eKey,aEject,Ethres,Q]#Avoiding repetition
             newVal=[ejectIso,resIso,Ethres,Q]
             newValP=[resIso,ejectIso,Ethres,Q]#Avoiding repetition
             if newVal not in reactionList and newValP not in reactionList:
@@ -241,8 +230,6 @@ def latexNReaction(iso1,iso2):
         else:
             fStr='MeV\\\\'
 
-        # r[1]=str(r[0])
-        # r[3]=str(r[3])
         r[3]=str(round(r[3],2))
         aEject,kEject=getIso(r[0])
         aRes,kRes=getIso(r[1])
@@ -360,31 +347,31 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     react=checkReaction(iso1,iso2,isoEject,isoRes)
     if not checkArguments(ELab,react,eject,res):
         return False
-    Q=react[3]
-    miF,mtF,meF,mrF=getAllEMasses(iso1,iso2,isoEject,isoRes)
-    veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
-    if veo==False:
+
+    ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    if ve==False:
         return False
-    # print "Normal solution is"
-    s1=solveNum(ang,veo,vRo,Vcm,meF,mrF)
-    s2=solveNum(ang,vRo,veo,Vcm,mrF,meF)
+    s1=solveNum(ang,ve,vR,Vcm,isoEject,isoRes)
+    s2=solveNum(ang,vR,ve,Vcm,isoRes,isoEject)
     solution=[s1,s2]
     return solution
 
-def checkSecSol(miF,mtF,meF,mrF,ELab):
-    Q=getQVal(miF,mtF,meF,mrF)
+def checkSecSol(emp,emt,eme,emr,ELab):
+    Q=getQVal(emp,emt,eme,emr)
     if Q<0:
-        Ethres=-Q*(mrF+meF)/(mrF+meF-miF)
-        Emax=-Q*mrF/(mrF-miF)
+        Ethres=-Q*(emr+eme)/(emr+eme-emp)
+        Emax=-Q*emr/(emr-emp)
         print "Ethres,Emax"
         print Ethres,Emax
         if Ethres<ELab<Emax:
             print "Possible second solution"
-            thetaM=acos(sqrt(-(mrF+meF)*(mrF*Q+(mrF-miF)*ELab)/(miF*meF*ELab)))
+            thetaM=acos(sqrt(-(emr+eme)*(emr*Q+(emr-emp)*ELab)/(emp*eme*ELab)))
             return thetaM
     return False
 
-def solveNum(ang,veo,vRo,Vcm,meF,mrF):
+def solveNum(ang,ve,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
+    eme=getEMass(isoE)+exList[2]
+    emr=getEMass(isoR)+exList[3]
     thEject=0
     dTh=0.2
     ang=radians(ang)
@@ -393,23 +380,23 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
     tolerance=0.0001
     while True:
         thEject+=dTh
-        veoy=veo*sin(thEject)
-        veoz=veo*cos(thEject)
-        vRoy=vRo*sin(pi-thEject)
-        vRoz=vRo*cos(pi-thEject)
+        vey=ve*sin(thEject)
+        vez=ve*cos(thEject)
+        vRy=vR*sin(pi-thEject)
+        vRz=vR*cos(pi-thEject)
          
         #They actually have to be zero
-        ### deltaPy=(veoy*meF-vRoy*mrF)*1.0/c**2
-        ### deltaPz=(veoz*meF+vRoz*mrF)*1.0/c**2
+        ### deltaPy=(vey*eme-vRy*emr)*1.0/c**2
+        ### deltaPz=(vez*eme+vRz*emr)*1.0/c**2
         # print deltaPy,deltaPz
-        if (veoz+Vcm)==0 or (vRoz+Vcm)==0:
+        if (vez+Vcm)==0 or (vRz+Vcm)==0:
             print "No solution was found, div by zero"
             print "#####################################################"
             return False
-        thEjectLab=atan(veoy/(veoz+Vcm))
-        ELabEject=meF*(veoy**2+(veoz+Vcm)**2)/(2*c**2)
-        theResLab=atan(vRoy/(vRoz+Vcm))
-        ELabResid=mrF*(vRoy**2+(vRoz+Vcm)**2)/(2*c**2)
+        thEjectLab=atan(vey/(vez+Vcm))
+        ELabEject=eme*(vey**2+(vez+Vcm)**2)/(2*c**2)
+        theResLab=atan(vRy/(vRz+Vcm))
+        ELabResid=emr*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
 
         diff=ang-thEjectLab
         if abs(diff)<tolerance:
@@ -424,9 +411,8 @@ def solveNum(ang,veo,vRo,Vcm,meF,mrF):
     return [degrees(thEjectLab),ELabEject,degrees(theResLab),\
             ELabResid]
 
+
 def xTremeTest(iso1,iso2,E=10,ang=30):
-    # iso1=str(a1)+key1
-    # iso2=str(a2)+key2
     reactions=nReaction(iso1,iso2)
     for e in reactions:
         if 'None' in e:
@@ -470,23 +456,34 @@ def checkDictIso(iso):
     else:
         return True
 
-
-def getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab):
-    Q=getQVal(miF,mtF,meF,mrF)
-    Pi=sqrt(2*miF*ELab)/c
-    Vcm=Pi*c**2/(miF+mtF)
-    Etied=(Pi*c)**2/(2*(miF+mtF))
-    Edisp=ELab-Etied
+def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
+    emp,emt,eme,emr=getAllEMasses(iso1,iso2,isoE,isoR)
+    emp+=exList[0]
+    emt+=exList[1]
+    eme+=exList[2]
+    emr+=exList[3]
+    Q=getQVal(emp,emt,eme,emr)
+    # Pi=sqrt(2*emp*ELab)/c
+    # Vcm=Pi*c**2/(emp+emt)
+    # EcmSys=(Pi*c)**2/(2.0*(emp+emt))
+    v1=sqrt(2.0*ELab/emp)*c
+    v2=0 #For future improvement
+    Vcm=(emp*v1+emt*v2)/(emp+emt)
+    iso1="d"
+    iso2="14N"
+    EcmSys=0.5*(Vcm/c)**2*(emp+emt)
+    #Available E in b4 collision
+    Edisp=ELab-EcmSys
     Ef=Edisp+Q
-
     if Ef<0:
         print "Not enough energy for reaction"
         return False,False,False,False
-
-    Po=sqrt(2*Ef*meF*mrF/(meF+mrF))/c
-    veo=Po*c**2/meF
-    vRo=Po*c**2/mrF
-    return veo,vRo,Vcm,Ef
+    #Momentum, in cm, going out
+    muO=eme*emr/(eme+emr)
+    Po=sqrt(2*Ef*muO)/c
+    ve=Po*c**2/eme
+    vR=Po*c**2/emr
+    return ve,vR,Vcm,Ef
 
 def getEMass(iso1):
     eCoef=938.41
@@ -494,7 +491,6 @@ def getEMass(iso1):
     return iDict[k][1][A][0]*eCoef
 
 def getLevelE(iso1,level):
-    # iso1=str(iso)+k
     A,k=getIso(iso1)
     if not checkDictIso(iso1):
         return 0
@@ -502,47 +498,48 @@ def getLevelE(iso1,level):
 
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
-def exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,eVal=1):
+# def exLevReact(ang,emp,emt,eme,emr,eject,aEject,res,aRes,ELab,Ef,eVal=1):
+def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
+    emp,emt,eme,emr=getAllEMasses(iso1,iso2,isoEject,isoRes)#Necessary?
     if eVal==1:
-        k=res
-        aVal=aRes
+        isoE1=isoRes
     else:
-        k=eject
-        aVal=aEject
-    iso1=str(aVal)+k
-    popLevels=getPopLevels(iso1,Ef)
+        isoE1=isoEject
+    popLevels=getPopLevels(isoE1,Ef)
     if len(popLevels)<=1:
         popLevels=[[1,0.0]]
     levList=[]
+    #For sending the mass excitations into getCoef
+    exList=[0,0,0,0]
     for e in popLevels:
         # print e
         if e[1] == False and e[0] != 1:
             print "Entered false for e[1] en exLevReact"
             continue
         if eVal==1:
-            mEject=meF
-            mRes=mrF+e[1]
+            mEject=eme
+            mRes=emr+e[1]
+            exList[3]=e[1]
         else:
-            mEject=meF+e[1]
-            mRes=mrF
-        veo,vRo,Vcm,Ef=getCoef(miF,mtF,mEject,mRes,\
-                                          eject,\
-                                          aEject,\
-                                          res,\
-                                          aRes,\
-                                          ELab)
-        if not veo:
+            mEject=eme+e[1]
+            mRes=emr
+            exList[2]=e[1]
+
+        ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab,exList)
+        if not ve:
             return False
 
-        Q=getQVal(miF,mtF,mEject,mRes)
-        numSol=solveNum(ang,veo,vRo,Vcm,mEject,mRes)
-        # print e,numSol
+        numSol=solveNum(ang,ve,vR,Vcm,isoEject,isoRes,exList)
         levList.append([e,numSol])
         if numSol==False:
             break
     return levList
     
-def getQVal(m1,m2,m3,m4):
+def getQVal(m1,m2,m3,m4,exList=[0,0,0,0]):
+    m1+=exList[0]
+    m2+=exList[1]
+    m3+=exList[2]
+    m4+=exList[3]
     Q=(m1+m2-m3-m4)
     return Q
 
@@ -569,22 +566,21 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
         return False
     Q=react[3]
 
-    miF,mtF,meF,mrF=getAllEMasses(iso1,iso2,isoEject,isoRes)
-    veo,vRo,Vcm,Ef=getCoef(miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab)
-    if veo==False:
+    ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    if ve==False:
         return False
     lL=[]
     c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
-    lL.append([c,exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,0)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
 
     c=[iso2String(eject,aEject,''),iso2String(res,aRes,'*')]
-    lL.append([c,exLevReact(ang,miF,mtF,meF,mrF,eject,aEject,res,aRes,ELab,Ef,1)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,1)])
 
     c=[iso2String(res,aRes,'*'),iso2String(eject,aEject,'')]
-    lL.append([c,exLevReact(ang,miF,mtF,mrF,meF,res,aRes,eject,aEject,ELab,Ef,0)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,0)])
 
     c=[iso2String(res,aRes,''),iso2String(eject,aEject,'*')]
-    lL.append([c,exLevReact(ang,miF,mtF,mrF,meF,res,aRes,eject,aEject,ELab,Ef,1)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,1)])
 
     return lL
 
@@ -631,20 +627,14 @@ def xEject(xReact,mCount=6):
             break
         count+=1
     return xList
-    # print xReact[1]
 
 def xXTremeTest(iso1,iso2,E=10,ang=30):
-    # iso1=str(a1)+key1
-    # iso2=str(a2)+key2
-
     reactions=nReaction(iso1,iso2)
     rStuff=[]
     for e in reactions:
         # print e
         if 'None' in e:
             continue
-        # isoEject=str(e[1])+e[0]
-        # isoRes=str(e[3])+e[2]
 
         isoEject=e[0]
         isoRes=e[1]
@@ -652,8 +642,7 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
         react=xReaction(iso1,iso2,isoEject,isoRes,E,ang)
         if react==False:
             break
-        # print e
-        # pXReaction(react)
+
         rStuff.append([e,react])
     return rStuff
 
@@ -709,12 +698,12 @@ def checkArguments(ELab,react,eject,res):
     return True
 
 def getAllEMasses(iso1,iso2,isoEject,isoRes):
-    miF=getEMass(iso1)
-    mtF=getEMass(iso2)
+    emp=getEMass(iso1)
+    emt=getEMass(iso2)
 
-    meF=getEMass(isoEject)
-    mrF=getEMass(isoRes)
-    return miF,mtF,meF,mrF
+    eme=getEMass(isoEject)
+    emr=getEMass(isoRes)
+    return emp,emt,eme,emr
 
 #Given an energy, beam energy, angle, a list of reactions and a
 #tolerance it returns values to hint where it might be from
@@ -765,15 +754,8 @@ def rutherford0(iso1,iso2,Ecm,theta):
     dSigma*=10
     return dSigma
 
-
-##WARNING for now it only works for deuterons in Nitrogen: fixed
-#in mb
 def rutherfordLab0(iso1,iso2,ELab,thetaL):
     """ Returns the rutherford value in the lab frame"""
-    # z1=getPnum(iso1)
-    # z2=getPnum(iso2)
-    # #This has to be fixed
-    # K=1.0/7.0
     Ecm=comE(iso1,iso2,ELab)[2] #Taking the 3rd argument
     K=getMass(iso1)/getMass(iso2)
     #see m. cottereau and f. lefebvres recuel de problemes...
@@ -810,8 +792,6 @@ def solveAng(thetaL,ratio):
         thetaCM+=dTh
     thetaL=degrees(atan(fVal))
     return degrees(thetaCM)
-    # return thetaL
-
 
 def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
@@ -1057,8 +1037,6 @@ def getB(iso1,isoEject):
     z1=getPnum(iso1)
     z2=getPnum(isoEject)
     return alpha*hbc*z1*z2/a
-
-
 
 #This is still in testing
 def stoppingPowerD(iso1,iso2,E,I):
