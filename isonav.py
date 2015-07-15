@@ -758,20 +758,28 @@ def rutherfordLab0(iso1,iso2,ELab,thetaL):
     Ecm=getEcm(iso1,iso2,ELab)[2] #Taking the 3rd argument
     K=getMass(iso1)/getMass(iso2)
     #see m. cottereau and f. lefebvres recuel de problemes...
-    theta=solveAng(thetaL,K)
-    dSigmaL=rutherford0(iso1,iso2,Ecm,theta)*\
-        (1+K**2+2*K*cos(theta))**(3.0/2.0)/(1+K*cos(theta))
+    thetaCM=solveAng(thetaL,K)
+    dSigmaL=rutherford0(iso1,iso2,Ecm,thetaCM)*\
+        (1+K**2+2*K*cos(thetaCM))**(3.0/2.0)/(1+K*cos(thetaCM))
     return dSigmaL
 
-def solveAng(thetaL,ratio):
+def solveAng(thetaL,ratio,direction="f"):
     """ Returns the CM angle """
     thetaL=radians(thetaL)
     tgThetaL=tan(thetaL)
-    thetaCM=0
-    def myFunct(thetaCM,KE):
+ 
+    if direction=="f":
+        thetaCM=0
+        dTh=0.05
+        sign=1
+    else:
+        thetaCM=pi
+        dTh=-0.05
+        sign=-1
+
+    def myFunct(thetaCM,ratio):
         return sin(thetaCM)/(cos(thetaCM)+ratio)
     tolerance=0.0001
-    dTh=0.05
     # i=0
     while True:
         fVal=myFunct(thetaCM,ratio)
@@ -779,18 +787,84 @@ def solveAng(thetaL,ratio):
         #     break
         # print "fVal is:",fVal
         # i+=1
-        diff=tgThetaL-fVal
+        diff=sign*(tgThetaL-fVal)
         if abs(diff)<tolerance:
             break
         if dTh>0 and diff<0 or dTh<0 and diff>0:
             dTh *= -1.0/2
             # print "Sign switch"
-        if thetaCM>=pi:
+        if sign==1 and thetaCM>=pi or sign==-1 and thetaCM<0:
             # print "No solution was found"
             return False
         thetaCM+=dTh
     thetaL=degrees(atan(fVal))
     return degrees(thetaCM)
+
+def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
+#There appears to be always forward solutions :'(
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
+    r=1.0*vE/Vcm
+    ratio=1/r
+    thetaCMf=solveAng(thetaL,ratio,"f")
+    thetaCMb=solveAng(thetaL,ratio,"b")
+    #No need to convert to radians in this case
+    return thetaCMf,thetaCMb
+
+def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
+    angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0])[0]
+    #Keeping angles in degrees
+    if thetaL>angMax:
+        print "Angle is too big, no solution found"
+        return [False,False,False,False]
+
+    #Getting the coeficients
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
+    #Getting the CM angles
+    thEjectCM=getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL)[0]
+    thEjectCM=radians(thEjectCM)
+    theResCM=pi-thEjectCM
+
+    emE=getEMass(isoE)+exList[2]
+    emR=getEMass(isoR)+exList[3]
+
+    vEy=vE*sin(thEjectCM)
+    vEz=vE*cos(thEjectCM)
+    vRy=vR*sin(theResCM)
+    vRz=vR*cos(theResCM)
+    
+    thEjectLab=atan(vEy/(vEz+Vcm))
+    ELabEject=emE*(vEy**2+(vEz+Vcm)**2)/(2*c**2)
+    theResLab=atan(vRy/(vRz+Vcm))
+    ELabResid=emR*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
+
+    return [degrees(thEjectLab),ELabEject,degrees(theResLab),\
+            ELabResid]
+
+
+def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
+    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
+    # v1=sqrt(2.0*E1L/emp)
+    # v2=0 #Zero for now
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
+    if vE==False:
+        print "Not enough energy to get angle"
+        return False
+
+    r1=1.0*vE/Vcm
+    r2=1.0*vR/Vcm
+
+    if r1>=1:
+        maxAng1=pi
+    else:
+        maxAng1=atan(r1/sqrt(1-r1**2))
+
+    if r2>=1:
+        maxAng2=pi
+    else:
+        maxAng2=atan(r2/sqrt(1-r2**2))
+
+    return [degrees(maxAng1),degrees(maxAng2)]
+
 
 def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
@@ -1055,28 +1129,3 @@ def stoppingPowerI(iso1,iso2,E,I,L):
         E+=stoppingPowerD(iso1,iso2,E,I)*dx
         x+=dx
     return E
-
-def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
-    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
-    v1=sqrt(2.0*E1L/emp)
-    v2=0 #Zero for now
-    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
-    if vE==False:
-        print "Not enough energy to get angle"
-        return False
-
-    r1=1.0*vE/Vcm
-    r2=1.0*vR/Vcm
-
-    if r1>=1:
-        maxAng1=pi
-    else:
-        maxAng1=atan(r1/sqrt(1-r1**2))
-
-    if r2>=1:
-        maxAng2=pi
-    else:
-        maxAng2=atan(r2/sqrt(1-r2**2))
-
-    return [degrees(maxAng1),degrees(maxAng2)]
-
