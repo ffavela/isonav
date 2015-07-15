@@ -349,8 +349,13 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
     if vE==False:
         return False
-    s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
-    s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
+
+    # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
+    # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
+
+    s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
+    s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
+
     solution=[s1,s2]
     return solution
 
@@ -523,6 +528,8 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
             return False
 
         numSol=solveNum(ang,vE,vR,Vcm,isoEject,isoRes,exList)
+        # numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,exList=exList)
+
         levList.append([e,numSol])
         if numSol==False:
             break
@@ -767,7 +774,7 @@ def solveAng(thetaL,ratio,direction="f"):
     """ Returns the CM angle """
     thetaL=radians(thetaL)
     tgThetaL=tan(thetaL)
- 
+    #"f" is for forward sol "b" for backward sol
     if direction=="f":
         thetaCM=0
         dTh=0.05
@@ -801,7 +808,6 @@ def solveAng(thetaL,ratio,direction="f"):
     return degrees(thetaCM)
 
 def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
-#There appears to be always forward solutions :'(
     vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
     r=1.0*vE/Vcm
     ratio=1/r
@@ -810,17 +816,23 @@ def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
     #No need to convert to radians in this case
     return thetaCMf,thetaCMb
 
-def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
+def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,\
+                 exList=[0,0,0,0],direction="f"):
     angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0])[0]
     #Keeping angles in degrees
     if thetaL>angMax:
         print "Angle is too big, no solution found"
         return [False,False,False,False]
 
-    #Getting the coeficients
+    #Getting the coefficients
     vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
     #Getting the CM angles
-    thEjectCM=getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL)[0]
+    angs=getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL)
+    if direction=="f":
+        thEjectCM=angs[0]
+    else:
+        thEjectCM=angs[1]
+
     thEjectCM=radians(thEjectCM)
     theResCM=pi-thEjectCM
 
@@ -918,7 +930,7 @@ def getBEperNucleon(iso):
 #Using the liquid drop model for the binding energy
 #Values taken from A. Das and T. Ferbel book
 def getLDBE(iso,a1=15.6,a2=16.8,a3=0.72,a4=23.3,a5=34):
-    #All the coeficients are in MeV
+    #All the coefficients are in MeV
     A,s=getIso(iso)
     Z=getPnum(s)
     N=getNnum(iso)
