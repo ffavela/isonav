@@ -47,14 +47,14 @@ def getVelcm(iso1,iso2,E1):
 
 def getEcm(iso1,iso2,E1):
     vels=getVelcm(iso1,iso2,E1)
-    me1=getEMass(iso1)
-    me2=getEMass(iso2)
+    mE1=getEMass(iso1)
+    mE2=getEMass(iso2)
     #Alternative way
-    # mu=me1*me2/(me1+me2)
+    # mu=mE1*mE2/(mE1+mE2)
     # rVel=vels[0]-vels[1]
     # print 1.0/2.0*mu*rVel**2
-    E1cm=vels[0]**2*me1/2
-    E2cm=vels[1]**2*me2/2
+    E1cm=vels[0]**2*mE1/2
+    E2cm=vels[1]**2*mE2/2
     Ecm=E1cm+E2cm
     return E1cm,E2cm,Ecm
 
@@ -85,8 +85,8 @@ def mirror(iso):
     pNumber=getNnum(iso)
     nNumber=getPnum(iso)
     ma=pNumber+nNumber
-    me=getKey(pNumber)
-    return me,ma
+    mE=getKey(pNumber)
+    return mE,ma
     
 def coulombE(iso1,iso2):
     alpha=1/137.036 #fine structure
@@ -99,13 +99,13 @@ def coulombE(iso1,iso2):
 def thresholdE(iso1,iso2,iso3,iso4):
     mp=getMass(iso1)
     mt=getMass(iso2)
-    me=getMass(iso3)
-    mr=getMass(iso4)
+    mE=getMass(iso3)
+    mR=getMass(iso4)
     eCoef=938.41
 
-    Q=getQVal(mp,mt,me,mr)*eCoef
+    Q=getQVal(mp,mt,mE,mR)*eCoef
     if Q<=0:
-        Ethres=-Q*(mr+me)/(mr+me-mp)
+        Ethres=-Q*(mR+mE)/(mR+mE-mp)
     else:
         Ethres=0
     return Ethres
@@ -210,8 +210,6 @@ def tNReaction(iso1,iso2):
             print e[0]+'\t'+e[1]+'\t',e[2],'\t',"{0:0.2f}".format(float(e[3]))
         else:
             print e[0]+'\t'+e[1]+'\t',"{0:0.2f}".format(float(e[2])),'\t',"{0:0.2f}".format(float(e[3]))
-
-            # print str(e[1])+e[0]+'\t'+str(e[3])+e[2]+'\t',float(e[4]),'\t',float(e[5])
 
 ##Printing latex fiendly nReaction
 def latexNReaction(iso1,iso2):
@@ -348,30 +346,30 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     if not checkArguments(ELab,react,eject,res):
         return False
 
-    ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    if ve==False:
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    if vE==False:
         return False
-    s1=solveNum(ang,ve,vR,Vcm,isoEject,isoRes)
-    s2=solveNum(ang,vR,ve,Vcm,isoRes,isoEject)
+    s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
+    s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
     solution=[s1,s2]
     return solution
 
-def checkSecSol(emp,emt,eme,emr,ELab):
-    Q=getQVal(emp,emt,eme,emr)
+def checkSecSol(emp,emt,emE,emR,ELab):
+    Q=getQVal(emp,emt,emE,emR)
     if Q<0:
-        Ethres=-Q*(emr+eme)/(emr+eme-emp)
-        Emax=-Q*emr/(emr-emp)
+        Ethres=-Q*(emR+emE)/(emR+emE-emp)
+        Emax=-Q*emR/(emR-emp)
         print "Ethres,Emax"
         print Ethres,Emax
         if Ethres<ELab<Emax:
             print "Possible second solution"
-            thetaM=acos(sqrt(-(emr+eme)*(emr*Q+(emr-emp)*ELab)/(emp*eme*ELab)))
+            thetaM=acos(sqrt(-(emR+emE)*(emR*Q+(emR-emp)*ELab)/(emp*emE*ELab)))
             return thetaM
     return False
 
-def solveNum(ang,ve,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
-    eme=getEMass(isoE)+exList[2]
-    emr=getEMass(isoR)+exList[3]
+def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
+    emE=getEMass(isoE)+exList[2]
+    emR=getEMass(isoR)+exList[3]
     thEject=0
     dTh=0.2
     ang=radians(ang)
@@ -380,23 +378,23 @@ def solveNum(ang,ve,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
     tolerance=0.0001
     while True:
         thEject+=dTh
-        vey=ve*sin(thEject)
-        vez=ve*cos(thEject)
+        vEy=vE*sin(thEject)
+        vEz=vE*cos(thEject)
         vRy=vR*sin(pi-thEject)
         vRz=vR*cos(pi-thEject)
          
         #They actually have to be zero
-        ### deltaPy=(vey*eme-vRy*emr)*1.0/c**2
-        ### deltaPz=(vez*eme+vRz*emr)*1.0/c**2
+        ### deltaPy=(vEy*emE-vRy*emR)*1.0/c**2
+        ### deltaPz=(vEz*emE+vRz*emR)*1.0/c**2
         # print deltaPy,deltaPz
-        if (vez+Vcm)==0 or (vRz+Vcm)==0:
+        if (vEz+Vcm)==0 or (vRz+Vcm)==0:
             print "No solution was found, div by zero"
             print "#####################################################"
             return False
-        thEjectLab=atan(vey/(vez+Vcm))
-        ELabEject=eme*(vey**2+(vez+Vcm)**2)/(2*c**2)
+        thEjectLab=atan(vEy/(vEz+Vcm))
+        ELabEject=emE*(vEy**2+(vEz+Vcm)**2)/(2*c**2)
         theResLab=atan(vRy/(vRz+Vcm))
-        ELabResid=emr*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
+        ELabResid=emR*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
 
         diff=ang-thEjectLab
         if abs(diff)<tolerance:
@@ -457,33 +455,28 @@ def checkDictIso(iso):
         return True
 
 def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
-    emp,emt,eme,emr=getAllEMasses(iso1,iso2,isoE,isoR)
-    emp+=exList[0]
-    emt+=exList[1]
-    eme+=exList[2]
-    emr+=exList[3]
-    Q=getQVal(emp,emt,eme,emr)
+    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
+    Q=getQVal(emp,emt,emE,emR)
     # Pi=sqrt(2*emp*ELab)/c
     # Vcm=Pi*c**2/(emp+emt)
     # EcmSys=(Pi*c)**2/(2.0*(emp+emt))
     v1=sqrt(2.0*ELab/emp)*c
     v2=0 #For future improvement
     Vcm=(emp*v1+emt*v2)/(emp+emt)
-    iso1="d"
-    iso2="14N"
     EcmSys=0.5*(Vcm/c)**2*(emp+emt)
     #Available E in b4 collision
     Edisp=ELab-EcmSys
     Ef=Edisp+Q
     if Ef<0:
+        print "Inside getCoef Ef = ", Ef
         print "Not enough energy for reaction"
-        return False,False,False,False
-    #Momentum, in cm, going out
-    muO=eme*emr/(eme+emr)
-    Po=sqrt(2*Ef*muO)/c
-    ve=Po*c**2/eme
-    vR=Po*c**2/emr
-    return ve,vR,Vcm,Ef
+        return False,False,Vcm,Ef
+    #Final momentum, in cm.
+    muf=emE*emR/(emE+emR)
+    Pf=sqrt(2*Ef*muf)/c
+    vE=Pf*c**2/emE
+    vR=Pf*c**2/emR
+    return vE,vR,Vcm,Ef
 
 def getEMass(iso1):
     eCoef=938.41
@@ -498,9 +491,9 @@ def getLevelE(iso1,level):
 
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
-# def exLevReact(ang,emp,emt,eme,emr,eject,aEject,res,aRes,ELab,Ef,eVal=1):
+# def exLevReact(ang,emp,emt,emE,emR,eject,aEject,res,aRes,ELab,Ef,eVal=1):
 def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
-    emp,emt,eme,emr=getAllEMasses(iso1,iso2,isoEject,isoRes)#Necessary?
+    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoEject,isoRes)#Necessary?
     if eVal==1:
         isoE1=isoRes
     else:
@@ -517,19 +510,19 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
             print "Entered false for e[1] en exLevReact"
             continue
         if eVal==1:
-            mEject=eme
-            mRes=emr+e[1]
+            mEject=emE
+            mRes=emR+e[1]
             exList[3]=e[1]
         else:
-            mEject=eme+e[1]
-            mRes=emr
+            mEject=emE+e[1]
+            mRes=emR
             exList[2]=e[1]
 
-        ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab,exList)
-        if not ve:
+        vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab,exList)
+        if not vE:
             return False
 
-        numSol=solveNum(ang,ve,vR,Vcm,isoEject,isoRes,exList)
+        numSol=solveNum(ang,vE,vR,Vcm,isoEject,isoRes,exList)
         levList.append([e,numSol])
         if numSol==False:
             break
@@ -566,8 +559,8 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
         return False
     Q=react[3]
 
-    ve,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    if ve==False:
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    if vE==False:
         return False
     lL=[]
     c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
@@ -697,13 +690,19 @@ def checkArguments(ELab,react,eject,res):
 
     return True
 
-def getAllEMasses(iso1,iso2,isoEject,isoRes):
+def getAllEMasses(iso1,iso2,isoEject,isoRes,exList=[0,0,0,0]):
     emp=getEMass(iso1)
     emt=getEMass(iso2)
 
-    eme=getEMass(isoEject)
-    emr=getEMass(isoRes)
-    return emp,emt,eme,emr
+    emE=getEMass(isoEject)
+    emR=getEMass(isoRes)
+
+    emp+=exList[0]
+    emt+=exList[1]
+    emE+=exList[2]
+    emR+=exList[3]
+
+    return emp,emt,emE,emR
 
 #Given an energy, beam energy, angle, a list of reactions and a
 #tolerance it returns values to hint where it might be from
@@ -1056,3 +1055,28 @@ def stoppingPowerI(iso1,iso2,E,I,L):
         E+=stoppingPowerD(iso1,iso2,E,I)*dx
         x+=dx
     return E
+
+def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
+    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
+    v1=sqrt(2.0*E1L/emp)
+    v2=0 #Zero for now
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
+    if vE==False:
+        print "Not enough energy to get angle"
+        return False
+
+    r1=1.0*vE/Vcm
+    r2=1.0*vR/Vcm
+
+    if r1>=1:
+        maxAng1=pi
+    else:
+        maxAng1=atan(r1/sqrt(1-r1**2))
+
+    if r2>=1:
+        maxAng2=pi
+    else:
+        maxAng2=atan(r2/sqrt(1-r2**2))
+
+    return [degrees(maxAng1),degrees(maxAng2)]
+
