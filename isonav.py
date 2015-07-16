@@ -372,6 +372,7 @@ def checkSecSol(emp,emt,emE,emR,ELab):
             return thetaM
     return False
 
+#This is now deprecated
 def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
     emE=getEMass(isoE)+exList[2]
     emR=getEMass(isoR)+exList[3]
@@ -498,12 +499,11 @@ def getLevelE(iso1,level):
 #when the reaction occurs (no fission or gammas for now)
 # def exLevReact(ang,emp,emt,emE,emR,eject,aEject,res,aRes,ELab,Ef,eVal=1):
 def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
-    emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoEject,isoRes)#Necessary?
     if eVal==1:
-        isoE1=isoRes
+        isoEX1=isoRes
     else:
-        isoE1=isoEject
-    popLevels=getPopLevels(isoE1,Ef)
+        isoEX1=isoEject
+    popLevels=getPopLevels(isoEX1,Ef)
     if len(popLevels)<=1:
         popLevels=[[1,0.0]]
     levList=[]
@@ -515,20 +515,12 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
             print "Entered false for e[1] en exLevReact"
             continue
         if eVal==1:
-            mEject=emE
-            mRes=emR+e[1]
             exList[3]=e[1]
         else:
-            mEject=emE+e[1]
-            mRes=emR
             exList[2]=e[1]
 
-        vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab,exList)
-        if not vE:
-            return False
-
-        numSol=solveNum(ang,vE,vR,Vcm,isoEject,isoRes,exList)
-        # numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,exList=exList)
+        numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
+                            exList=exList)
 
         levList.append([e,numSol])
         if numSol==False:
@@ -812,7 +804,10 @@ def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
     r=1.0*vE/Vcm
     ratio=1/r
     thetaCMf=solveAng(thetaL,ratio,"f")
-    thetaCMb=solveAng(thetaL,ratio,"b")
+    # For excited states it stays in this function
+    #Commenting it for now
+    # thetaCMb=solveAng(thetaL,ratio,"b")
+    thetaCMb=False
     #No need to convert to radians in this case
     return thetaCMf,thetaCMb
 
