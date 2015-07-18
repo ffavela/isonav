@@ -34,13 +34,15 @@ def printElemList():
         print i,e
         i+=1
 
+##This functions should be somewhat equivalent to getCoef but I'll leave
+##it for now
 #Center of mass velocity stuff
 def getVelcm(iso1,iso2,E1):
     m1=getEMass(iso1)
     m2=getEMass(iso2)
-    v1=sqrt(2*E1/m1)
+    v1=sqrt(2.0*E1/m1)
     v2=0 #assuming it is still
-    Vcm=(v1*m1+v2*m2)/(m1+m2)
+    Vcm=(1.0*v1*m1+1.0*v2*m2)/(m1+m2)
     v1p=v1-Vcm
     v2p=v2-Vcm
     return v1p,v2p,Vcm
@@ -53,10 +55,11 @@ def getEcm(iso1,iso2,E1):
     # mu=mE1*mE2/(mE1+mE2)
     # rVel=vels[0]-vels[1]
     # print 1.0/2.0*mu*rVel**2
-    E1cm=vels[0]**2*mE1/2
-    E2cm=vels[1]**2*mE2/2
+    E1cm=vels[0]**2*mE1/2.0
+    E2cm=vels[1]**2*mE2/2.0
     Ecm=E1cm+E2cm
     return E1cm,E2cm,Ecm
+############################################
 
 def checkIsoExistence(iso1,iso2):
     a1,key1=getIso(iso1)
@@ -397,10 +400,10 @@ def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
             print "No solution was found, div by zero"
             print "#####################################################"
             return False
-        thEjectLab=atan(vEy/(vEz+Vcm))
-        ELabEject=emE*(vEy**2+(vEz+Vcm)**2)/(2*c**2)
-        theResLab=atan(vRy/(vRz+Vcm))
-        ELabResid=emR*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
+        thEjectLab=atan(1.0*vEy/(vEz+Vcm))
+        ELabEject=emE*(1.0*vEy**2+(vEz+Vcm)**2)/(2*c**2)
+        theResLab=atan(1.0*vRy/(vRz+Vcm))
+        ELabResid=emR*(1.0*vRy**2+(vRz+Vcm)**2)/(2*c**2)
 
         diff=ang-thEjectLab
         if abs(diff)<tolerance:
@@ -468,7 +471,7 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     # EcmSys=(Pi*c)**2/(2.0*(emp+emt))
     v1=sqrt(2.0*ELab/emp)*c
     v2=0 #For future improvement
-    Vcm=(emp*v1+emt*v2)/(emp+emt)
+    Vcm=(1.0*emp*v1+1.0*emt*v2)/(emp+emt)
     EcmSys=0.5*(Vcm/c)**2*(emp+emt)
     #Available E in b4 collision
     Edisp=ELab-EcmSys
@@ -478,10 +481,10 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
         print "Not enough energy for reaction"
         return False,False,Vcm,Ef
     #Final momentum, in cm.
-    muf=emE*emR/(emE+emR)
-    Pf=sqrt(2*Ef*muf)/c
-    vE=Pf*c**2/emE
-    vR=Pf*c**2/emR
+    muf=1.0*emE*emR/(emE+emR)
+    Pf=sqrt(2.0*Ef*muf)/c
+    vE=1.0*Pf*c**2/emE
+    vR=1.0*Pf*c**2/emR
     return vE,vR,Vcm,Ef
 
 def getEMass(iso1):
@@ -725,7 +728,7 @@ def pFReact(E,tol,XXList):
 
 def findOE(Eang,ang,iso1,iso2):
     E=Eang
-    Emax=2*Eang
+    Emax=2.0*Eang
     dE=0.01
     tolerance=0.0001
     while True:
@@ -847,7 +850,6 @@ def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,\
     return [degrees(thEjectLab),ELabEject,degrees(theResLab),\
             ELabResid]
 
-
 def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
     emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
     # v1=sqrt(2.0*E1L/emp)
@@ -863,15 +865,14 @@ def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
     if r1>=1:
         maxAng1=pi
     else:
-        maxAng1=atan(r1/sqrt(1-r1**2))
+        maxAng1=atan(r1/sqrt(1.0-r1**2))
 
     if r2>=1:
         maxAng2=pi
     else:
-        maxAng2=atan(r2/sqrt(1-r2**2))
+        maxAng2=atan(r2/sqrt(1.0-r2**2))
 
     return [degrees(maxAng1),degrees(maxAng2)]
-
 
 def nEvents(Ni,aDens,dSigma,dOmega):
     return Ni*aDens*dSigma*dOmega
@@ -887,10 +888,10 @@ def current2Part(current):
 #Gets the product of #Projectiles*#Targets
 #in part/mb
 def getT(ps,ts,E,angle,Nr,dOmega):
-    return Nr/(rutherfordLab0(ps,ts,E,angle)*dOmega)
+    return 1.0*Nr/(rutherfordLab0(ps,ts,E,angle)*dOmega)
 
 def getdSigma(Nn,dOmega,T):
-   return Nn/(dOmega*T) 
+   return 1.0*Nn/(dOmega*T) 
 
 def getdSigma2(pIso,tIso,Nruth,Nnucl,ELab,angle):
     return 1.0*Nnucl/Nruth*rutherfordLab0(pIso,tIso,ELab,angle)
@@ -939,7 +940,7 @@ def getLDBE(iso,a1=15.6,a2=16.8,a3=0.72,a4=23.3,a5=34):
 #Binding energy per nucleon using LD
 def getLDBEperNucleon(iso):
     A,s=getIso(iso)
-    return getLDBE(iso)/A
+    return 1.0*getLDBE(iso)/A
 
 #Using the LD model to get the eMass
 def getLDEMass(iso):
@@ -954,19 +955,19 @@ def getLDEMass(iso):
 #Using the LD model to get the mass
 def getLDMass(iso):
     eCoef=938.41
-    return getLDEMass(iso)/eCoef
+    return 1.0*getLDEMass(iso)/eCoef
 
 #de Broglie wavelength in angstrom
 def deBroglie(iso,E):
     hc=1.23984193 #MeV-pm
     # iso=str(A)+element
     em=getEMass(iso)
-    p=sqrt(2*em*E) #a "c" from here goes to the hc
+    p=sqrt(2.0*em*E) #a "c" from here goes to the hc
     return hc/p/100 # 1/100 to convert to angstrom
 
 #reduced de Broglie wavelength in angstrom
 def reducedDeBroglie(iso,E):
-    return deBroglie(iso,E)/(2*pi)
+    return deBroglie(iso,E)/(2.0*pi)
 
 #Compton wavelength
 def comptonW(em):
@@ -1044,7 +1045,7 @@ def getTAlpha(radIso):
     daughterIso=str(A-4)+getKey(getPnum(k)-2)
     # print daughterIso
     Q=getIsoQVal('0None',radIso,'4He',daughterIso)
-    TAlpha=Q*(1-4/A)
+    TAlpha=Q*(1.0-4.0/A)
     return TAlpha
 
 #Using gamow factor according to krane eq. 8.17
@@ -1059,14 +1060,14 @@ def gamowAlpha(iso1):
         return 'None'
 
     hbc=197.33 #MeV-fm
-    alpha=1/137.036
+    alpha=1.0/137.036
 
     B=getB(iso1,isoEject)
     em=getEMass(isoEject) #Most probably alpha part mass
     z1=getPnum(iso1)
     z2=getPnum(isoEject)
 
-    x=Q/B
+    x=1.0*Q/B
     #Both equations should give the same... but they don't!!
     #See Krane pg 253, eq. 8.16
     G=sqrt(2*em/Q)*alpha*z1*z2*(pi/2-2*sqrt(x))
@@ -1094,7 +1095,6 @@ def gamowHL(iso1):
     G=gamowAlpha(iso1)
     tHalf=ln2*a/cfm*sqrt(em/(V0+Q))*e**(2*G)
     return tHalf
-
 
 def findDecay(iso1,ejectIso):
     rList=QDecay(iso1)
