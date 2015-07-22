@@ -362,6 +362,32 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     solution=[s1,s2]
     return solution
 
+def testSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
+    a1,key1=getIso(iso1)
+    a2,key2=getIso(iso2)
+    aEject,eject=getIso(isoEject)
+    aRes,res=getIso(isoRes)
+
+    react=checkReaction(iso1,iso2,isoEject,isoRes)
+    if not checkArguments(ELab,react,eject,res):
+        return False
+
+    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    if vE==False:
+        return False
+
+    # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
+    # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
+
+    # s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
+    # s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
+
+    s1=analiticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
+    s2=analiticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
+
+    solution=[s1,s2]
+    return solution
+
 def checkSecSol(emp,emt,emE,emR,ELab):
     Q=getQVal(emp,emt,emE,emR)
     if Q<0:
@@ -525,16 +551,13 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
         numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
                             exList=exList)
 
+        # numSol=analiticSol(iso1,iso2,ELab,E2L=0,ang=0,exList=exList)
         levList.append([e,numSol])
         if numSol==False:
             break
     return levList
     
-def getQVal(m1,m2,m3,m4,exList=[0,0,0,0]):
-    m1+=exList[0]
-    m2+=exList[1]
-    m3+=exList[2]
-    m4+=exList[3]
+def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
 
@@ -805,7 +828,7 @@ def solveAng(thetaL,ratio,direction="f"):
 def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
     vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
     r=1.0*vE/Vcm
-    ratio=1/r
+    ratio=1.0/r
     thetaCMf=solveAng(thetaL,ratio,"f")
     # For excited states it stays in this function
     #Commenting it for now
@@ -1136,3 +1159,141 @@ def stoppingPowerI(iso1,iso2,E,I,L):
         E+=stoppingPowerD(iso1,iso2,E,I)*dx
         x+=dx
     return E
+
+#########################################################################
+###### Testing analytic solution for non relativistic case ##############
+#########################################################################
+
+#def getVcms(v1L,v2L,m1,m2):
+def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
+    #In case the isos are excited b4 reaction
+    m1=getEMass(iso1)+exList[0]
+    m2=getEMass(iso2)+exList[1]
+    # print "m1,m2 = ", m1,m2
+    # print "E1L,E2L = ",E1L,E2L
+    v1L=sqrt(2.0*E1L/m1)*c
+    v2L=sqrt(2.0*E2L/m2)*c
+
+    Vcm=1.0*(v1L*m1+v2L*m2)/(1.0*m1+m2)
+    Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
+    Q-=sum(exList)
+    # print "Vcm,Q = ", Vcm,Q
+    #abs is impotant, they are magnitudes!!
+    v1cm=abs(v1L-Vcm)
+    v2cm=abs(v2L-Vcm)
+
+    E1cm=0.5*m1*(v1cm/c)**2
+    E2cm=0.5*m2*(v2cm/c)**2
+    Ecm=E1cm+E2cm+Q
+
+    # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
+    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[0:2])
+    # print "v1cm,v2cm",v1cm,v2cm
+    # print "vEcm,vRcm",vEcm,vRcm
+
+    return vEcm,vRcm,Vcm
+
+def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
+    m1=getEMass(iso1)+redXL[0]
+    m2=getEMass(iso2)+redXL[1]
+
+    v1cm=sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
+    v2cm=(1.0*m1)/m2*v1cm
+    return v1cm,v2cm
+
+def getEFromV(iso,v,xMass=0):
+    m=getEMass(iso)+xMass
+    return 0.5*m*(v/c)**2
+    
+#Testing the non numeric solution
+
+def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
+    vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
+    angle=radians(angle)
+    kAng=tan(angle)
+    k1=1.0*vEcm/Vcm
+    maxAng=getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)[0]
+    if maxAng=="NaN":
+        return "NaN"
+    maxAng=radians(maxAng)
+    # print "maxAng = ", degrees(maxAng)
+   
+    discr=1-(1+kAng**2)*(1-k1**2)
+    if discr<0:
+        print "Angle maybe too large"
+        return [False,False,False,False,]
+
+    vxa1=Vcm*(1+sqrt(discr))/(1+kAng**2)
+    vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
+    vya1=kAng*vxa1
+    vya2=kAng*vxa2
+    va1=sqrt(vxa1**2+vya1**2)
+    va2=sqrt(vxa2**2+vya2**2)
+    angLA1=atan(vya1/vxa1)
+    angLA2=atan(vya2/vxa2)
+
+    #To get the angle and velocity of the corresponding particle, we
+    #do the following 1.- Get the center of mass velocity of
+    #particle "a".
+    vxa1CM=vxa1-Vcm
+    vya1CM=vya1
+    vxa2CM=vxa2-Vcm
+    vya2CM=vya2
+    #2.- Get the slopes
+    sa1=vya1CM/vxa1CM
+    sa2=vya2CM/vxa2CM
+    #3.- The corresponding angles
+    angA1=atan(sa1)
+    angA2=atan(sa2)
+    # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
+    angB1=angA1+pi
+    angB2=angA2+pi
+    #4.- The corresponding center of mass velocity values
+    vxb1CM=vRcm*cos(angB1)
+    vyb1CM=vRcm*sin(angB1)
+    vxb2CM=vRcm*cos(angB2)
+    vyb2CM=vRcm*sin(angB2)
+    #5.- The lab values
+    vxb1=vxb1CM+Vcm
+    vyb1=vyb1CM
+    vb1=sqrt(vxb1**2+vyb1**2)
+    vxb2=vxb2CM+Vcm
+    vyb2=vyb2CM
+    vb2=sqrt(vxb2**2+vyb2**2)
+    angLB1=atan(vyb1/vxb1)
+    angLB2=atan(vyb2/vxb2)
+    #Ignoring the second solution for now
+    Ea1=getEFromV(isoEject,va1)
+    Eb1=getEFromV(isoRes,vb1)
+    return [(degrees(angLA1),Ea1,degrees(angLB1),Eb1)]# ,\
+            # (degrees(angLA2),va2,degrees(angLB2),vb2)]
+
+# def getMaxAngles(v1L,v2L,m1,m2):
+def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
+    vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
+    k1=1.0*vEcm/Vcm
+    k2=1.0*vRcm/Vcm
+    # print "k1,k2 = ",k1,k2
+    if k1 != 1:
+        discr1=k1**2/(1.0-k1**2)
+        # print "discr1 = ",discr1
+        if discr1<0: #Vcm < vEcm
+            maxAng1=pi
+        else:
+            maxAng1=atan(sqrt(discr1))
+    else:
+        maxAng1=pi #Maybe it should be pi/2
+
+    if k2 != 1:
+        discr2=k2**2/(1.0-k2**2)
+        # print "discr2 = ",discr2
+        if discr2<0: #Vcm < vRcm
+            maxAng2=pi
+        else:
+            maxAng2=atan(sqrt(discr2))
+    else:
+        maxAng2=pi #Maybe it should be pi/2
+
+    return [degrees(maxAng1),degrees(maxAng2)]
+
+
