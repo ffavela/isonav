@@ -47,8 +47,8 @@ def getVelcm(iso1,iso2,E1):
     v2p=v2-Vcm
     return v1p,v2p,Vcm
 
-def getEcm(iso1,iso2,E1):
-    vels=getVelcm(iso1,iso2,E1)
+def getEcm(iso1,iso2,E1L):
+    vels=getVelcm(iso1,iso2,E1L)
     mE1=getEMass(iso1)
     mE2=getEMass(iso2)
     #Alternative way
@@ -59,6 +59,11 @@ def getEcm(iso1,iso2,E1):
     E2cm=vels[1]**2*mE2/2.0
     Ecm=E1cm+E2cm
     return E1cm,E2cm,Ecm
+
+def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L):
+    E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
+    Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
+    return Ecm+Q
 ############################################
 
 def checkIsoExistence(iso1,iso2):
@@ -356,8 +361,13 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
     # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
 
-    s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
-    s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
+    # s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
+    # s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
+
+    # potential BUG, the signs switch sometimes when comparing with the
+    # solutions above
+    s1=analiticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
+    s2=analiticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
 
     solution=[s1,s2]
     return solution
@@ -527,12 +537,13 @@ def getLevelE(iso1,level):
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
 # def exLevReact(ang,emp,emt,emE,emR,eject,aEject,res,aRes,ELab,Ef,eVal=1):
-def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
+def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
     if eVal==1:
         isoEX1=isoRes
     else:
         isoEX1=isoEject
-    popLevels=getPopLevels(isoEX1,Ef)
+    Edisp=getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L)
+    popLevels=getPopLevels(isoEX1,Edisp)
     if len(popLevels)<=1:
         popLevels=[[1,0.0]]
     levList=[]
@@ -548,13 +559,15 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,eVal=1):
         else:
             exList[2]=e[1]
 
-        numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
-                            exList=exList)
+        # numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
+        #                     exList=exList)
 
-        # numSol=analiticSol(iso1,iso2,ELab,E2L=0,ang=0,exList=exList)
-        levList.append([e,numSol])
-        if numSol==False:
+        numSol=analiticSol(iso1,iso2,isoEject,isoRes,\
+                           E1L,E2L,angle=ang,exList=exList)
+        if numSol[0]==False:
             break
+        levList.append([e,numSol])
+
     return levList
     
 def getQVal(m1,m2,m3,m4):
@@ -584,21 +597,28 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
         return False
     Q=react[3]
 
-    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    if vE==False:
-        return False
+    # vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    # if vE==False:
+    #     return False
     lL=[]
+    E1L=ELab
+    #For now E2L=0
+    E2L=0
     c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
-    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
+    # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,0)])
 
     c=[iso2String(eject,aEject,''),iso2String(res,aRes,'*')]
-    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,1)])
+    # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,1)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,1)])
 
     c=[iso2String(res,aRes,'*'),iso2String(eject,aEject,'')]
-    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,0)])
+    # lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,0)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,0)])
 
     c=[iso2String(res,aRes,''),iso2String(eject,aEject,'*')]
-    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,1)])
+    # lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,1)])
+    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,1)])
 
     return lL
 
@@ -668,9 +688,10 @@ def pXXTremeTest(XXList):
     for e in XXList:
         print e[0]
         for ee in e[1]:
-            print ee[0]
-            for states in ee[1]:
-                print states
+            if len(ee[1])>0:
+                print ee[0]
+                for states in ee[1]:
+                    print states
 
 def pSpecialXXTremeTest(XXList,reactStuff,lev):
     pass
@@ -1185,7 +1206,8 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     E1cm=0.5*m1*(v1cm/c)**2
     E2cm=0.5*m2*(v2cm/c)**2
     Ecm=E1cm+E2cm+Q
-
+    if Ecm<=0:
+        return False,False,False
     # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
     vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[0:2])
     # print "v1cm,v2cm",v1cm,v2cm
@@ -1196,7 +1218,10 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
 def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
     m1=getEMass(iso1)+redXL[0]
     m2=getEMass(iso2)+redXL[1]
-
+    # print "Ecm = ", Ecm
+    # print "m1,m2 =", m1,m2
+    if Ecm<=0:
+        return False,False
     v1cm=sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
     v2cm=(1.0*m1)/m2*v1cm
     return v1cm,v2cm
@@ -1209,6 +1234,8 @@ def getEFromV(iso,v,xMass=0):
 
 def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
+    if vEcm == False:
+        return [False,False,False,False]
     angle=radians(angle)
     kAng=tan(angle)
     k1=1.0*vEcm/Vcm
@@ -1216,57 +1243,55 @@ def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     if maxAng=="NaN":
         return "NaN"
     maxAng=radians(maxAng)
-    # print "maxAng = ", degrees(maxAng)
    
     discr=1-(1+kAng**2)*(1-k1**2)
     if discr<0:
-        print "Angle maybe too large"
+        # print "Angle maybe too large"
         return [False,False,False,False,]
 
     vxa1=Vcm*(1+sqrt(discr))/(1+kAng**2)
-    vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
+    #Ignoring the second solutions for now
+    # vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
     vya1=kAng*vxa1
-    vya2=kAng*vxa2
+    # vya2=kAng*vxa2
     va1=sqrt(vxa1**2+vya1**2)
-    va2=sqrt(vxa2**2+vya2**2)
+    # va2=sqrt(vxa2**2+vya2**2)
     angLA1=atan(vya1/vxa1)
-    angLA2=atan(vya2/vxa2)
+    # angLA2=atan(vya2/vxa2)
 
     #To get the angle and velocity of the corresponding particle, we
     #do the following 1.- Get the center of mass velocity of
     #particle "a".
     vxa1CM=vxa1-Vcm
     vya1CM=vya1
-    vxa2CM=vxa2-Vcm
-    vya2CM=vya2
+    # vxa2CM=vxa2-Vcm
+    # vya2CM=vya2
     #2.- Get the slopes
     sa1=vya1CM/vxa1CM
-    sa2=vya2CM/vxa2CM
+    # sa2=vya2CM/vxa2CM
     #3.- The corresponding angles
     angA1=atan(sa1)
-    angA2=atan(sa2)
+    # angA2=atan(sa2)
     # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
-    angB1=angA1+pi
-    angB2=angA2+pi
+    angB1=angA1-pi
+    # angB2=angA2-pi
     #4.- The corresponding center of mass velocity values
     vxb1CM=vRcm*cos(angB1)
     vyb1CM=vRcm*sin(angB1)
-    vxb2CM=vRcm*cos(angB2)
-    vyb2CM=vRcm*sin(angB2)
+    # vxb2CM=vRcm*cos(angB2)
+    # vyb2CM=vRcm*sin(angB2)
     #5.- The lab values
     vxb1=vxb1CM+Vcm
     vyb1=vyb1CM
     vb1=sqrt(vxb1**2+vyb1**2)
-    vxb2=vxb2CM+Vcm
-    vyb2=vyb2CM
-    vb2=sqrt(vxb2**2+vyb2**2)
-    angLB1=atan(vyb1/vxb1)
-    angLB2=atan(vyb2/vxb2)
-    #Ignoring the second solution for now
+    # vxb2=vxb2CM+Vcm
+    # vyb2=vyb2CM
+    # vb2=sqrt(vxb2**2+vyb2**2)
+    angLB1=atan(vyb1/vxb1) 
+    # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
-    return [(degrees(angLA1),Ea1,degrees(angLB1),Eb1)]# ,\
-            # (degrees(angLA2),va2,degrees(angLB2),vb2)]
+    return [(degrees(angLA1),Ea1,degrees(angLB1),Eb1)]
 
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
