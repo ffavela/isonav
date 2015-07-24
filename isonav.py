@@ -17,6 +17,8 @@ def getKey(pNum):
 
 def getPnum(iso):
     A,k=getIso(iso)
+    if k=="None" or k=="0None":
+        return 0
     if k not in listStuff:
         return False
     return listStuff.index(k)
