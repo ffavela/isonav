@@ -79,7 +79,7 @@ def checkIsoExistence(iso1,iso2):
         return False
     return True
 
-print "#Populating dictionary"
+# print "#Populating dictionary"
 iDict=populateDict()
 
 def nRadius(iso):
@@ -94,7 +94,8 @@ def mirror(iso):
     nNumber=getPnum(iso)
     ma=pNumber+nNumber
     mE=getKey(pNumber)
-    return mE,ma
+    isoM=str(ma)+str(mE)
+    return isoM
     
 def coulombE(iso1,iso2):
     alpha=1/137.036 #fine structure
@@ -257,6 +258,9 @@ def QDecay(iso1):
     decays=[val[0:2]+[val[3]] for val in decayCand if val[3]>0]
     return decays
 
+def pQDecay(iso):
+    for d in QDecay(iso):
+        print d
 #Prints out all the possible neg Q's
 def QStable(iso1):
     a1,key1=getIso(iso1)
@@ -354,9 +358,9 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     if not checkArguments(ELab,react,eject,res):
         return False
 
-    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    if vE==False:
-        return False
+    # vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
+    # if vE==False:
+    #     return False
 
     # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
     # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
@@ -372,32 +376,7 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     solution=[s1,s2]
     return solution
 
-def testSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
-    a1,key1=getIso(iso1)
-    a2,key2=getIso(iso2)
-    aEject,eject=getIso(isoEject)
-    aRes,res=getIso(isoRes)
-
-    react=checkReaction(iso1,iso2,isoEject,isoRes)
-    if not checkArguments(ELab,react,eject,res):
-        return False
-
-    vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    if vE==False:
-        return False
-
-    # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
-    # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
-
-    # s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
-    # s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
-
-    s1=analiticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
-    s2=analiticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
-
-    solution=[s1,s2]
-    return solution
-
+#This is now deprecated
 def checkSecSol(emp,emt,emE,emR,ELab):
     Q=getQVal(emp,emt,emE,emR)
     if Q<0:
@@ -465,9 +444,10 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
         react=sReaction(iso1,iso2,isoEject,isoRes,E,ang)
         if react==False:
             break
-        print e
-        print react[0]
-        print react[1]
+        if react[0][0]!=False and react[1][0]!=False:
+            print e
+            print react[0]
+            print react[1]
 
 def numberReact(iso1):
     for e in iDict:
@@ -498,7 +478,7 @@ def checkDictIso(iso):
         return False
     else:
         return True
-
+#This is now deprecated
 def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
     Q=getQVal(emp,emt,emE,emR)
@@ -536,7 +516,6 @@ def getLevelE(iso1,level):
 
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
-# def exLevReact(ang,emp,emt,emE,emR,eject,aEject,res,aRes,ELab,Ef,eVal=1):
 def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
     if eVal==1:
         isoEX1=isoRes
@@ -575,13 +554,17 @@ def getQVal(m1,m2,m3,m4):
     return Q
 
 def getIsoQVal(iso1,iso2,iso3,iso4):
-    # checkReaction(iso1,iso2,iso3,iso4)
+    # checkReaction(iso1,iso2,iso3,iso4) #Maybe I should uncomment this
     m1=getEMass(iso1)
     m2=getEMass(iso2)
     m3=getEMass(iso3)
     m4=getEMass(iso4)
     Q=(m1+m2-m3-m4)
     return Q
+
+def getIsoQValAMU(iso1,iso2,iso3,iso4):
+    eCoef=938.41
+    return getIsoQVal(iso1,iso2,iso3,iso4)/eCoef
 
 def iso2String(k,iso,eVal=''):
     return eVal+str(iso)+k
@@ -858,6 +841,7 @@ def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
     #No need to convert to radians in this case
     return thetaCMf,thetaCMb
 
+#This is now deprecated
 def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,\
                  exList=[0,0,0,0],direction="f"):
     angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0])[0]

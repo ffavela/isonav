@@ -20,3 +20,10 @@ Part of the ensdf files where loaded into a python dictionary.
 Also a txt file called isoMasses.txt has to be downloaded.
 
 https://mega.co.nz/#!PBsFxJwY!iAtRj7uhQqwv1KokUIgtNKOiawe8K7hH4iIFItOackI
+
+Eventually isonav.py will be called isonavBase.py and isonavCLI.py will
+be renamed isonav.py. The intention is to use it directly from the
+terminal without going through the python terminal.
+
+The problem for now is uploading the entire dictionary at the beginning,
+this will be optimised.
