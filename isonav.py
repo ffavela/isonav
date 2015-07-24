@@ -11,14 +11,15 @@ cfm=c*10**(15) #in fm/s
 #utility functions for nuclear physics reactions
 
 def getKey(pNum):
-    for e in iDict:
-        if iDict[e][0]==pNum:
-            return e
+    if 0<=pNum<len(listStuff):
+        return listStuff[pNum]
     return False
 
 def getPnum(iso):
     A,k=getIso(iso)
-    return iDict[k][0]
+    if k not in listStuff:
+        return False
+    return listStuff.index(k)
         
 def getNnum(iso):
     A,k=getIso(iso)
