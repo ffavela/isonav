@@ -67,6 +67,16 @@ def populateDict():
         iDict=populateDict2(iDict)
         pickle.dump(iDict,open("isoDict.pkl","wb"))
     return iDict
+
+def fastPopulateDict():
+    if os.path.isfile("isoDictMass.pkl"):
+        # print "#Dictionary file exists, loading it"
+        iDict = pickle.load(open("isoDictMass.pkl", "rb" ))
+    else:
+        print "#Dictionary file does not exist, creating it"
+        iDict=populateDict1()
+        pickle.dump(iDict,open("isoDictMass.pkl","wb"))
+    return iDict
     
 def putIsoData():
     isoVal=getIsoVal()

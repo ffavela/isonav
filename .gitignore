@@ -5,6 +5,8 @@
 *.pyc
 *.zip
 *.tsv
+.#*#
+*.db
 printDensity.py
 alphaData2.tsv
 csCalculation.py
@@ -15,3 +17,7 @@ dookTest.py
 newPachucTestingFunct.py
 testingStuff.py
 optTest.py
+dbExample.py
+example.db
+dbOpen.py
+throwaway.py

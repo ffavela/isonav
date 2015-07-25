@@ -25,5 +25,6 @@ Eventually isonav.py will be called isonavBase.py and isonavCLI.py will
 be renamed isonav.py. The intention is to use it directly from the
 terminal without going through the python terminal.
 
-The problem for now is uploading the entire dictionary at the beginning,
-this will be optimised.
+Optimized the loading, not super fast but bearable.
+
+isonavCLI is still a work in progress.

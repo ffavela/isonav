@@ -40,3 +40,9 @@ def getIso(s):
         #Maybe case not necessary
         return None,s
     return None,None
+
+def myString2List(s):
+    if len(s)<=2:
+        return []
+    c=s[2:-2].split("', '")
+    return c
