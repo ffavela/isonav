@@ -28,3 +28,13 @@ terminal without going through the python terminal.
 Optimized the loading, not super fast but bearable.
 
 isonavCLI is still a work in progress.
+
+There are new files, one is isoDict.pkl which can be downloaded from:
+
+https://mega.co.nz/#!GVUDULZS!RRQELwDcOExdO5XPQgjsGxtLeHoAioi9-Q_Grf7UCOA
+
+The other one is a database called isoData.bd
+
+https://mega.co.nz/#!uMVxiQYR!c1qQils-yrimUBxlBtFAUmUO2VVfKQFFi9VZaDnFc_Q
+
+The first files are no longer needed.
