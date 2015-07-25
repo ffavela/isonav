@@ -1,6 +1,10 @@
 from math import *
 from loadingStuff import *
 from isoParser import *
+import sqlite3
+
+conn = sqlite3.connect('isoData.db')
+cursor = conn.cursor()
 
 #important constant
 # c=3*10**8
@@ -9,6 +13,12 @@ cfm=c*10**(15) #in fm/s
 # cfm=1 #in fm/s
 
 #utility functions for nuclear physics reactions
+def checkDictIso(iso):
+    A,k=getIso(iso)
+    if len(iDict[k][1][A])<=1:
+        return False
+    else:
+        return True
 
 def getKey(pNum):
     if 0<=pNum<len(listStuff):
@@ -81,9 +91,6 @@ def checkIsoExistence(iso1,iso2):
         print "Error: isotopes have to exist"
         return False
     return True
-
-# print "#Populating dictionary"
-iDict=populateDict()
 
 def nRadius(iso):
     #In fermis
@@ -161,6 +168,7 @@ def reaction(iso1,iso2):
         #Ending of ignore block
 
         if aRes in iDict[rKey][1] and aEject in iDict[eKey][1]:
+            #Maybe use getMass or getQval here?
             finalMass=iDict[eKey][1][aEject][0]+iDict[rKey][1][aRes][0]
             Q=(initialMass-finalMass)*eCoef
             ejectIso=str(aEject)+eKey
@@ -272,56 +280,6 @@ def QStable(iso1):
         return False
     decays=[val for val in decayCand if val[3]<0]
     return decays
-
-#Print out the first unstable elements
-#(in terms of Q)
-def firstQPos(val=5):
-    fQListX=[]
-    fQListY=[]
-    for i in range(117):
-        k=getKey(i+1)
-        print i+1,k
-        if k==False:
-            continue
-        for iso in iDict[k][1]:
-            isoVal=str(iso)+k
-            d=QDecay(isoVal)
-            if d==False:
-                continue
-            if d!=[]:
-                fQListX.append(i+1)
-                fQListY.append(iso)
-                val-=1
-                print "Here!",iso #,d
-                print iso #,d
-                break
-            else:#Just testing
-                fQListX.append(i+1)
-                fQListY.append(0)
-            if val<=0:
-                return fQListX,fQListY
-    return fQListX,fQListY
-
-def firstNoQNeg(val=5):
-    fQDict={}
-    for i in range(117):
-        k=getKey(i+1)
-        print i+1,k
-        if k==False:
-            continue
-        for iso in iDict[k][1]:
-            isoVal=str(iso)+k
-            d=QStable(isoVal)
-        if d==False:
-            continue
-        if d!=[]:
-            fQDict[k]=[i+1,iso]
-            val-=1
-            print "Here again!",iso,d
-            print iso #,d
-        if val<=0:
-            return fQDict
-    return fQDict
 
 def checkReaction(iso1,iso2,isoEject,isoRes):
     a1,key1=getIso(iso1)
@@ -452,35 +410,44 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
             print react[0]
             print react[1]
 
-def numberReact(iso1):
-    for e in iDict:
-        for i in iDict[e][1]:
-            print e,i
-            iso2=str(i)+e
-            nR=nReaction(iso1,iso2)
-            if nR==False:
-                print 0
-            else:
-                print len(nR)
+def getLevelE(iso1,level):
+    A,k=getIso(iso1)
+    getMoreData(iso1)
+    if not checkDictIso(iso1):
+        return 0
+    return iDict[k][1][A][1][level][0]
+
+
 
 def getPopLevels(iso1,aE):
     levels=[]
     iso,eName=getIso(iso1)
+
+    getMoreData(iso1)
     if not checkDictIso(iso1):
         return [1]
     for e in iDict[eName][1][iso][1]:
         lE=iDict[eName][1][iso][1][e][0]
+        (lE,float)
         if lE>aE:
             return levels
         levels.append([e,lE])
     return levels
 
-def checkDictIso(iso):
+#If the excitation data is needed then this loads it.
+def getMoreData(iso):
+    #Careful with neutrons and Nones
     A,k=getIso(iso)
-    if len(iDict[k][1][A])<=1:
-        return False
-    else:
-        return True
+    levDict={}
+    if len(iDict[k][1][A])<2:
+        t=(iso,)
+        cursor.execute('SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t)
+        #Creating subDictionary
+        for exData in cursor.fetchall():
+            if int(exData[0]) not in levDict:
+                levDict[exData[0]]=[float(exData[1]),myString2List(exData[2])]
+        iDict[k][1][A].append(levDict)
+
 #This is now deprecated
 def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     emp,emt,emE,emR=getAllEMasses(iso1,iso2,isoE,isoR,exList)
@@ -510,12 +477,6 @@ def getEMass(iso1):
     eCoef=938.41
     A,k=getIso(iso1)
     return iDict[k][1][A][0]*eCoef
-
-def getLevelE(iso1,level):
-    A,k=getIso(iso1)
-    if not checkDictIso(iso1):
-        return 0
-    return iDict[k][1][A][1][level][0]
 
 #Still work to be done, assuming the nucleus only gets increased mass
 #when the reaction occurs (no fission or gammas for now)
@@ -549,7 +510,6 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
         if numSol[0]==False:
             break
         levList.append([e,numSol])
-
     return levList
     
 def getQVal(m1,m2,m3,m4):
@@ -1309,3 +1269,9 @@ def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     return [degrees(maxAng1),degrees(maxAng2)]
 
 
+# print "#Populating dictionary"
+# iDict=populateDict()
+iDict=fastPopulateDict()
+
+#Don't forget this?
+#conn.close()
