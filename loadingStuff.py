@@ -4,7 +4,8 @@ import pickle
 import os.path
 from enxParser import *
 
-
+if os.path.isfile("isoDict.pkl"):
+    return fastPopulateDict()
 #Isotope dictionary
 iDict={}
 listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
