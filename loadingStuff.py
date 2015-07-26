@@ -21,7 +21,7 @@ listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
            'Rf','Db','Sg','Bh','Hs','Mt','Ds','Rg',
            'Cn','Uut','Fl','Uup','Lv','Uus','Uuo']
 
-if not os.path.isfile("isoDict.pkl"):
+if  os.path.isfile("isoDict.pkl"):
     lines = [line.strip().split() for line in open('isoMasses.txt')]
 
 def populateDict1():
