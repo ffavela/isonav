@@ -372,6 +372,7 @@ def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
 
 def xTremeTest(iso1,iso2,E=10,ang=30):
     reactions=nReaction(iso1,iso2)
+    l=[]
     for e in reactions:
         if 'None' in e:
             continue
@@ -381,9 +382,8 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
         if react==False:
             break
         if react[0][0]!=False and react[1][0]!=False:
-            print e
-            print react[0]
-            print react[1]
+            l.append([e,react])
+    return l
 
 def getLevelE(iso1,level):
     A,k=getIso(iso1)

@@ -53,6 +53,25 @@ def pXXTremeTest(XXList):
                 print ""
 
     
+def pXTremeTest(iso1,iso2,Elab,angle):
+    val=xTremeTest(iso1,iso2,Elab,angle)
+    stringFormat="%.3f\t%.3f\t%.3f"
+    for v in val:
+        isoE=v[0][0]
+        isoR=v[0][1]
+        ejectE=v[1][0][1]
+        resAng=v[1][0][2]
+        resE=v[1][0][3]
+        tup=(ejectE,resAng,resE)
+        print isoE,"\t",isoR
+        print stringFormat % tuple(tup)
+        ejectE=v[1][1][1]
+        resAng=v[1][1][2]
+        resE=v[1][1][3]
+        tup=(ejectE,resAng,resE)
+        print stringFormat % tuple(tup)
+
+
 #Printing it nicely for a spreadsheet.
 def tNReaction(iso1,iso2):
     rList=nReaction(iso1,iso2)

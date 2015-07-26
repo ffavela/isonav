@@ -151,8 +151,8 @@ def argHand(args):
                 pXXTremeTest(xXTremeTest(iso1,iso2,Elab,angle))
                 return 0
                     
-            xTremeTest(iso1,iso2,Elab,angle)
-
+            # print xTremeTest(iso1,iso2,Elab,angle)
+            pXTremeTest(iso1,iso2,Elab,angle)
             return 0
                 
     if args["--QVal"] or args["-q"]:
