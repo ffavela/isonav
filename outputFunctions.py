@@ -124,3 +124,7 @@ def pIsotopes(iso,flag=True):
         i[1]*=eCoef
         print stringFormat %tuple(i)
 
+def pDecay(iso):
+    dec=QDecay(iso)
+    for d in dec:
+        print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d)

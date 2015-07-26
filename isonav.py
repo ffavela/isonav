@@ -242,11 +242,13 @@ def QDecay(iso1):
     if decayCand==False:
         return False
     decays=[val[0:2]+[val[3]] for val in decayCand if val[3]>0]
-    return decays
+    ndec=[]
+    for d in decays:
+        E1cm,E2cm=getEcmsFromECM(d[0],d[1],d[2])
+        d=[d[0],d[1],E1cm,E2cm,d[2]]
+        ndec.append(d)
+    return ndec
 
-def pQDecay(iso):
-    for d in QDecay(iso):
-        print d
 #Prints out all the possible neg Q's
 def QStable(iso1):
     a1,key1=getIso(iso1)

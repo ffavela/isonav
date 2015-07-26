@@ -126,7 +126,8 @@ def argHand(args):
         iso=args["<iso>"]
         if args["-v"]:
             print "#Given an isotope, it gives all the possible decay schemes"
-        pQDecay(iso)
+            print "#res\tdaught\t\teRes\teDaugh\tQ"
+        pDecay(iso)
 
     Elab=args['--Elab']
     if args["<iso1>"] and testVal(Elab):
