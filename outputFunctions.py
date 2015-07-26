@@ -70,6 +70,7 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         resE=v[1][1][3]
         tup=(ejectE,resAng,resE)
         print stringFormat % tuple(tup)
+        print ""
 
 
 #Printing it nicely for a spreadsheet.
