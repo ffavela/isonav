@@ -1,4 +1,5 @@
 from isonav import *
+from outputFunctions import *
 import sqlite3
 
 def testVal(stuff):
@@ -33,6 +34,14 @@ def argHand(args):
             print "Given an isotope it returns the number of neutrons"
         iso=args["<iso>"]
         print getNnum(iso)
+        return 0
+
+    if args["--isotopes"] or args["-i"]:
+        flag=True
+        if args["--amu"]:
+            flag=False
+        iso=args["<iso>"]
+        pIsotopes(iso,flag)
         return 0
 
     if args["--mirror"]:
@@ -108,7 +117,7 @@ def argHand(args):
                 latexNReaction(iso1,iso2)
             else:
                 tNReaction(iso1,iso2)
-                return 0
+            return 0
 
         print coulombE(iso1,iso2)
         return 0
@@ -193,8 +202,7 @@ def argHand(args):
             if args["-x"] or args["--xTreme"]:
                 pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle))
                 return 0
-            sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
-            print sReact[0]
-            print sReact[1]
+            # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
+            pSReaction(isop,isot,isoE,isoR,Elab,angle)
             return 0
 

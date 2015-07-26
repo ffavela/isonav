@@ -1,14 +1,14 @@
 """Usage:
   isonavCLI.py <number> [-v] (-s|--symbol)
-  isonavCLI.py <symbol> [-v] (-p|--protons)
-  isonavCLI.py <iso> [-v] (-n|--neutrons)
+  isonavCLI.py <symbol> [-v] ([-p|--protons])
+  isonavCLI.py <iso> [-v] [-n|--neutrons] [[-i|--isotopes] [--amu]]
   isonavCLI.py <iso> [-v] (-m|--mass) [--amu --liquidDrop]
   isonavCLI.py <iso> [-v] --mirror
   isonavCLI.py <iso> [-v] (-r | --radius)
   isonavCLI.py <iso> [-v] --Elab=val [--redDeBroglie] [--angstrom|--fm|--nm|--microns]
   isonavCLI.py <iso> [-v] --decay [--simple|--bp|--bm|--all] [--latex]
   isonavCLI.py <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
-  isonavCLI.py <iso1> <iso2> [-v] (--coulomb | --reactions)
+  isonavCLI.py <iso1> <iso2> [-v] (--coulomb | --reactions [--latex])
   isonavCLI.py <iso1> <iso2> [-v] --Elab=val --angle=val [[--xTreme|-x] --latex]
   isonavCLI.py <iso1> <iso2> --Elab=val --reactE=val --tol=val
   isonavCLI.py <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
