@@ -190,6 +190,9 @@ def reaction(iso1,iso2):
                 Ethres='None'
             else:
                 Ethres=thresholdE(iso1,iso2,ejectIso,resIso)
+                #Getting rid o the annoying -0.0, there must be a better way
+                if Ethres==0:
+                    Ethres=0.0
             newVal=[ejectIso,resIso,Ethres,Q]
             newValP=[resIso,ejectIso,Ethres,Q]#Avoiding repetition
             # if newVal not in reactionList and newValP not in reactionList:
