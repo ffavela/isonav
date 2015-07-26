@@ -192,7 +192,10 @@ def reaction(iso1,iso2):
                 Ethres=thresholdE(iso1,iso2,ejectIso,resIso)
             newVal=[ejectIso,resIso,Ethres,Q]
             newValP=[resIso,ejectIso,Ethres,Q]#Avoiding repetition
-            if newVal not in reactionList and newValP not in reactionList:
+            # if newVal not in reactionList and newValP not in reactionList:
+            fList=[v[0] for v in reactionList]
+            slist=[v[1] for v in reactionList]
+            if ejectIso not in fList and ejectIso not in slist:
                 reactionList.append(newVal)
             aRes-=1
             aEject+=1
