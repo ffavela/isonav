@@ -73,6 +73,18 @@ def getEcm(iso1,iso2,E1L):
     Ecm=E1cm+E2cm
     return E1cm,E2cm,Ecm
 
+def getEcmsFromECM(iso1,iso2,ECM):
+    #For example, in a decay ECM=Q
+    m1=getEMass(iso1)
+    m2=getEMass(iso2)
+    mu=1.0*m1*m2/(m1+m2)
+    P=sqrt(2.0*mu*ECM)/c
+    E1=0.5*(P*c)**2/m1
+    E2=0.5*(P*c)**2/m2
+    return E1,E2
+    
+    
+
 def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L):
     E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
@@ -221,43 +233,6 @@ def nReaction(iso1,iso2):
     #Q value
     ls.sort(key=lambda x: x[3],reverse=True)
     return ls
-
-#Printing it nicely for a spreadsheet.
-def tNReaction(iso1,iso2):
-    rList=nReaction(iso1,iso2)
-    for e in rList:
-        if e[2]=='None':
-            print e[0]+'\t'+e[1]+'\t',e[2],'\t',"{0:0.2f}".format(float(e[3]))
-        else:
-            print e[0]+'\t'+e[1]+'\t',"{0:0.2f}".format(float(e[2])),'\t',"{0:0.2f}".format(float(e[3]))
-
-##Printing latex fiendly nReaction
-def latexNReaction(iso1,iso2):
-    reacList=nReaction(iso1,iso2)
-    a1,key1=getIso(iso1)
-    a2,key2=getIso(iso2)
-    sa1=str(a1)
-    sa2=str(a2)
-    print """\\begin{eqnarray*} """
-    
-    print ' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&',
-    maxVal=len(reacList)
-    for r in reacList:
-        if r==reacList[3]:
-            fStr='MeV'
-        else:
-            fStr='MeV\\\\'
-
-        r[3]=str(round(r[3],2))
-        aEject,kEject=getIso(r[0])
-        aRes,kRes=getIso(r[1])
-        aEject,aRes=str(aEject),str(aRes)
-        if kEject==None:
-            print ' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr
-            continue
-
-        print '& ^{'+aEject+'}\!'+kEject+'+'+' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr
-    print '\end{eqnarray*}'
 
 
 #Not yet perfect, only uses Q
@@ -517,7 +492,8 @@ def getQVal(m1,m2,m3,m4):
     return Q
 
 def getIsoQVal(iso1,iso2,iso3,iso4):
-    # checkReaction(iso1,iso2,iso3,iso4) #Maybe I should uncomment this
+    if not checkReaction(iso1,iso2,iso3,iso4):
+        return False
     m1=getEMass(iso1)
     m2=getEMass(iso2)
     m3=getEMass(iso3)
@@ -568,50 +544,6 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
 
     return lL
 
-def pXReaction(xReact):
-    for e in xReact:
-        print e[0]
-        for ee in e[1]:
-            print ee
-
-def tabXEject(iso1,iso2,isoEject,isoRes,ELabs=[2.8,2.9],ang=30):
-    a1,key1=getIso(iso1)
-    a2,key2=getIso(iso2)
-    aEject,eject=getIso(isoEject)
-    aRes,res=getIso(isoRes)
-
-    react=checkReaction(iso1,iso2,isoEject,isoRes)
-    gList=[]
-    for energy in ELabs:
-        gList.append(xEject(xReaction(iso1,iso2,isoEject,isoRes,\
-                                      energy,ang)))
-    return gList
-    
-class prettyfloat(float):
-    def __repr__(self):
-        return "%0.2f" % self
-
-def pTabXEject(iso1,iso2,isoEject,isoRes,ELabs=[2.8,2.9],ang=30):
-    # ELabs=[1.41685, 1.4665065, 1.520496, 1.5788185, 1.641474, 1.7084625, 1.779784, 1.8554385, 1.935426, 2.0197465, 2.1084, 2.2013865, 2.298706, 2.4003585, 2.506344, 2.6166625, 2.731314, 2.8502985, 2.973616, 3.1012665, 3.23325, 3.3695665]
-    # ELabs=[2.2013865,2.298706,2.4003585,2.506344,2.6166625,2.731314,2.87461536,2.973616,3.1012665,3.3695665]
-    # ELabs=[2.1084,2.2013865,2.298706,2.4003585,2.506344,2.6166625,2.731314,2.87461536,2.973616,3.1012665,3.26016666,3.3695665]
-    levE=tabXEject(iso1,iso2,isoEject,isoRes,ELabs=[2.8,2.9],ang=30)
-    for l in levE:
-        ll=map(prettyfloat, l)
-        # print ll
-        # print('\t'.join(map(str,ll)))
-        print "%.2f\t "*len(l) % tuple(l)
-
-def xEject(xReact,mCount=6):
-    xList=[]
-    count=0
-    for e in xReact[1][1]:
-        xList.append(e[1][1])
-        if count>=mCount:
-            break
-        count+=1
-    return xList
-
 def xXTremeTest(iso1,iso2,E=10,ang=30):
     reactions=nReaction(iso1,iso2)
     rStuff=[]
@@ -629,44 +561,6 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
 
         rStuff.append([e,react])
     return rStuff
-
-def pXXTremeTest(XXList):
-    for e in XXList:
-        print e[0]
-        for ee in e[1]:
-            if len(ee[1])>0:
-                print ee[0]
-                for states in ee[1]:
-                    print states
-
-def pSpecialXXTremeTest(XXList,reactStuff,lev):
-    pass
-    for e in XXList:
-        print 
-        # if e[0]==reactStuff:
-        #     print e[1][0]
-
-#Commenting this for now
-# def xXTremeTestSame(key1,a1,key2,a2,E=10,ang=30):
-#     iso1=str(a1)+key1
-#     iso2=str(a2)+key2
-
-#     reactions=[[key1,a1,key2,a2,0,0]]
-#     rStuff=[]
-#     for e in reactions:
-#         # print e
-#         if 'None' in e:
-#             continue
-#         isoEject=str(e[1])+e[0]
-#         isoRes=str(e[3])+e[2]
-#         react=sReaction(iso1,iso2,isoEject,isoRes,E,ang)
-#         if react==False:
-#             break
-#         # print e
-#         # pXReaction(react)
-#         rStuff.append([e,react])
-#     return rStuff
-
 
 def checkArguments(ELab,react,eject,res):
     if ELab<=0:
@@ -1008,7 +902,6 @@ def softSphereDSBorn(isop,isot,V0=50):
 def softSphereTSBorn(isop,isot,V0=50):
     return 4*pi*softSphereDSBorn(isop,isot,V0)
 
-
 #Using the Yukawa potential
 def yukawaDCS(isop,isot,E,theta,beta,mu):
     hbc=197.33 #MeV-fm
@@ -1129,7 +1022,7 @@ def stoppingPowerI(iso1,iso2,E,I,L):
     return E
 
 #########################################################################
-###### Testing analytic solution for non relativistic case ##############
+###### Testing analytic #################################################
 #########################################################################
 
 #def getVcms(v1L,v2L,m1,m2):
@@ -1178,7 +1071,6 @@ def getEFromV(iso,v,xMass=0):
     return 0.5*m*(v/c)**2
     
 #Testing the non numeric solution
-
 def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
     if vEcm == False:
@@ -1238,7 +1130,7 @@ def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
-    return [(degrees(angLA1),Ea1,degrees(angLB1),Eb1)]
+    return [degrees(angLA1),Ea1,degrees(angLB1),Eb1]
 
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
@@ -1269,9 +1161,20 @@ def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     return [degrees(maxAng1),degrees(maxAng2)]
 
 
+def getIsotopes(s):
+    a,key=getIso(s)
+    l=[]
+    if key not in iDict:
+        return False
+    for e in iDict[key][1]:
+        isoVar=str(e)+key
+        l+=[[isoVar,iDict[key][1][e][0]]]
+    return l
+
 # print "#Populating dictionary"
 # iDict=populateDict()
 iDict=fastPopulateDict()
+
 
 #Don't forget this?
 #conn.close()
