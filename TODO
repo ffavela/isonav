@@ -1,0 +1,22 @@
+Improve the documentation. Make a latex doc for the theory.
+
+Add the relativistic scattering case.
+
+Decays with excited states.
+
+Improve the database, add half lifes, decay modes.
+
+Beta decay.
+
+BUGS:
+
+    isotopes with names 1950s and 1940s appear sometimes, for example:
+
+        $ python isonav.py 235U --decay -v | head
+         #Given an isotope, it gives all the possible decay schemes
+         #res    daught          eRes    eDaugh  Q
+          40S     195Os           77.659  15.923  93.582
+          41S     194Os           76.083  16.075  92.157
+          37P     198Ir           72.564  13.554  86.118
+          34Si    201Pt           73.201  12.376  85.576
+          38P     197Ir           70.896  13.672  84.568
