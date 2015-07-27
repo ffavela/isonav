@@ -1,4 +1,4 @@
-from isonav import *
+from isonavBase import *
 
 def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     react=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
@@ -14,7 +14,6 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     print isoRes,"+",isoEject
     print stringFormat % tuple(sR)
     print ""
-
 
 def pXReaction(xReact):
     for e in xReact:

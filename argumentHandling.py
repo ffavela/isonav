@@ -1,4 +1,4 @@
-from isonav import *
+from isonavBase import *
 from outputFunctions import *
 import sqlite3
 
@@ -37,6 +37,8 @@ def argHand(args):
         return 0
 
     if args["--isotopes"] or args["-i"]:
+        if args["-v"]:
+            print "Isotopes and masses, in MeV by defaulot"
         flag=True
         if args["--amu"]:
             flag=False
@@ -81,6 +83,13 @@ def argHand(args):
             else:
                 print getLDEMass(args['<iso>'])
                 return 0
+
+    if  args["--compton"]:
+        if args["-v"]==True:
+            print "#The compton wavelength in fm"
+        print comptonW(args['<iso>'])
+        return 0
+
             
         if args["--amu"]==True:
             print getMass(args['<iso>'])

@@ -1,33 +1,5 @@
-
 The isotope-navigator is intended to be a command line interface program
 (for now) for making quick and easy calculations for nuclear reactions.
-
-Given a reaction it gives the possible binary final reactions, and the
-respective Q values, it sorts the output in terms of the Q values. Given
-an angle and beam energy, it gives the energy of either the ejectile or
-the resiual nucleus.
-
-Currently, it has a limited isotope database which includes the masses
-and it will include soon the levels of excitation.
-
-You have to download the database for it to work, the dictionary can be
-downloaded from:
-
-https://mega.co.nz/#!XEkj3JqY!RqtOKDo6W4DKg02unABHh27856mJuC46cq_pkS1f72c
-
-Part of the ensdf files where loaded into a python dictionary.
-
-Also a txt file called isoMasses.txt has to be downloaded.
-
-https://mega.co.nz/#!PBsFxJwY!iAtRj7uhQqwv1KokUIgtNKOiawe8K7hH4iIFItOackI
-
-Eventually isonav.py will be called isonavBase.py and isonavCLI.py will
-be renamed isonav.py. The intention is to use it directly from the
-terminal without going through the python terminal.
-
-Optimized the loading, not super fast but bearable.
-
-isonavCLI is still a work in progress.
 
 There are new files, one is isoDict.pkl which can be downloaded from:
 
@@ -37,4 +9,191 @@ The other one is a database called isoData.bd
 
 https://mega.co.nz/#!uMVxiQYR!c1qQils-yrimUBxlBtFAUmUO2VVfKQFFi9VZaDnFc_Q
 
-The first files are no longer needed.
+The python package docopt is required.
+
+Examples:
+
+$ python isonav.py 
+
+Gives a printout of the general usage (not all functions have been
+implemented yet). The -v option can be used in almost all cases
+(vervose).
+
+$ python isonav.py 22 -s
+Ti
+
+$ python isonav.py Au --protons #A value can be ommited here
+79
+
+$ python isonav.py 195Au --neutrons
+116
+
+$ python isonav.py Pb -i #A can be also ommitted here
+185Pb   173594.022
+186Pb   174529.812
+.
+.
+.
+213Pb   199878.166
+214Pb   200819.554
+
+Forcing amu (instead of MeV) and being vervose:
+
+$ python isonav.py Pb -iv --amu
+Isotopes and masses, in MeV by default
+185Pb   184.987
+.
+.
+.
+
+$ python isonav.py 22Ne --mass #In MeV
+20636.9299674
+
+$ python isonav.py 22Ne --mass --liquidDrop #Using the LD model
+20631.3528075
+
+$ python isonav.py 22Ne --mirror
+22Mg
+
+$ python isonav.py 40Ca -r #Radius in fm
+4.10394227202
+
+$ python isonav.py d 14N a 12C --Elab=3.0 --angle=35
+a + 12C
+14.016  49.420  2.666
+
+12C + a
+5.914   47.390  10.769
+
+$ python isonav.py d 14N a 12C --Elab=3.0 --angle=35 --xTreme
+*4He + 12C
+1       0.000           14.016  49.420  2.666
+
+4He + *12C
+1       0.000           14.016  49.420  2.666
+2       4.439           10.429  52.568  1.815
+.
+.
+.
+13      15.440          1.077   -57.619 0.166
+14      16.106          0.356   -24.835 0.221
+
+*12C + 4He
+1       0.000           5.914   47.390  10.769
+2       4.439           4.542   49.697  7.702
+.
+.
+.
+13      15.440          0.619   -81.894 0.623
+
+12C + *4He
+1       0.000           5.914   47.390  10.769
+
+$ python isonav.py d 14N --reactions
+0None   16O     None    20.90
+4He     12C     0.00    13.68
+1H      15N     0.00    8.68
+8Be     8Be     0.00    6.16
+1n      15O     0.00    5.12
+2H      14N     0.00    0.00
+3He     13C     2.37    -2.07
+.
+.
+.
+8He     8C      58.42   -51.10
+
+$ python isonav.py d 14N --Elab=3.0 --angle=35 
+4He     12C
+14.016  49.420  2.666
+5.914   47.390  10.769
+
+1H      15N
+11.418  80.601  0.259
+1.584   61.219  10.094
+
+8Be     8Be
+5.939   51.102  3.226
+5.939   51.102  3.226
+
+1n      15O
+7.940   -85.103 0.177
+1.202   67.254  6.915
+
+2H      14N
+2.848   -70.134 0.152
+0.885   78.091  2.115
+
+3He     13C
+0.754   -35.249 0.173
+0.254   -87.609 0.361
+
+$ python isonav.py d 14N --Elab=3.0 --angle=35 --xTreme
+*4He    12C
+1       0.000           14.016  49.420  2.666
+
+4He     *12C
+1       0.000           14.016  49.420  2.666
+2       4.439           10.429  52.568  1.815
+.
+.
+.
+14      16.106          0.356   -24.835 0.221
+
+*12C    4He
+1       0.000           5.914   47.390  10.769
+2       4.439           4.542   49.697  7.702
+.
+.
+.
+7       11.160          2.335   58.228  3.187
+
+12C     *4He
+1       0.000           5.914   47.390  10.769
+
+*1H     15N
+1       0.000           11.418  80.601  0.259
+
+1H      *15N
+1       0.000           11.418  80.601  0.259
+2       5.270           6.258   -74.500 0.149
+3       5.299           6.230   -74.295 0.149
+.
+.
+.
+23      11.235          0.128   -5.431  0.315
+
+*15N    1H
+1       0.000           1.584   61.219  10.094
+.
+.
+.
+6       7.301           0.731   82.321  3.645
+.
+.
+.............. You get the idea.
+
+$ python isonav.py 235U --decay
+#Given an isotope, it gives all the possible decay schemes
+#res    daught          eRes    eDaugh  Q
+40S     195Os           77.659  15.923  93.582 <-BUG
+41S     194Os           76.083  16.075  92.157 <-BUG
+37P     198Ir           72.564  13.554  86.118
+34Si    201Pt           73.201  12.376  85.576
+38P     197Ir           70.896  13.672  84.568
+39P     196Ir           69.481  13.823  83.304
+.
+.
+.
+10B     225Fr           4.889   0.218   5.107
+4He     231Th           4.635   0.080   4.716
+14B     221Fr           3.778   0.240   4.018
+11Be    224Ra           1.852   0.091   1.943
+9B      226Fr           1.005   0.040   1.045
+
+$ python isonav.py n --compton -v
+#The compton wavelength in fm
+1.30986561319
+
+Optimized the loading, not super fast but bearable.
+
+This is still work in progress.
