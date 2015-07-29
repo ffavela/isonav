@@ -38,12 +38,15 @@ def argHand(args):
 
     if args["--isotopes"] or args["-i"]:
         if args["-v"]:
-            print "Isotopes and masses, in MeV by defaulot"
+            print "#Isotopes of given element, and optional mass"
         flag=True
-        if args["--amu"]:
-            flag=False
+        mFlag=False
+        if args["-m"]:
+            mFlag=True
+            if args["--amu"]:
+                flag=False
         iso=args["<iso>"]
-        pIsotopes(iso,flag)
+        pIsotopes(iso,mFlag,flag)
         return 0
 
     if args["--mirror"]:
@@ -62,6 +65,7 @@ def argHand(args):
 
     Elab=args['--Elab']
     if Elab != None and args["<iso>"] :
+        Elab=float(Elab)
         iso=args["<iso>"]
         if args["-v"]==True:
             print "#Returns the deBroglie wavelength by default, in angstrom"
@@ -83,20 +87,18 @@ def argHand(args):
             else:
                 print getLDEMass(args['<iso>'])
                 return 0
-
-    if  args["--compton"]:
-        if args["-v"]==True:
-            print "#The compton wavelength in fm"
-        print comptonW(args['<iso>'])
-        return 0
-
-            
         if args["--amu"]==True:
             print getMass(args['<iso>'])
         else:
             print getEMass(args['<iso>'])
         return 0
 
+    if  args["--compton"]:
+        if args["-v"]==True:
+            print "#The compton wavelength in fm"
+        print comptonW(args['<iso>'])
+        return 0
+            
     if args["--BE"] or args["--BEperNucleon"]:
         iso=args["<iso>"]
         if args["-v"]:
@@ -118,7 +120,7 @@ def argHand(args):
         iso2=args["<iso2>"]
         if args["-v"]:
             print "#Given two isotopes it returns the coulomb energy barrier"
-            print "#Or the possible reactions"
+            print "#Or the possible reactions."
         if args["--reactions"]:
             if args["-v"]==True:
                 print "#Eject\tResidue\tThres\tQValue"
@@ -134,9 +136,24 @@ def argHand(args):
     if args["--decay"] and args["<iso>"]:
         iso=args["<iso>"]
         if args["-v"]:
-            print "#Given an isotope, it gives all the possible decay schemes"
+            print "#Decay, splitting in two nucleons (no beta)"
             print "#res\tdaught\t\teRes\teDaugh\tQ"
         pDecay(iso)
+        return 0
+
+    if args["--fussion"]:
+        iso1=args["<iso1>"]
+        iso2=args["<iso2>"]
+        
+        Elab=args['--Elab']
+        if Elab:
+            Elab=float(Elab)
+        else:
+            Elab=0
+        if args["-v"]:
+            print "#Prints the fused element, if isotope exists."
+            print "#Max populated level, and energy, and remaining KE in lab"
+        pFussion(iso1,iso2,Elab)
 
     Elab=args['--Elab']
     if args["<iso1>"] and testVal(Elab):
@@ -157,14 +174,41 @@ def argHand(args):
             if args["--xTreme"]==True:
                 if args["-v"]==True:
                     print "#Prints out angles and energies of the reactions"
-                    print "#ang1L\tEe\tang2L\tEr"
+                    print "#lev\tlevE\t\tEe\tang2L\tEr"
                 pXXTremeTest(xXTremeTest(iso1,iso2,Elab,angle))
                 return 0
                     
             # print xTremeTest(iso1,iso2,Elab,angle)
             pXTremeTest(iso1,iso2,Elab,angle)
             return 0
-                
+
+    scatE=args["--scatE"]    
+    if scatE:
+        if args["-v"]==True:
+            print "#Gives the beam energy [MeV]"
+
+        if not testVal(scatE):
+            print "Error; scattered energy has to be a number"
+            return 10 #Making this up as I go
+        scatE=float(scatE)
+
+        angle=args["--angle"]
+        if not testVal(scatE):
+            print "Error; scattered energy has to be a number"
+            return 10
+        angle=float(angle)
+        if not 0<=angle<=180:
+            print "Error; angle outside of 0<=angle<=180"
+            return 11
+
+        iso1=args["<iso1>"]
+        iso2=args["<iso2>"]
+        print findOE(scatE,angle,iso1,iso2)
+        return 0
+
+    if args["--reactE"]:
+        pass #For now
+            
     if args["--QVal"] or args["-q"]:
         isop=args["<isop>"]
         isot=args["<isot>"]

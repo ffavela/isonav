@@ -1,12 +1,18 @@
 Improve the documentation. Make a latex doc for the theory.
 
+Parse que extra data in the db (parity etc).
+
 Add the relativistic scattering case.
 
 Decays with excited states.
 
-Improve the database, add half lifes, decay modes.
+Improve the database, add half lifes, decay modes. Beta decay.
+Add a wikipedia parser for HF?
+Add subnuclear particles?
 
-Beta decay.
+Spectroscopic functions.
+
+Testing cases for debugging.
 
 BUGS:
 

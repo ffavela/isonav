@@ -8,10 +8,10 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     fR=react[0][1:]
     sR=react[1][1:]
     stringFormat="%.3f\t"*(len(fR)-1)+"%.3f"
-    print isoEject,"+",isoRes
+    print isoEject,isoRes
     print stringFormat % tuple(fR)
     print ""
-    print isoRes,"+",isoEject
+    print isoRes,isoEject
     print stringFormat % tuple(sR)
     print ""
 
@@ -109,21 +109,30 @@ def latexNReaction(iso1,iso2):
         print '& ^{'+aEject+'}\!'+kEject+'+'+' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr
     print '\end{eqnarray*}'
 
-
-def pIsotopes(iso,flag=True):
+def pIsotopes(iso,mFlag=False,flag=True):
     val=getIsotopes(iso)
     eCoef=1
-    if flag:
-        eCoef=938.41
-    if val == False:
-        print "Symbol not in database"
-        return False
-    stringFormat="%s\t%0.3f"
+    if mFlag:
+        if flag:
+            eCoef=931.4941
+        if val == False:
+            print "Symbol not in database"
+            return False
+        stringFormat="%s\t%0.3f"
+        for i in val:
+            i[1]*=eCoef
+            print stringFormat %tuple(i)
+        return 0
     for i in val:
-        i[1]*=eCoef
-        print stringFormat %tuple(i)
+        print i[0]
+    return 0
 
 def pDecay(iso):
     dec=QDecay(iso)
     for d in dec:
         print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d)
+
+def pFussion(iso1,iso2,Elab):
+    l=fussionCase(iso1,iso2,Elab)
+    stringFormat="%s\t%d\t%.3f\t%.3f"
+    print stringFormat % tuple(l)
