@@ -10,6 +10,12 @@ cursor = conn.cursor()
 # c=3*10**8
 c=299792458 #in m/s
 cfm=c*10**(15) #in fm/s
+eCoef=931.4941 #amu to MeV convertion coef
+hc=1.23984193 #MeV-pm
+hbc=197.33 #MeV-fm
+alpha=1/137.036 #fine structure
+
+
 # cfm=1 #in fm/s
 
 #utility functions for nuclear physics reactions
@@ -53,7 +59,7 @@ def printElemList():
 def getVelcm(iso1,iso2,E1):
     m1=getEMass(iso1)
     m2=getEMass(iso2)
-    v1=sqrt(2.0*E1/m1)
+    v1=sqrt(2.0*E1/m1)*c
     v2=0 #assuming it is still
     Vcm=(1.0*v1*m1+1.0*v2*m2)/(m1+m2)
     v1p=v1-Vcm
@@ -68,8 +74,8 @@ def getEcm(iso1,iso2,E1L):
     # mu=mE1*mE2/(mE1+mE2)
     # rVel=vels[0]-vels[1]
     # print 1.0/2.0*mu*rVel**2
-    E1cm=vels[0]**2*mE1/2.0
-    E2cm=vels[1]**2*mE2/2.0
+    E1cm=0.5*(vels[0]/c)**2*mE1
+    E2cm=0.5*(vels[1]/c)**2*mE2
     Ecm=E1cm+E2cm
     return E1cm,E2cm,Ecm
 
@@ -83,10 +89,23 @@ def getEcmsFromECM(iso1,iso2,ECM):
     E2=0.5*(P*c)**2/m2
     return E1,E2
 
-def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L):
+def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L=0):
     E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
     return Ecm+Q
+
+#Just for testing
+def getAllVs(iso1,iso2,isoE,isoR,E1L):
+    v1cm,v2cm,Vcm=getVelcm(iso1,iso2,E1L)
+    EcmAvail=getAvailEnergy(iso1,iso2,isoE,isoR,E1L)
+    ejectE,resE=getEcmsFromECM(isoE,isoR,EcmAvail)
+    print ejectE,resE
+    vE=sqrt(2.0*ejectE/getEMass(isoE))*c
+    vR=sqrt(2.0*resE/getEMass(isoR))*c
+    print v1cm,v2cm
+    print Vcm
+    print vE,vR
+
 ############################################
 
 def checkIsoExistence(iso1,iso2):
@@ -118,8 +137,6 @@ def mirror(iso):
     return isoM
     
 def coulombE(iso1,iso2):
-    alpha=1/137.036 #fine structure
-    hbc=197.33 #MeV-fm
     z1=getPnum(iso1)
     z2=getPnum(iso2)
     rMin=nRadius(iso1)+nRadius(iso2)
@@ -130,7 +147,6 @@ def thresholdE(iso1,iso2,iso3,iso4):
     mt=getMass(iso2)
     mE=getMass(iso3)
     mR=getMass(iso4)
-    eCoef=938.41
 
     Q=getQVal(mp,mt,mE,mR)*eCoef
     if Q<=0:
@@ -160,7 +176,7 @@ def reaction(iso1,iso2):
     aVal=aTot
     pVal=pTot
     initialMass=getMass(iso1)+getMass(iso2)
-    eCoef=938.41
+
     reactionList=[]
     rKey=getKey(pRes)
     eKey='None'
@@ -252,6 +268,19 @@ def QDecay(iso1):
         d=[d[0],d[1],E1cm,E2cm,d[2]]
         ndec.append(d)
     return ndec
+
+#Still working on this
+# #Given an isotope, the ejectile nucleus, the Daughter and the available
+# #energy (in CM, not Q), it returns all the possible combinations of
+# #excitation modes.
+# def xDecay(iso,isoE,isoD,ECM=0):
+#     if iso != getCompound(isoE,isoD):
+#         return False
+#     exList=[0,0,0,0]
+#     Q=getIsoQVal(iso,"0None",isoE,isoD,exList)
+#     Eavail=ECM+Q
+#     levsE=getPopLevels(isoE,Eavail)
+#     levsD=getPopLevels(isoR,Eavail)
 
 #Prints out all the possible neg Q's
 def QStable(iso1):
@@ -390,6 +419,56 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
         if react[0][0]!=False and react[1][0]!=False:
             l.append([e,react])
     return l
+#returns the corresponding fused element, along with the max populated
+#level and the corresponding remaining energy
+def fussionCase(iso1,iso2,E1L,E2L=0):
+    isof=getCompound(iso1,iso2)
+    if isof==False:
+        return False
+    Q=getIsoQVal(iso1,iso2,"0None",isof)
+    E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
+    ETotcm=Q+Ecm
+    maxLev,maxLE=getCorrespLevE(isof,ETotcm)
+    rKEcm=ETotcm-maxLE #residual KE
+
+    vDump,vDump,Vcm=getVcms(iso1,iso2,iso1,iso2,E1L)
+    EcmSys=0.5*(Vcm/c)**2*(getEMass(iso1)+getEMass(iso2))
+    rKE=rKEcm+EcmSys
+
+    return isof,maxLev,maxLE,rKE
+
+def getCompound(iso1,iso2):
+    a1,k1=getIso(iso1)
+    a2,k2=getIso(iso2)
+
+    p1=getPnum(iso1)
+    p2=getPnum(iso2)
+
+    pf=p1+p2
+    af=a1+a2
+    kf=getKey(pf)
+    if kf==False:
+        return False
+    isof=str(af)+kf
+    if getPnum(isof):
+        return isof
+    return False
+
+def getCorrespLevE(iso,E):
+    aVal,eName=getIso(iso)
+    getMoreData(iso)
+    if not checkDictIso(iso):
+        return False
+    lev,lEMax=0,0
+    for e in iDict[eName][1][aVal][1]:
+        lE=iDict[eName][1][aVal][1][e][0]
+        if lE >= E:
+            lev,lEMax=e-1,iDict[eName][1][aVal][1][e-1][0]
+            break
+    if E>0 and lev==0:
+        print "#Energy over max level in db"
+        lev,lEMax=e,iDict[eName][1][aVal][1][e][0]
+    return lev,lEMax
 
 def getLevelE(iso1,level):
     A,k=getIso(iso1)
@@ -397,8 +476,6 @@ def getLevelE(iso1,level):
     if not checkDictIso(iso1):
         return 0
     return iDict[k][1][A][1][level][0]
-
-
 
 def getPopLevels(iso1,aE):
     levels=[]
@@ -409,7 +486,6 @@ def getPopLevels(iso1,aE):
         return [1]
     for e in iDict[eName][1][iso][1]:
         lE=iDict[eName][1][iso][1][e][0]
-        (lE,float)
         if lE>aE:
             return levels
         levels.append([e,lE])
@@ -455,7 +531,6 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     return vE,vR,Vcm,Ef
 
 def getEMass(iso1):
-    eCoef=938.41
     A,k=getIso(iso1)
     return iDict[k][1][A][0]*eCoef
 
@@ -497,18 +572,17 @@ def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
 
-def getIsoQVal(iso1,iso2,iso3,iso4):
+def getIsoQVal(iso1,iso2,iso3,iso4,exList=[0,0,0,0]):
     if not checkReaction(iso1,iso2,iso3,iso4):
         return False
-    m1=getEMass(iso1)
-    m2=getEMass(iso2)
-    m3=getEMass(iso3)
-    m4=getEMass(iso4)
+    m1=getEMass(iso1)+exList[0]#Adding mas excitations
+    m2=getEMass(iso2)+exList[1]
+    m3=getEMass(iso3)+exList[2]
+    m4=getEMass(iso4)+exList[3]
     Q=(m1+m2-m3-m4)
     return Q
 
 def getIsoQValAMU(iso1,iso2,iso3,iso4):
-    eCoef=938.41
     return getIsoQVal(iso1,iso2,iso3,iso4)/eCoef
 
 def iso2String(k,iso,eVal=''):
@@ -620,7 +694,7 @@ def findOE(Eang,ang,iso1,iso2):
     E=Eang
     Emax=2.0*Eang
     dE=0.01
-    tolerance=0.0001
+    tolerance=0.00001
     while True:
         sR= sReaction(iso1,iso2,iso1,iso2,E,ang)
         diff=Eang-sR[0][1]
@@ -635,8 +709,6 @@ def findOE(Eang,ang,iso1,iso2):
 
 #It prints the CS in mb
 def rutherford0(iso1,iso2,Ecm,theta):
-    hbc=197.33 #MeV-fm
-    alpha=1/137.036
     theta=radians(theta)
     z1=getPnum(iso1)
     z2=getPnum(iso2)
@@ -845,12 +917,10 @@ def getLDEMass(iso):
 
 #Using the LD model to get the mass
 def getLDMass(iso):
-    eCoef=938.41
     return 1.0*getLDEMass(iso)/eCoef
 
 #de Broglie wavelength in angstrom
 def deBroglie(iso,E):
-    hc=1.23984193 #MeV-pm
     # iso=str(A)+element
     em=getEMass(iso)
     p=sqrt(2.0*em*E) #a "c" from here goes to the hc
@@ -863,13 +933,11 @@ def reducedDeBroglie(iso,E):
 #Compton wavelength
 def comptonW(iso):
     em=getEMass(iso)
-    hc=1.23984193 #MeV-pm
     return hc/em*1000 #*1000 to convert to fm
 
 #Reduced Compton wavelength
 def rComptonW(iso):
     em=getEMass(iso)
-    hbc=197.33 #MeV-fm
     return hbc/em
 
 #Hard sphere classical total CS
@@ -889,7 +957,6 @@ def softSphereDCS(isop,isot,V0=50):
     a=nRadius(isot)
     # iso=str(ap)+sp
     em=getEMass(isop)
-    hbc=197.33 #MeV-fm
     return (2*em*V0*a**3/(3*hbc**2))**2
 
 #soft sphere total CS
@@ -901,7 +968,6 @@ def softSphereDSBorn(isop,isot,V0=50):
     a=nRadius(isot)
     # iso=str(ap)+sp
     em=getEMass(isop)
-    hbc=197.33 #MeV-fm
     firstC=2*em*V0*a**3/(3*hbc**2)
     secondC=1-4*em*V0*a**2/(5*hbc**2)
     return (firstC*secondC)**2
@@ -912,7 +978,6 @@ def softSphereTSBorn(isop,isot,V0=50):
 
 #Using the Yukawa potential
 def yukawaDCS(isop,isot,E,theta,beta,mu):
-    hbc=197.33 #MeV-fm
     # iso=str(ap)+sp
     eMass=getEMass(isop)
     theta=radians(theta)
@@ -923,7 +988,6 @@ def yukawaDCS(isop,isot,E,theta,beta,mu):
 #Getting the total CS for the Yukawa potential, Griffiths 11.12 Note;
 #this is still in testing
 def yukawaTCS(isop,isot,E,theta,beta,mu):
-    hbc=197.33 #MeV-fm
     # iso=str(ap)+sp
     eMass=getEMass(isop)
     theta=radians(theta)
@@ -950,9 +1014,6 @@ def gamowAlpha(iso1):
         Q=decay[2]
     else:
         return 'None'
-
-    hbc=197.33 #MeV-fm
-    alpha=1.0/137.036
 
     B=getB(iso1,isoEject)
     em=getEMass(isoEject) #Most probably alpha part mass
@@ -1003,8 +1064,6 @@ def findDecay(iso1,ejectIso):
 #For alpha decay is the barrier penetration energy for decay (in MeV),
 #normally alpha
 def getB(iso1,isoEject):
-    alpha=1/137.036 #fine structure
-    hbc=197.33 #MeV-fm
     a=nRadius(iso1)
     z1=getPnum(iso1)
     z2=getPnum(isoEject)
