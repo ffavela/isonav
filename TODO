@@ -14,6 +14,8 @@ Spectroscopic functions.
 
 Testing cases for debugging.
 
+Generalize the file path so the program can be run from anywhere.
+
 BUGS:
 
     isotopes with names 1950s and 1940s appear sometimes, for example:

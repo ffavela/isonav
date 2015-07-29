@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Usage:
   isonav.py <number> [-v] (-s|--symbol)
   isonav.py <symbol> [-v] ([-p|--protons])
@@ -27,4 +28,3 @@ if __name__ == '__main__':
     args = docopt(__doc__, version='v1.0')
     # print(args)
     argHand(args)
-

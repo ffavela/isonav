@@ -38,7 +38,7 @@ def argHand(args):
 
     if args["--isotopes"] or args["-i"]:
         if args["-v"]:
-            print "#Isotopes of given element, and optional mass"
+            print "Isotopes and masses, in MeV by default"
         flag=True
         mFlag=False
         if args["-m"]:
