@@ -2,6 +2,12 @@ from isonavBase import *
 from outputFunctions import *
 import sqlite3
 
+def makeSureIso(iso):
+    A,k=getIso(iso)
+    if A == None or k == None:
+        return False
+    return True
+
 def testVal(stuff):
     try:
         stuff=float(stuff)
@@ -30,6 +36,11 @@ def argHand(args):
         print getPnum(symbol)
         return 0
     if args["--neutrons"] or args["-n"]:
+        iso=args["<iso>"]
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         if args["-v"]:
             print "Given an isotope it returns the number of neutrons"
         iso=args["<iso>"]
@@ -46,6 +57,7 @@ def argHand(args):
             if args["--amu"]:
                 flag=False
         iso=args["<iso>"]
+
         pIsotopes(iso,mFlag,flag)
         return 0
 
@@ -60,6 +72,10 @@ def argHand(args):
         if args["-v"]:
             print "#Returns the isotope's radius, in fermis, using r=1.2*A**(1.0/3)"
         iso=args["<iso>"]
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         print nRadius(iso)
         return 0
 
@@ -67,6 +83,10 @@ def argHand(args):
         iso=args["<iso>"]
         if args["-v"]:
             print "#Returns the energy levels of the isotope, prints at most limit levels"
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         if args["--limit"]:
             limit=int(args["--limit"])
             pLevels(iso,limit)
@@ -79,6 +99,10 @@ def argHand(args):
     if Elab != None and args["<iso>"] :
         Elab=float(Elab)
         iso=args["<iso>"]
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         if args["-v"]==True:
             print "#Returns the deBroglie wavelength by default, in angstrom"
         if testVal(Elab):
@@ -93,6 +117,12 @@ def argHand(args):
     if args["-m"] or args["--mass"]:
         if args["-v"]==True:
             print "#Returns the mass in MeV or in amu if --amu is used"
+
+        iso=args['<iso>']
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         if args["--liquidDrop"]:
             if args["--amu"]==True:
                 print getLDMass(args['<iso>'])
@@ -108,6 +138,10 @@ def argHand(args):
     if  args["--compton"]:
         if args["-v"]==True:
             print "#The compton wavelength in fm"
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         print comptonW(args['<iso>'])
         return 0
             
@@ -115,6 +149,10 @@ def argHand(args):
         iso=args["<iso>"]
         if args["-v"]:
             print "#Given an isotope it provides its binding energy"
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         if args["--BE"]:
             if args["--liquidDrop"]:
                 print getLDBE(iso)
@@ -150,6 +188,10 @@ def argHand(args):
         if args["-v"]:
             print "#Decay, splitting in two nucleons (no beta)"
             print "#res\tdaught\t\teRes\teDaugh\tQ"
+        if not makeSureIso(iso):
+            print "Not a valid isotope"
+            return 1
+
         pDecay(iso)
         return 0
 
