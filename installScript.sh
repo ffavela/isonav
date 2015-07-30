@@ -1,5 +1,7 @@
 #!/bin/bash
 #Run the script as with sudo
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
 if [ "$1" = "--uninstall" ]
 then
@@ -28,7 +30,7 @@ fi
 python -c "import docopt"
 if [ $? -eq 1  ]
 then
-    echo "Error; install docopt first. Aborting"
+    echo "${RED}Error; install docopt first. Aborting${NC}"
     echo "For ubuntu execute"
     echo "sudo apt-get install python-docopt"
     echo "For linux in general:"
