@@ -25,6 +25,9 @@ then
     rm -r /usr/share/isonav
 fi
 
+python -c "import docopt"
+[ $? -eq 1  ] && echo "Error; install docopt first. Aborting" && exit 1
+
 mkdir /usr/share/isonav
 chmod +x isonav.py
 cp -r data /usr/share/isonav

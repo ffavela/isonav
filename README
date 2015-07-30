@@ -25,6 +25,10 @@ Run with sudo the install script via
 
 $ sudo ./installScript.sh
 
+In case you need uninstalling, simply do a:
+
+$ sudo ./installScript.sh --uninstall
+
 USAGE:
 
 The typical abbreviations for some isotopes can be used:
