@@ -40,7 +40,7 @@ fi
 
 if [ ! -d data ]
 then
-    printf "${RED}Error; no data directory{NC}"
+    printf "${RED}Error; no data directory${NC}"
     echo "Download it from:"
     echo "https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0"
     echo "And uncompress it inside the repo's directory"
