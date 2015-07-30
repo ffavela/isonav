@@ -30,7 +30,7 @@ fi
 python -c "import docopt"
 if [ $? -eq 1  ]
 then
-    printf "${RED}Error; install docopt first. Aborting${NC}"
+    printf "${RED}Error; install docopt first. Aborting${NC}\n"
     echo "For ubuntu execute"
     echo "sudo apt-get install python-docopt"
     echo "For linux in general:"
