@@ -6,9 +6,10 @@ A note for potential developers; The code is written so it is
 "expressive", that is every part is clear in what is does, as opposed to
 have the best running time performance with unreadable code. So if you
 want to modify it take this into account, upstream merges will not be
-accepted if "guru" tricks that do the job "better" are not readable. I
-want to always keep the code upgradable in whatever direction it is
-taken, and It can only be done if it is easy to read and to modify.
+accepted if "guru" tricks that do the job "better" are not readable or
+properly commented. I want to always keep the code upgradable in
+whatever direction it is taken, and It can only be done if it is easy to
+read and to modify.
 
 INSTALLATION:
 
@@ -35,6 +36,13 @@ $ sudo ./installScript.sh
 In case you need uninstalling, simply do a:
 
 $ sudo ./installScript.sh --uninstall
+
+In case you don't want to install system wide, just make sure the data
+directory is available (as well as docopt) and you run it with:
+
+$ python isonav.py ...
+
+As a setback, the scripts probably won't work as expected.
 
 USAGE:
 

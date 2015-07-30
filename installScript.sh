@@ -38,7 +38,17 @@ then
     exit 1
 fi
 
+if [ ! -d data ]
+then
+    printf "${RED}Error; no data directory{NC}"
+    echo "Download it from:"
+    echo "https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0"
+    echo "And uncompress it inside the repo's directory"
+    exit 2
+fi
+
 mkdir /usr/share/isonav
+[ $? -ne 0 ] && echo "Error; try running with sudo" && exit 3
 chmod +x isonav.py
 cp -r data /usr/share/isonav
 cp isonav.py /usr/share/isonav
@@ -57,5 +67,8 @@ then
 fi
 
 ln -s /usr/share/isonav/isonav.py /usr/local/bin/isonav
+
+echo "Installation complete"
+echo "Run isonav to see a list of options"
 
 exit 0
