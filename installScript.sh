@@ -26,7 +26,15 @@ then
 fi
 
 python -c "import docopt"
-[ $? -eq 1  ] && echo "Error; install docopt first. Aborting" && exit 1
+if [ $? -eq 1  ]
+then
+    echo "Error; install docopt first. Aborting"
+    echo "For ubuntu execute"
+    echo "sudo apt-get install python-docopt"
+    echo "For linux in general:"
+    echo "pip install docopt==0.6.1"
+    exit 1
+fi
 
 mkdir /usr/share/isonav
 chmod +x isonav.py

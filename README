@@ -19,7 +19,14 @@ uncompress it into the repository's directory:
 
 https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0
 
-The python package docopt is REQUIRED.
+The python package docopt is REQUIRED. In ubuntu the package can be
+installed via:
+
+$ sudo apt-get install python-docopt
+
+Or for linux in general via:
+
+$ pip install docopt==0.6.1
 
 Run with sudo the install script via
 
