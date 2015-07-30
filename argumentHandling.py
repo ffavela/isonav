@@ -330,4 +330,3 @@ def argHand(args):
             # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
             pSReaction(isop,isot,isoE,isoR,Elab,angle)
             return 0
-

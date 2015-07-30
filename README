@@ -2,15 +2,6 @@ The program isonav (formerly isotope-navigator) is intended to be a
 command line interface program (for now) for making quick and easy
 calculations for nuclear reactions.
 
-A note for potential developers; The code is written so it is
-"expressive", that is every part is clear in what is does, as opposed to
-have the best running time performance with unreadable code. So if you
-want to modify it take this into account, upstream merges will not be
-accepted if "guru" tricks that do the job "better" are not readable or
-properly commented. I want to always keep the code upgradable in
-whatever direction it is taken, and It can only be done if it is easy to
-read and to modify.
-
 INSTALLATION:
 
 Requirements:
@@ -55,6 +46,8 @@ The typical abbreviations for some isotopes can be used:
 
 Examples:
 
+Note: All energies are in MeV
+
 $ isonav 
 
 Gives a printout of the general usage (not all functions have been
@@ -71,13 +64,13 @@ $ isonav 195Au --neutrons
 116
 
 $ isonav Pb -i #A can be also ommitted here
-185Pb   173594.022
-186Pb   174529.812
+185Pb
+186Pb
 .
 .
 .
-213Pb   199878.166
-214Pb   200819.554
+213Pb
+214Pb
 
 Forcing amu (instead of MeV) and being verbose:
 
@@ -267,8 +260,8 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 $ isonav 235U --decay -v
 #Decay, splitting in two nucleons (no beta)
 #res	daught		eRes	eDaugh	Q
-40S	195Os		77.087	15.806	92.892
-41S	194Os		75.522	15.956	91.478
+40S	195Os <-BUG	77.087	15.806	92.892
+41S	194Os <-BUG	75.522	15.956	91.478
 37P	198Ir		72.029	13.454	85.483
 34Si	201Pt		72.661	12.285	84.946
 38P	197Ir		70.373	13.571	83.944
@@ -282,9 +275,31 @@ $ isonav n --compton -v
 #The compton wavelength in fm
 1.31959074145
 
-Optimized the loading, not super fast but bearable.
+See the directory "isonavScripts/" for some script examples.
+
+The --xTreme cases can take some time and the outputs can become very
+large, here is an example of one case:
+
+$ isonav 14N 167Yb --Elab=5.5 --angle=20 --xTreme>14N167YbxTreme5p5MeVAngle20.txt
+
+#This took about 80 min in my computer
+
+The txt file is in:
+
+https://mega.co.nz/#!jMMQBJQR!tbHG6sQclgR895ezXMhqkBDMsel3E7vX0ATRKg8x4VE
+
+Consider output redirection for such cases.
 
 This is still work in progress.
+
+A note for potential developers; The code is written so it is
+"expressive", that is every part is clear in what is does, as opposed to
+have the best running time performance with unreadable code. So if you
+want to modify it take this into account, upstream merges will not be
+accepted if "guru" tricks that do the job "better" are not readable or
+properly commented. I want to always keep the code upgradable in
+whatever direction it is taken, and It can only be done if it is easy to
+read and to modify.
 
 Contact: preferably through github, or via email ffavela@gmail.com, with
 the subject isonav
