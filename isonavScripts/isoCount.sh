@@ -5,7 +5,7 @@
 #It prints at the end the max values
 
 maxN=0
-maxS$="n"
+maxS="n"
 maxIsoC=0
 
 for n in $(seq 0 118)
