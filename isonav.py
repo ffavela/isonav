@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright 2015 Francisco Favela
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +15,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#!/usr/bin/env python
 """Usage:
   isonav.py <number> [-v] (-s|--symbol)
   isonav.py <symbol> [-v] ([-p|--protons])
@@ -34,6 +35,7 @@
   isonav.py <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]
   isonav.py -h | --version
 """
+
 from docopt import docopt
 from argumentHandling import argHand
 import sqlite3
