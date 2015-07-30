@@ -1,9 +1,27 @@
 #!/bin/bash
 #Run the script as with sudo
+
+if [ "$1" = "--uninstall" ]
+then
+    if [ -L /usr/local/bin/isonav ] || [ -f /usr/local/bin/isonav ]
+    then 
+	echo "Removing the isonav symlink"
+	rm /usr/local/bin/isonav
+    fi
+
+    if [ -d /usr/share/isonav ]
+    then
+    echo "Removing the isonav files"
+    rm -r /usr/share/isonav
+    fi
+    echo "isonav uninstall complete"
+    exit 0
+fi
+
 if [ -d /usr/share/isonav ]
 then
     echo "File /usr/share/isonav exists"
-    echo "Removing it for new instalation"
+    echo "Removing it for new installation"
     rm -r /usr/share/isonav
 fi
 
@@ -18,13 +36,13 @@ cp enxParser.py /usr/share/isonav
 cp outputFunctions.py /usr/share/isonav
 cp argumentHandling.py /usr/share/isonav
 
-if [ -f /usr/local/bin/isonav ]
+if [ -f /usr/local/bin/isonav ] || [ -L /usr/local/bin/isonav ]
 then
     echo "/usr/local/bin/isonav exists"
-    echo "Removing it for reinstallation"
+    echo "Removing it for reinstall"
     rm /usr/local/bin/isonav
 fi
 
 ln -s /usr/share/isonav/isonav.py /usr/local/bin/isonav
 
-echo $?
+exit 0

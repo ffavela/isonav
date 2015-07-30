@@ -10,26 +10,22 @@ accepted if "guru" tricks that do the job "better" are not readable. I
 want to always keep the code upgradable in whatever direction it is
 taken, and It can only be done if it is easy to read and to modify.
 
+INSTALLATION:
+
 Requirements:
-(IMRPOVE THIS!!)
-Make a folder called data under the directory where the source files
-where downloaded and place the following 2 files inside ./data
 
-One is isoDict.pkl which can be downloaded from:
+After you have cloned the repository download the data.zip file and
+uncompress it into the repository's directory:
 
-https://mega.co.nz/#!GVUDULZS!RRQELwDcOExdO5XPQgjsGxtLeHoAioi9-Q_Grf7UCOA
-
-The other one is a database called isoData.bd
-
-https://mega.co.nz/#!uMVxiQYR!c1qQils-yrimUBxlBtFAUmUO2VVfKQFFi9VZaDnFc_Q
+https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0
 
 The python package docopt is REQUIRED.
-
-INSTALLATION:
 
 Run with sudo the install script via
 
 $ sudo ./installScript.sh
+
+USAGE:
 
 The typical abbreviations for some isotopes can be used:
 
@@ -170,6 +166,10 @@ $ isonav d 14N --Elab=3.0 --angle=35
 3He 	13C
 0.770	-35.844	0.171
 0.278	88.707	0.394
+
+Where the first row after the expression is when the ejectile is
+expected at the given angle and the recond is when the residual is
+expected.
 
 $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 *4He	12C

@@ -11,8 +11,8 @@ if os.path.dirname(__file__) == "/usr/share/isonav":
 else:
     fileName=os.path.dirname(__file__)
     DATA_PATH = fileName+"/data"
-    print "You do not have a working installation of isonav"
-    print "See the installation procedure in the README file"
+    print "#You do not have a working installation of isonav"
+    print "#See the installation procedure in the README file"
     # sys.exit(1)
 
 isoDictLoc=os.path.join(DATA_PATH, "isoDict.pkl")
