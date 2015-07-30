@@ -63,6 +63,18 @@ def argHand(args):
         print nRadius(iso)
         return 0
 
+    if args["-l"]==True or args["--levels"]==True:
+        iso=args["<iso>"]
+        if args["-v"]:
+            print "#Returns the energy levels of the isotope, prints at most limit levels"
+        if args["--limit"]:
+            limit=int(args["--limit"])
+            pLevels(iso,limit)
+            return 0
+
+        pLevels(iso)
+        return 0
+
     Elab=args['--Elab']
     if Elab != None and args["<iso>"] :
         Elab=float(Elab)

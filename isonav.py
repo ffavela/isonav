@@ -5,7 +5,7 @@
   isonav.py <iso> [-v] [-n|--neutrons] [[-i|--isotopes] [-m --amu]]
   isonav.py <iso> [-v] ([-m|--mass]|--compton) [--amu --liquidDrop]
   isonav.py <iso> [-v] --mirror
-  isonav.py <iso> [-v] (-r | --radius)
+  isonav.py <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
   isonav.py <iso> [-v] --Elab=val [--redDeBroglie] 
   isonav.py <iso> [-v] --decay
   isonav.py <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]

@@ -136,3 +136,18 @@ def pFussion(iso1,iso2,Elab):
     l=fussionCase(iso1,iso2,Elab)
     stringFormat="%s\t%d\t%.3f\t%.3f"
     print stringFormat % tuple(l)
+
+def pLevels(iso,limit="NaN"):
+    levs=getAllLevels(iso)
+    if limit=="NaN":
+        for l in levs:
+            print l[0],l[1]
+        return 0
+    counter=0
+    for l in levs:
+        counter+=1
+        if counter > limit:
+            break
+        print l[0],l[1]
+    return 0
+    
