@@ -10,11 +10,15 @@ Improve the database, add half lifes, decay modes. Beta decay.
 Add a wikipedia parser for HF?
 Add subnuclear particles?
 
-Spectroscopic functions.
+Spectroscopic functions. Plotting stuff.
 
 Testing cases for debugging.
 
 Generalize the file path so the program can be run from anywhere.
+
+Make a man page: example;  $ man isonav
+
+Include the license; GPL? open source?
 
 BUGS:
 
