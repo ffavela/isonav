@@ -2,9 +2,24 @@ from os import listdir
 from os.path import isfile, join
 import pickle
 import os.path
+import sys
 from enxParser import *
 
-    
+if os.path.dirname(__file__) == "/usr/share/isonav":
+    DATA_PATH = "/usr/share/isonav/data"
+# elif os.path.dirname(__file__) == ".":
+else:
+    fileName=os.path.dirname(__file__)
+    DATA_PATH = fileName+"/data"
+    print "You do not have a working installation of isonav"
+    print "See the installation procedure in the README file"
+    # sys.exit(1)
+
+isoDictLoc=os.path.join(DATA_PATH, "isoDict.pkl")
+isoMassesLoc=os.path.join(DATA_PATH, "isoMasses.txt")
+isoDictMassLoc=os.path.join(DATA_PATH, "isoDictMass.pkl")
+isoDatadb=os.path.join(DATA_PATH, "isoData.db")
+
 #Isotope dictionary
 iDict={}
 listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
@@ -21,8 +36,8 @@ listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
            'Rf','Db','Sg','Bh','Hs','Mt','Ds','Rg',
            'Cn','Uut','Fl','Uup','Lv','Uus','Uuo']
 
-if  os.path.isfile("isoDict.pkl"):
-    lines = [line.strip().split() for line in open('isoMasses.txt')]
+if  os.path.isfile(isoDictLoc):
+    lines = [line.strip().split() for line in open(isoMassesLoc)]
 
 def populateDict1():
     listLen=len(listStuff)
@@ -60,24 +75,24 @@ def getFileName(aList,key,iso):
     return False
 
 def populateDict():
-    if os.path.isfile("isoDict.pkl"):
+    if os.path.isfile(isoDictLoc):
         # print "#Dictionary file exists, loading it"
-        iDict = pickle.load(open("isoDict.pkl", "rb" ))
+        iDict = pickle.load(open(isoDictLoc, "rb" ))
     else:
         print "#Dictionary file does not exist, creating it"
         iDict=populateDict1()
         iDict=populateDict2(iDict)
-        pickle.dump(iDict,open("isoDict.pkl","wb"))
+        pickle.dump(iDict,open(isoDictLoc,"wb"))
     return iDict
 
 def fastPopulateDict():
-    if os.path.isfile("isoDictMass.pkl"):
+    if os.path.isfile(isoDictMassLoc):
         # print "#Dictionary file exists, loading it"
-        iDict = pickle.load(open("isoDictMass.pkl", "rb" ))
+        iDict = pickle.load(open(isoDictMassLoc, "rb" ))
     else:
         print "#Dictionary file does not exist, creating it"
         iDict=populateDict1()
-        pickle.dump(iDict,open("isoDictMass.pkl","wb"))
+        pickle.dump(iDict,open(isoDictMassLoc,"wb"))
     return iDict
     
 def putIsoData():

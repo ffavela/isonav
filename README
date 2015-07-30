@@ -1,7 +1,21 @@
-The isotope-navigator is intended to be a command line interface program
-(for now) for making quick and easy calculations for nuclear reactions.
+The program isonav (formerly isotope-navigator) is intended to be a
+command line interface program (for now) for making quick and easy
+calculations for nuclear reactions.
 
-There are new files, one is isoDict.pkl which can be downloaded from:
+A note for potential developers; The code is written so it is
+"expressive", that is every part is clear in what is does, as opposed to
+have the best running time performance with unreadable code. So if you
+want to modify it take this into account, upstream merges will not be
+accepted if "guru" tricks that do the job "better" are not readable. I
+want to always keep the code upgradable in whatever direction it is
+taken, and It can only be done if it is easy to read and to modify.
+
+Requirements:
+(IMRPOVE THIS!!)
+Make a folder called data under the directory where the source files
+where downloaded and place the following 2 files inside ./data
+
+One is isoDict.pkl which can be downloaded from:
 
 https://mega.co.nz/#!GVUDULZS!RRQELwDcOExdO5XPQgjsGxtLeHoAioi9-Q_Grf7UCOA
 
@@ -9,26 +23,39 @@ The other one is a database called isoData.bd
 
 https://mega.co.nz/#!uMVxiQYR!c1qQils-yrimUBxlBtFAUmUO2VVfKQFFi9VZaDnFc_Q
 
-The python package docopt is required.
+The python package docopt is REQUIRED.
+
+INSTALLATION:
+
+Run with sudo the install script via
+
+$ sudo ./installScript.sh
+
+The typical abbreviations for some isotopes can be used:
+
+1H==p
+2H==d
+3H==t
+4He==a
 
 Examples:
 
-$ python isonav.py 
+$ isonav 
 
 Gives a printout of the general usage (not all functions have been
 implemented yet). The -v option can be used in almost all cases
 (verbose).
 
-$ python isonav.py 22 -s
+$ isonav 22 -s
 Ti
 
-$ python isonav.py Au --protons #A value can be ommited here
+$ isonav Au --protons #A value can be ommited here
 79
 
-$ python isonav.py 195Au --neutrons
+$ isonav 195Au --neutrons
 116
 
-$ python isonav.py Pb -i #A can be also ommitted here
+$ isonav Pb -i #A can be also ommitted here
 185Pb   173594.022
 186Pb   174529.812
 .
@@ -39,7 +66,7 @@ $ python isonav.py Pb -i #A can be also ommitted here
 
 Forcing amu (instead of MeV) and being verbose:
 
-$ python isonav.py Pb -iv
+$ isonav Pb -iv
 #Isotopes of given element, and optional mass
 185Pb
 186Pb
@@ -52,26 +79,26 @@ $ python isonav.py Pb -iv
 .
 .
 
-$ python isonav.py 22Ne --mass #In MeV
+$ isonav 22Ne --mass #In MeV
 20484.8397894
 
-$ python isonav.py 22Ne --mass --liquidDrop #Using the LD model
+$ isonav 22Ne --mass --liquidDrop #Using the LD model
 20477.9424464
 
-$ python isonav.py 22Ne --mirror
+$ isonav 22Ne --mirror
 22Mg
 
-$ python isonav.py 40Ca -r #Radius in fm
+$ isonav 40Ca -r #Radius in fm
 4.10394227202
 
-$ python isonav.py d 14N a 12C --Elab=3.0 --angle=35
+$ isonav d 14N a 12C --Elab=3.0 --angle=35
 a 12C
 13.935	49.475	2.647
 
 12C a
 5.883	47.431	10.699
 
-$ python isonav.py d 14N a 12C --Elab=3.0 --angle=35 --xTreme
+$ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 *4He + 12C
 1	0.000		13.935	49.475	2.647
 
@@ -96,7 +123,7 @@ $ python isonav.py d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 12C + *4He
 1	0.000		5.883	47.431	10.699
 
-$ python isonav.py d 14N --reactions
+$ isonav d 14N --reactions
 0None	16O	None 	20.75
 4He	12C	0.00 	13.58
 1H	15N	0.00 	8.61
@@ -111,15 +138,15 @@ $ python isonav.py d 14N --reactions
 .
 .
 
-$ python isonav.py p 14N  --fussion
+$ isonav p 14N  --fussion
 15O	7	7.276	0.025
 
-$ python isonav.py p 14N --fussion --Elab=0.1 -v
+$ isonav p 14N --fussion --Elab=0.1 -v
 #Prints the fused element, if isotope exists.
 #Max populated level, and energy, and remaining KE in lab
 15O	7	7.276	0.125
 
-$ python isonav.py d 14N --Elab=3.0 --angle=35
+$ isonav d 14N --Elab=3.0 --angle=35
 4He 	12C
 13.935	49.475	2.647
 5.883	47.431	10.699
@@ -144,7 +171,7 @@ $ python isonav.py d 14N --Elab=3.0 --angle=35
 0.770	-35.844	0.171
 0.278	88.707	0.394
 
-$ python isonav.py d 14N --Elab=3.0 --angle=35 --xTreme
+$ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 *4He	12C
 1	0.000		13.935	49.475	2.647
 
@@ -218,7 +245,7 @@ $ python isonav.py d 14N --Elab=3.0 --angle=35 --xTreme
 .
 .............. You get the idea.
 
-$ python isonav.py 235U --decay -v
+$ isonav 235U --decay -v
 #Decay, splitting in two nucleons (no beta)
 #res	daught		eRes	eDaugh	Q
 40S	195Os		77.087	15.806	92.892
@@ -232,7 +259,7 @@ $ python isonav.py 235U --decay -v
 .
 .
 
-$ python isonav.py n --compton -v
+$ isonav n --compton -v
 #The compton wavelength in fm
 1.31959074145
 

@@ -3,7 +3,7 @@ from loadingStuff import *
 from isoParser import *
 import sqlite3
 
-conn = sqlite3.connect('isoData.db')
+conn = sqlite3.connect(isoDatadb)
 cursor = conn.cursor()
 
 #important constant
@@ -476,6 +476,16 @@ def getLevelE(iso1,level):
     if not checkDictIso(iso1):
         return 0
     return iDict[k][1][A][1][level][0]
+
+def getAllLevels(iso):
+    A,k=getIso(iso)
+    getMoreData(iso)
+    if not checkDictIso(iso):
+        return 0
+    lList=[]
+    for level in iDict[k][1][A][1]:
+        lList.append([level,iDict[k][1][A][1][level][0]])
+    return lList
 
 def getPopLevels(iso1,aE):
     levels=[]
