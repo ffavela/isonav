@@ -9,7 +9,7 @@ Requirements:
 After you have cloned the repository download the data.zip file and
 uncompress it into the repository's directory:
 
-https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0
+https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4
 
 The python package docopt is REQUIRED. In ubuntu the package can be
 installed via:
