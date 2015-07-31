@@ -298,8 +298,22 @@ have the best running time performance with unreadable code. So if you
 want to modify it take this into account, upstream merges will not be
 accepted if "guru" tricks that do the job "better" are not readable or
 properly commented. I want to always keep the code upgradable in
-whatever direction it is taken, and It can only be done if it is easy to
+whatever direction it is taken, and it can only be done if it is easy to
 read and to modify.
 
+Any donations can be sent to te following bitcoin address:
+
+1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2
+
+The address owner is Francisco Favela.
+
+If you are redistributing a modified version of the code, be sure to
+change the beneficiary's name (be clear about it, even in the donation
+part of the code) and the bitcoin address (that last part is optional
+;).
+
+This project was done without any financial support of any kind, so any
+donations are greatly appreciated :).
+
 Contact: preferably through github, or via email ffavela@gmail.com, with
-the subject isonav
+the subject isonav.

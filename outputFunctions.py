@@ -16,6 +16,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from isonavBase import *
+import webbrowser
 
 def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     react=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
@@ -166,4 +167,10 @@ def pLevels(iso,limit="NaN"):
         if counter > limit:
             break
         print l[0],l[1]
+    return 0
+
+def pDonation(flag=False):
+    if flag==True:
+        disp=webbrowser.open(isonavQR)
+    print  "1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2"
     return 0

@@ -36,6 +36,7 @@ isoDictLoc=os.path.join(DATA_PATH, "isoDict.pkl")
 isoMassesLoc=os.path.join(DATA_PATH, "isoMasses.txt")
 isoDictMassLoc=os.path.join(DATA_PATH, "isoDictMass.pkl")
 isoDatadb=os.path.join(DATA_PATH, "isoData.db")
+isonavQR=os.path.join(DATA_PATH, "isonavQR.png")
 
 #Isotope dictionary
 iDict={}

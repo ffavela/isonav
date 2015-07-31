@@ -330,3 +330,14 @@ def argHand(args):
             # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
             pSReaction(isop,isot,isoE,isoR,Elab,angle)
             return 0
+
+    if args["-d"] or args["--donate"]:
+        if args["-v"]:
+            print "#Make a donation through bitcoin ;)"
+            print "#The address belongs to Francisco Favela"
+
+        flag=False
+        if args["--QR"]:
+            flag=True
+        pDonation(flag)
+        return 0
