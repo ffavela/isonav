@@ -35,6 +35,33 @@ $ python isonav.py ...
 
 As a setback, the scripts probably won't work as expected.
 
+Resources:
+
+The program is far from finished, here are some resources online that
+where partially used for building it.
+
+The Isotope Explorer:
+http://ie.lbl.gov/isoexpl/isoexpl.htm
+
+Main inspiration for the program, the main problem with it is that is
+only for windows, isonav does not do everything isotope explorer does
+nor is it the intention.
+
+Most of the data of isonav was taken from the ENSDF data files that the
+isotope explorer uses.
+
+TUNL:
+
+http://www.tunl.duke.edu/
+
+Provides an easy to use webapp for accessing nuclear data.
+
+NNDC:
+
+http://www.nndc.bnl.gov/
+
+Another important resource.
+
 USAGE:
 
 The typical abbreviations for some isotopes can be used:
@@ -130,6 +157,24 @@ $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 
 12C + *4He
 1	0.000		5.883	47.431	10.699
+
+Can also see Coulomb excitations
+$ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
+*2H + 14N
+1	0.000		5.354	-75.758	0.146
+
+2H + *14N
+1	0.000		5.354	-75.758	0.146
+2	2.313		3.024	-43.702	0.163
+3	3.948		1.267	-19.746	0.285
+
+*14N + 2H
+1	0.000		1.987	56.922	3.513
+2	2.313		1.342	71.855	1.845
+3	3.948		0.516	-87.236	0.642
+
+14N + *2H
+1	0.000		1.987	56.922	3.513
 
 $ isonav d 14N --reactions
 0None	16O	None 	20.75

@@ -1,5 +1,7 @@
 Improve the documentation. Make a latex doc for the theory.
 
+Make the interactive part of the program, less prone to errors.
+
 Parse que extra data in the db (parity etc).
 
 Add the relativistic scattering case.
@@ -7,6 +9,7 @@ Add the relativistic scattering case.
 Decays with excited states.
 
 Improve the database, add half lifes, decay modes. Beta decay.
+Add a get reference option.
 Add a wikipedia parser for HF?
 Add subnuclear particles?
 
@@ -14,11 +17,9 @@ Spectroscopic functions. Plotting stuff.
 
 Testing cases for debugging.
 
-Generalize the file path so the program can be run from anywhere.
+Generalize the file path so the program can run from anywhere.
 
 Make a man page: example;  $ man isonav
-
-Include the license; GPL? open source?
 
 BUGS:
 
