@@ -268,6 +268,9 @@ def argHand(args):
                 return 888
 
             angle=float(angle)
+            if angle==0:
+                print "Error, give a positive angle"
+                return 222
 
             if args["--xTreme"]==True:
                 if verbose==True:
