@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright 2015 Francisco Favela
+#   Copyright (C) 2015 Francisco Favela
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
   isonav <iso1> <iso2> [-v] --fussion [--Elab=val]
   isonav <iso1> <iso2> [-v] --Elab=val --angle=val [[--xTreme|-x] --latex]
   isonav <iso1> <iso2> [-v] --scatE=val --angle=val
-  isonav <iso1> <iso2> --Elab=val --reactE=val --tol=val
   isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]

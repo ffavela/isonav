@@ -1,4 +1,4 @@
-#   Copyright 2015 Francisco Favela
+#   Copyright (C) 2015 Francisco Favela
 
 #   This file is part of isonav
 
@@ -31,7 +31,6 @@ eCoef=931.4941 #amu to MeV convertion coef
 hc=1.23984193 #MeV-pm
 hbc=197.33 #MeV-fm
 alpha=1/137.036 #fine structure
-
 
 # cfm=1 #in fm/s
 
@@ -314,6 +313,9 @@ def checkReaction(iso1,iso2,isoEject,isoRes):
     aEject,eject=getIso(isoEject)
     aRes,res=getIso(isoRes)
     #Making sure that the cases 'n' are '1n' 'p' is '1H' etc
+    if eject==None or res==None:
+        print "Reaction is invalid"
+        return False
     isoEject=str(aEject)+eject
     isoRes=str(aRes)+res
     if not checkIsoExistence(iso1,iso2):

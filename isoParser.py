@@ -1,4 +1,4 @@
-#   Copyright 2015 Francisco Favela
+#   Copyright (C) 2015 Francisco Favela
 
 #   This file is part of isonav
 
@@ -52,7 +52,9 @@ def getIso(s):
         elementSymbol=s[aValMatch.end():]
         return int(aVal),elementSymbol
     elif aValRe.match(s):
-        return int(s),None
+        if s.isdigit():
+            return int(s),None
+        return None,None
     elif onlySymbol.match(s):
         #Maybe case not necessary
         return None,s

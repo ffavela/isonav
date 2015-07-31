@@ -1,4 +1,4 @@
-#   Copyright 2015 Francisco Favela
+#   Copyright (C) 2015 Francisco Favela
 
 #   This file is part of isonav
 
@@ -17,7 +17,6 @@
 
 from isonavBase import *
 from outputFunctions import *
-import sqlite3
 
 def makeSureIso(iso):
     A,k=getIso(iso)
@@ -25,16 +24,40 @@ def makeSureIso(iso):
         return False
     return True
 
-def testVal(stuff):
+def testVal(stuff,strFlag="E"):
+    if stuff==False:
+        return False
     try:
         stuff=float(stuff)
     except:
         stuff=None
-    return isinstance(stuff,float)
+    val=isinstance(stuff,float) or isinstance(stuff,int)
+    if val:
+        if strFlag=="E":
+            if not 0<=stuff:
+                return False
+        if strFlag=="angle":
+            if not 0<=stuff<=180:
+                return False
+        return True
+    return False
 
 def argHand(args):
+    verbose=args["-v"]
+    Elab=args['--Elab']
+    angle=args['--angle']
+    scatE=args["--scatE"]
+    iso=args["<iso>"]
+    iso1=args["<iso1>"]
+    iso2=args["<iso2>"]
+    isop=args["<isop>"]
+    isot=args["<isot>"]
+    isoE=args["<isoEject>"]
+    isoR=args["<isoRes>"]
+
+
     if args["--symbol"] or args["-s"]:
-        if args["-v"]:
+        if verbose:
             print "#Given a number it returns the periodic table symbol"
         number=args["<number>"]
         try:
@@ -47,25 +70,25 @@ def argHand(args):
         return 0
 
     if args["--protons"] or args["-p"]:
-        if args["-v"]:
+        if verbose:
             print "#Given an isotope or purely the symbol it returns the number of protons"
         symbol=args["<symbol>"]
         print getPnum(symbol)
         return 0
     if args["--neutrons"] or args["-n"]:
-        iso=args["<iso>"]
+
         if not makeSureIso(iso):
             print "Not a valid isotope"
             return 1
 
-        if args["-v"]:
+        if verbose:
             print "Given an isotope it returns the number of neutrons"
-        iso=args["<iso>"]
+
         print getNnum(iso)
         return 0
 
     if args["--isotopes"] or args["-i"]:
-        if args["-v"]:
+        if verbose:
             print "Isotopes and masses, in MeV by default"
         flag=True
         mFlag=False
@@ -73,22 +96,20 @@ def argHand(args):
             mFlag=True
             if args["--amu"]:
                 flag=False
-        iso=args["<iso>"]
 
         pIsotopes(iso,mFlag,flag)
         return 0
 
     if args["--mirror"]:
-        if args["-v"]:
+        if verbose:
             print "Given an isotope it returns the mirror isotope"
-        iso=args["<iso>"]
+
         print mirror(iso)
         return 0
 
     if args["-r"]==True or args["--radius"]==True:
-        if args["-v"]:
+        if verbose:
             print "#Returns the isotope's radius, in fermis, using r=1.2*A**(1.0/3)"
-        iso=args["<iso>"]
         if not makeSureIso(iso):
             print "Not a valid isotope"
             return 1
@@ -97,8 +118,7 @@ def argHand(args):
         return 0
 
     if args["-l"]==True or args["--levels"]==True:
-        iso=args["<iso>"]
-        if args["-v"]:
+        if verbose:
             print "#Returns the energy levels of the isotope, prints at most limit levels"
         if not makeSureIso(iso):
             print "Not a valid isotope"
@@ -112,16 +132,19 @@ def argHand(args):
         pLevels(iso)
         return 0
 
-    Elab=args['--Elab']
-    if Elab != None and args["<iso>"] :
+    if Elab != None and iso :
+        if verbose==True:
+            print "#Returns the deBroglie wavelength by default, in angstrom"
+
+        if not testVal(Elab,"E"):
+            print "Error; energy has to be a positive number"
+            return 777
         Elab=float(Elab)
-        iso=args["<iso>"]
+
         if not makeSureIso(iso):
             print "Not a valid isotope"
             return 1
 
-        if args["-v"]==True:
-            print "#Returns the deBroglie wavelength by default, in angstrom"
         if testVal(Elab):
             if args["--redDeBroglie"]:
                 print reducedDeBroglie(iso,Elab)
@@ -132,10 +155,9 @@ def argHand(args):
         return 2
 
     if args["-m"] or args["--mass"]:
-        if args["-v"]==True:
+        if verbose==True:
             print "#Returns the mass in MeV or in amu if --amu is used"
 
-        iso=args['<iso>']
         if not makeSureIso(iso):
             print "Not a valid isotope"
             return 1
@@ -153,7 +175,7 @@ def argHand(args):
         return 0
 
     if  args["--compton"]:
-        if args["-v"]==True:
+        if verbose==True:
             print "#The compton wavelength in fm"
         if not makeSureIso(iso):
             print "Not a valid isotope"
@@ -163,8 +185,7 @@ def argHand(args):
         return 0
             
     if args["--BE"] or args["--BEperNucleon"]:
-        iso=args["<iso>"]
-        if args["-v"]:
+        if verbose:
             print "#Given an isotope it provides its binding energy"
         if not makeSureIso(iso):
             print "Not a valid isotope"
@@ -183,14 +204,16 @@ def argHand(args):
         return 0
 
     if args["--coulomb"] or args["--reactions"]:
-        iso1=args["<iso1>"]
-        iso2=args["<iso2>"]
-        if args["-v"]:
+        if verbose:
             print "#Given two isotopes it returns the coulomb energy barrier"
             print "#Or the possible reactions."
         if args["--reactions"]:
-            if args["-v"]==True:
+            if verbose==True:
                 print "#Eject\tResidue\tThres\tQValue"
+
+            if not checkIsoExistence(iso1,iso2):
+                return 665
+
             if args["--latex"]==True:
                 latexNReaction(iso1,iso2)
             else:
@@ -200,9 +223,8 @@ def argHand(args):
         print coulombE(iso1,iso2)
         return 0
 
-    if args["--decay"] and args["<iso>"]:
-        iso=args["<iso>"]
-        if args["-v"]:
+    if args["--decay"] and iso:
+        if verbose:
             print "#Decay, splitting in two nucleons (no beta)"
             print "#res\tdaught\t\teRes\teDaugh\tQ"
         if not makeSureIso(iso):
@@ -213,37 +235,42 @@ def argHand(args):
         return 0
 
     if args["--fussion"]:
-        iso1=args["<iso1>"]
-        iso2=args["<iso2>"]
-        
-        Elab=args['--Elab']
+        if not checkIsoExistence(iso1,iso2):
+            return 665
+
         if Elab:
+            if not testVal(Elab,"E"):
+                print "Error; energy has to be a positive number"
+                return 777
             Elab=float(Elab)
         else:
             Elab=0
-        if args["-v"]:
+        if verbose:
             print "#Prints the fused element, if isotope exists."
             print "#Max populated level, and energy, and remaining KE in lab"
         pFussion(iso1,iso2,Elab)
 
-    Elab=args['--Elab']
-    if args["<iso1>"] and testVal(Elab):
-        Elab=float(Elab)
-        angle=args['--angle'] 
-        if angle!=None and testVal(angle):
-            angle=float(angle)
-            if args["-v"]==True:
-                print "#Energy at given angle for the ejectile and the residue"
-            if not 0<=angle<=180:
-                print "Error; 0<=angle<=180 has to be True "
-                print "angle = ", angle
-                return 55
+    if iso1 and Elab:
+        if not testVal(Elab,"E"):
+            print "Error; energy has to be a positive number"
+            return 777
 
-            iso1=args["<iso1>"]
-            iso2=args["<iso2>"]
+        Elab=float(Elab)
+
+        if not checkIsoExistence(iso1,iso2):
+            return 665
+
+        if angle!=None:
+            if verbose==True:
+                print "#Energy at given angle for the ejectile and the residue"
+            if not testVal(angle,"angle"):
+                print "Error; 0<=angle<=180 has to be True "
+                return 888
+
+            angle=float(angle)
 
             if args["--xTreme"]==True:
-                if args["-v"]==True:
+                if verbose==True:
                     print "#Prints out angles and energies of the reactions"
                     print "#lev\tlevE\t\tEe\tang2L\tEr"
                 pXXTremeTest(xXTremeTest(iso1,iso2,Elab,angle))
@@ -253,38 +280,27 @@ def argHand(args):
             pXTremeTest(iso1,iso2,Elab,angle)
             return 0
 
-    scatE=args["--scatE"]    
     if scatE:
-        if args["-v"]==True:
+        if verbose==True:
             print "#Gives the beam energy [MeV]"
+
+        if not checkIsoExistence(iso1,iso2):
+            return 665
 
         if not testVal(scatE):
             print "Error; scattered energy has to be a number"
             return 10 #Making this up as I go
         scatE=float(scatE)
 
-        angle=args["--angle"]
-        if not testVal(scatE):
-            print "Error; scattered energy has to be a number"
-            return 10
+        if not testVal(angle,"angle"):
+            print "Error; 0<=angle<=180 has to be True"
+            return 888
         angle=float(angle)
-        if not 0<=angle<=180:
-            print "Error; angle outside of 0<=angle<=180"
-            return 11
 
-        iso1=args["<iso1>"]
-        iso2=args["<iso2>"]
         print findOE(scatE,angle,iso1,iso2)
         return 0
 
-    if args["--reactE"]:
-        pass #For now
-            
     if args["--QVal"] or args["-q"]:
-        isop=args["<isop>"]
-        isot=args["<isot>"]
-        isoE=args["<isoEject>"]
-        isoR=args["<isoRes>"]
         if args["--amu"]:
             print getIsoQValAMU(isop,isot,isoE,isoR)
         else:
@@ -293,46 +309,45 @@ def argHand(args):
 
 
     if args["--maxAng"]:
-        if args["-v"]:
+        if verbose:
             print "#Given a beam energy it outputs the maximum angle the exit particles have"
-        Elab=args["--Elab"]
         if not testVal(Elab):
-            print "Error; energy has to be a number"
-            return 8
+            print "Error; energy has to be a positive number"
+            return 777
         Elab=float(Elab)
-        isop=args["<isop>"]
-        isot=args["<isot>"]
-        isoE=args["<isoEject>"]
-        isoR=args["<isoRes>"]
-
-        print getMaxAngles(isop,isot,isoE,isoR,Elab)
+        if not checkReaction(isop,isot,isoE,isoR):
+            return 666
+        a=getMaxAngles(isop,isot,isoE,isoR,Elab)
+        print a[0], a[1]
         return 0
 
-    if args["--angle"] and args["<isoRes>"]:
-        if args["-v"]:
+    if angle and args["<isoRes>"]:
+        if verbose:
             print "#Prints the energies that'll reach the detector"
-        Elab=args['--Elab']
-        angle=args["--angle"]
-        if testVal(Elab) and testVal(angle):
-            Elab=float(Elab)
-            angle=float(angle)
-            if not 0<=angle<=180:
-                print "Error; 0<=angle<=180 has to be True "
-                print "angle = ",angle
-                return 7
-            isop=args["<isop>"]
-            isot=args["<isot>"]
-            isoE=args["<isoEject>"]
-            isoR=args["<isoRes>"]
-            if args["-x"] or args["--xTreme"]:
-                pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle))
-                return 0
-            # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
-            pSReaction(isop,isot,isoE,isoR,Elab,angle)
+
+        if not testVal(Elab,"E"):
+            print "Error; energy has to be a positive number"
+            return 777
+
+        if not testVal(angle,"angle"):
+            print "Error; 0<=angle<=180 has to be True"
+            return 888
+
+        Elab=float(Elab)
+        angle=float(angle)
+
+        if not checkReaction(isop,isot,isoE,isoR):
+            return 666
+
+        if args["-x"] or args["--xTreme"]:
+            pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle))
             return 0
+        # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
+        pSReaction(isop,isot,isoE,isoR,Elab,angle)
+        return 0
 
     if args["-d"] or args["--donate"]:
-        if args["-v"]:
+        if verbose:
             print "#Make a donation through bitcoin ;)"
             print "#The address belongs to Francisco Favela"
 

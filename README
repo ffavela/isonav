@@ -4,6 +4,8 @@ calculations for nuclear reactions.
 
 INSTALLATION:
 
+The installation process was tested only on Ubuntu 14.04 machines.
+
 Requirements:
 
 After you have cloned the repository download the data.zip file and
@@ -125,6 +127,9 @@ $ isonav 22Ne --mirror
 
 $ isonav 40Ca -r #Radius in fm
 4.10394227202
+
+These next parts are useful for identifying particles in terms of their
+energy in a nuclear scattering experiment.
 
 $ isonav d 14N a 12C --Elab=3.0 --angle=35
 a 12C
@@ -305,8 +310,8 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 $ isonav 235U --decay -v
 #Decay, splitting in two nucleons (no beta)
 #res	daught		eRes	eDaugh	Q
-40S	195Os <-BUG	77.087	15.806	92.892
-41S	194Os <-BUG	75.522	15.956	91.478
+40S	195Os <-BUG?	77.087	15.806	92.892
+41S	194Os <-BUG?	75.522	15.956	91.478
 37P	198Ir		72.029	13.454	85.483
 34Si	201Pt		72.661	12.285	84.946
 38P	197Ir		70.373	13.571	83.944
@@ -333,7 +338,7 @@ The txt file is in:
 
 https://mega.co.nz/#!jMMQBJQR!tbHG6sQclgR895ezXMhqkBDMsel3E7vX0ATRKg8x4VE
 
-Consider output redirection for such cases.
+Consider output redirection for such cases ">".
 
 This is still work in progress.
 
@@ -346,11 +351,14 @@ properly commented. I want to always keep the code upgradable in
 whatever direction it is taken, and it can only be done if it is easy to
 read and to modify.
 
+Faster versions could be adopted in a different version of the project,
+as long there is always an easy to read version.
+
 Any donations can be sent to te following bitcoin address:
 
 1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2
 
-The address owner is Francisco Favela.
+The owner of the address is Francisco Favela.
 
 If you are redistributing a modified version of the code, be sure to
 change the beneficiary's name (be clear about it, even in the donation
