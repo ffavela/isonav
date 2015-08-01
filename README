@@ -2,7 +2,7 @@ The program isonav (formerly isotope-navigator) is intended to be a
 command line interface program (for now) for making quick and easy
 calculations for nuclear reactions.
 
-As any other command line software, the main advatage is that the
+As any other command line software, the main advantage is that the
 program is callable either from a user or from another program. This is
 very attractive for various applications. See the "isonavScripts/"
 directory for just a few script examples made for BaSH.
