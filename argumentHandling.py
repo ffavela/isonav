@@ -42,6 +42,8 @@ def testVal(stuff,strFlag="E"):
         return True
     return False
 
+commonVal=["p","d","t","a"]
+
 def argHand(args):
     verbose=args["-v"]
     Elab=args['--Elab']
@@ -55,6 +57,11 @@ def argHand(args):
     isoE=args["<isoEject>"]
     isoR=args["<isoRes>"]
 
+    if iso:
+        vals=[i[0] for i in getIsotopes(iso)]
+
+    if iso in commonVal:
+        vals=commonVal
 
     if args["--symbol"] or args["-s"]:
         if verbose:
@@ -124,6 +131,10 @@ def argHand(args):
             print "Not a valid isotope"
             return 1
 
+        if iso not in vals:
+            print "Error; isotope not in database"
+            return 999
+
         if args["--limit"]:
             limit=int(args["--limit"])
             pLevels(iso,limit)
@@ -165,9 +176,14 @@ def argHand(args):
         if args["--liquidDrop"]:
             if args["--amu"]==True:
                 print getLDMass(args['<iso>'])
+                return 0
             else:
                 print getLDEMass(args['<iso>'])
                 return 0
+
+        if iso not in vals:
+            print "Error; isotope not in database"
+            return 999
         if args["--amu"]==True:
             print getMass(args['<iso>'])
         else:
@@ -181,6 +197,9 @@ def argHand(args):
             print "Not a valid isotope"
             return 1
 
+        if iso not in vals:
+            print "Error; isotope not in database"
+            return 999
         print comptonW(args['<iso>'])
         return 0
             
@@ -195,11 +214,17 @@ def argHand(args):
             if args["--liquidDrop"]:
                 print getLDBE(iso)
             else:
+                if iso not in vals:
+                    print "Error; isotope not in database"
+                    return 999
                 print getBE(iso)
         elif args["--BEperNucleon"]:
             if args["--liquidDrop"]:
                 print getLDBEperNucleon(iso)
             else:
+                if iso not in vals:
+                    print "Error; isotope not in database"
+                    return 999
                 print getBEperNucleon(iso)
         return 0
 
