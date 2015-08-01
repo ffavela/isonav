@@ -35,6 +35,12 @@ echo ""
 echo "isonav 40Ca -r"
 isonav 40Ca -r
 echo ""
+echo "isonav 12C --levels --limit=10"
+isonav 12C --levels --limit=10
+echo ""
+echo "isonav 12C --Elab=2.0 --redDeBroglie"
+isonav 12C --Elab=2.0 --redDeBroglie
+echo ""
 echo "isonav d 14N a 12C --Elab=3.0 --angle=35"
 isonav d 14N a 12C --Elab=3.0 --angle=35
 echo ""

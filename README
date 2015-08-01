@@ -148,6 +148,21 @@ $ isonav 22Ne --mirror
 $ isonav 40Ca -r #Radius in fm
 4.10394227202
 
+$ isonav 12C --levels --limit=10
+1 0.0
+2 4.43891
+3 7.6542
+4 9.641
+5 10.3
+6 10.844
+7 11.16
+8 11.828
+9 12.71
+10 13.352
+
+$ isonav 12C --Elab=2.0 --redDeBroglie
+9.33202252339e-06
+
 These next parts are useful for identifying particles in terms of their
 energy in a nuclear scattering experiment.
 
