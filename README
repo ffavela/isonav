@@ -76,6 +76,7 @@ USAGE:
 
 The typical abbreviations for some isotopes can be used:
 
+1n==n  #neutron
 1H==p
 2H==d
 3H==t

@@ -42,7 +42,7 @@ def testVal(stuff,strFlag="E"):
         return True
     return False
 
-commonVal=["p","d","t","a"]
+commonVal=["n","p","d","t","a"]
 
 def argHand(args):
     verbose=args["-v"]
