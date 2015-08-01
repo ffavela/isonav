@@ -42,6 +42,6 @@ import sqlite3
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='v1.2')
+    args = docopt(__doc__, version='v1.3')
     # print(args)
     argHand(args)
