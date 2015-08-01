@@ -2,6 +2,14 @@ The program isonav (formerly isotope-navigator) is intended to be a
 command line interface program (for now) for making quick and easy
 calculations for nuclear reactions.
 
+As any other command line software, the main advatage is that the
+program is callable either from a user or from another program. This is
+very attractive for various applications. See the "isonavScripts/"
+directory for just a few script examples made for BaSH.
+
+The main limitation, for the moment, is the small database I currently
+have. This will be improved in the future.
+
 INSTALLATION:
 
 The installation process was tested only on Ubuntu 14.04 machines.
@@ -112,6 +120,17 @@ $ isonav Pb -iv
 189Pb
 190Pb
 191Pb
+.
+.
+.
+
+$ isonav Au -im --amu
+175Au	174.982
+176Au	175.980
+177Au	176.977
+178Au	177.976
+179Au	178.973
+180Au	179.972
 .
 .
 .
@@ -324,8 +343,6 @@ $ isonav 235U --decay -v
 $ isonav n --compton -v
 #The compton wavelength in fm
 1.31959074145
-
-See the directory "isonavScripts/" for some script examples.
 
 The --xTreme cases can take some time and the outputs can become very
 large, here is an example of one case:
