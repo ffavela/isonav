@@ -42,9 +42,18 @@ if [ ! -d data ]
 then
     printf "${RED}Error; no data directory${NC}\n"
     echo "Download it from:"
-    echo "https://mega.co.nz/#!3N9D1ZIR!5YrwRoVG24VPN7FlOI_jUX_LFvRT8VErUMTP434k-V0"
+    echo "https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4"
     echo "And uncompress it inside the repo's directory"
     exit 2
+fi
+
+if [ ! -f data/isonavQR.png ]
+then
+    echo "There is a newer file in"
+    echo "https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4"
+    echo "And uncompress it inside the repo's directory"
+    printf "${RED}Error; install not complete.${NC}\n"
+    exit 3
 fi
 
 mkdir /usr/share/isonav

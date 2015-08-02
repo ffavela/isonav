@@ -136,10 +136,9 @@ def pIsotopes(iso,mFlag=False,flag=True):
         if val == False:
             print "Symbol not in database"
             return False
-        stringFormat="%s\t%0.3f"
         for i in val:
             i[1]*=eCoef
-            print stringFormat %tuple(i)
+            print i[0],"\t",i[1]
         return 0
     for i in val:
         print i[0]

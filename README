@@ -14,6 +14,12 @@ INSTALLATION:
 
 The installation process was tested only on Ubuntu 14.04 machines.
 
+To those unfamiliar to github, simply write on the command line:
+
+$ git clone https://github.com/ffavela/isonav
+
+And the repository will be cloned to your computer.
+
 Requirements:
 
 After you have cloned the repository download the data.zip file and
@@ -372,6 +378,10 @@ The txt file is in:
 https://mega.co.nz/#!jMMQBJQR!tbHG6sQclgR895ezXMhqkBDMsel3E7vX0ATRKg8x4VE
 
 Consider output redirection for such cases ">".
+
+A discussion of the project can be followed in:
+
+https://www.reddit.com/r/Physics/comments/3fdote/as_part_of_my_bucket_list_i_wanted_to_make/
 
 This is still work in progress.
 
