@@ -17,7 +17,12 @@ Spectroscopic functions. Plotting stuff.
 
 Testing cases for debugging.
 
-Generalize the file path so the program can run from anywhere.
+Use the database for masses and other properties from (suggested by
+   Silpion):
+
+https://www-nds.iaea.org/amdc/ame2012/mass.mas12
+
+
 
 Make a man page: example;  $ man isonav
 
