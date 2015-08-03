@@ -7,8 +7,12 @@ program is callable either from a user or from another program. This is
 very attractive for various applications. See the "isonavScripts/"
 directory for just a few script examples made for BaSH.
 
-The main limitation, for the moment, is the small database I currently
-have. This will be improved in the future.
+In this new version (v1.4), the database was improved greatly by
+incorporating data from:
+
+https://www-nds.iaea.org/amdc/ame2012/mass.mas12
+
+Thank you Silpion!
 
 INSTALLATION:
 
@@ -22,10 +26,10 @@ And the repository will be cloned to your computer.
 
 Requirements:
 
-After you have cloned the repository download the data.zip file and
+After you have cloned the repository download the data1p4.zip file and
 uncompress it into the repository's directory:
 
-https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4
+
 
 The python package docopt is REQUIRED. In ubuntu the package can be
 installed via:
@@ -91,12 +95,31 @@ The typical abbreviations for some isotopes can be used:
 Examples:
 
 Note: All energies are in MeV
-
-$ isonav 
-
-Gives a printout of the general usage (not all functions have been
+The next gives a printout of the general usage (not all functions have been
 implemented yet). The -v option can be used in almost all cases
 (verbose).
+
+
+$ isonav 
+Usage:
+  isonav <number> [-v] (-s|--symbol)
+  isonav <symbol> [-v] ([-p|--protons])
+  isonav <iso> [-v] [-n|--neutrons] [[-i|--isotopes] [-m --amu]]
+  isonav <iso> [-v] ([-m|--mass]|--compton) [--amu --liquidDrop]
+  isonav <iso> [-v] --mirror
+  isonav <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
+  isonav <iso> [-v] --Elab=val [--redDeBroglie]
+  isonav <iso> [-v] --decay
+  isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
+  isonav <iso1> <iso2> [-v] (--coulomb | --reactions [--latex] )
+  isonav <iso1> <iso2> [-v] --fussion [--Elab=val]
+  isonav <iso1> <iso2> [-v] --Elab=val --angle=val [[--xTreme|-x] --latex]
+  isonav <iso1> <iso2> [-v] --scatE=val --angle=val
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]
+  isonav [-v] ( -d | --donate ) [--QR]
+  isonav -h | --version
 
 $ isonav 22 -s
 Ti
@@ -132,12 +155,11 @@ $ isonav Pb -iv
 .
 
 $ isonav Au -im --amu
-175Au	174.982
-176Au	175.980
-177Au	176.977
-178Au	177.976
-179Au	178.973
-180Au	179.972
+175Au 	174.981567
+176Au 	175.98024
+177Au 	176.977234
+178Au 	177.975922
+179Au 	178.973419
 .
 .
 .
@@ -348,19 +370,23 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 .
 .............. You get the idea.
 
-$ isonav 235U --decay -v
-#Decay, splitting in two nucleons (no beta)
-#res	daught		eRes	eDaugh	Q
-40S	195Os <-BUG?	77.087	15.806	92.892
-41S	194Os <-BUG?	75.522	15.956	91.478
-37P	198Ir		72.029	13.454	85.483
-34Si	201Pt		72.661	12.285	84.946
-38P	197Ir		70.373	13.571	83.944
-39P	196Ir		68.969	13.721	82.690
-35Si	200Pt		70.293	12.297	82.590
+$ isonav 235U --decay
+76Zn	159Sm		111.947	53.485	165.431
+77Zn	158Sm		110.923	54.037	164.960
+75Zn	160Sm		111.483	52.232	163.714
+74Zn	161Sm		111.932	51.417	163.349
+73Zn	162Sm		111.038	50.006	161.044
+72Zn	163Sm		110.853	48.933	159.786
+75Cu	160Eu		108.181	50.692	158.872
+74Cu	161Eu		108.753	49.966	158.718
+73Cu	162Eu		109.351	49.252	158.603
+76Cu	159Eu		106.871	51.069	157.940
+72Cu	163Eu		109.153	48.190	157.343
+71Cu	164Eu		109.562	47.404	156.965
 .
+.Lots of stuff
 .
-.
+
 
 $ isonav n --compton -v
 #The compton wavelength in fm

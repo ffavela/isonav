@@ -17,11 +17,11 @@ Spectroscopic functions. Plotting stuff.
 
 Testing cases for debugging.
 
-Use the database for masses and other properties from (suggested by
-   Silpion):
+# Use the database for masses and other properties from (suggested by
+#    Silpion):
 
-https://www-nds.iaea.org/amdc/ame2012/mass.mas12
-
+# https://www-nds.iaea.org/amdc/ame2012/mass.mas12
+DONE!! (only for the masses)
 
 
 Make a man page: example;  $ man isonav

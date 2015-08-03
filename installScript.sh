@@ -38,28 +38,19 @@ then
     exit 1
 fi
 
-if [ ! -d data ]
+if [ ! -d data1p4 ]
 then
     printf "${RED}Error; no data directory${NC}\n"
     echo "Download it from:"
-    echo "https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4"
+    echo ""
     echo "And uncompress it inside the repo's directory"
     exit 2
-fi
-
-if [ ! -f data/isonavQR.png ]
-then
-    echo "There is a newer file in"
-    echo "https://mega.co.nz/#!GclxzSqB!0CMHMpPx5oPp1sa6sFKMGtZR9Lak43ppqc0dh_G_5w4"
-    echo "And uncompress it inside the repo's directory"
-    printf "${RED}Error; install not complete.${NC}\n"
-    exit 3
 fi
 
 mkdir /usr/share/isonav
 [ $? -ne 0 ] && echo "Error; try running with sudo" && exit 3
 chmod +x isonav.py
-cp -r data /usr/share/isonav
+cp -r data1p4 /usr/share/isonav
 cp isonav.py /usr/share/isonav
 cp isoParser.py /usr/share/isonav
 cp isonavBase.py /usr/share/isonav

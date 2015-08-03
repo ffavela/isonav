@@ -23,11 +23,11 @@ import sys
 from enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
-    DATA_PATH = "/usr/share/isonav/data"
+    DATA_PATH = "/usr/share/isonav/data1p4"
 # elif os.path.dirname(__file__) == ".":
 else:
-    fileName=os.path.dirname(__file__)
-    DATA_PATH = fileName+"/data"
+    # fileName=os.path.dirname(__file__)
+    DATA_PATH ="./data1p4"
     print "#You do not have a working installation of isonav"
     print "#See the installation procedure in the README file"
     # sys.exit(1)
@@ -37,6 +37,7 @@ isoMassesLoc=os.path.join(DATA_PATH, "isoMasses.txt")
 isoDictMassLoc=os.path.join(DATA_PATH, "isoDictMass.pkl")
 isoDatadb=os.path.join(DATA_PATH, "isoData.db")
 isonavQR=os.path.join(DATA_PATH, "isonavQR.png")
+wMLoc=os.path.join(DATA_PATH, "webMasses.txt")
 
 #Isotope dictionary
 iDict={}
@@ -52,12 +53,13 @@ listStuff=['n','H','He','Li','Be','B','C','N','O','F','Ne',
            'Fr','Ra','Ac','Th','Pa','U','Np','Pu','Am','Cm',
            'Bk','Cf','Es','Fm','Md','No','Lr',
            'Rf','Db','Sg','Bh','Hs','Mt','Ds','Rg',
-           'Cn','Uut','Fl','Uup','Lv','Uus','Uuo']
+           'Cn','Ed','Fl','Ef','Lv','Eh','Ei']
 
-if  os.path.isfile(isoDictLoc):
-    lines = [line.strip().split() for line in open(isoMassesLoc)]
+# if not os.path.isfile(isoDictLoc):
+#     lines = [line.strip().split() for line in open(isoMassesLoc)]
 
 def populateDict1():
+    lines = [line.strip().split() for line in open(isoMassesLoc)]
     listLen=len(listStuff)
     #iDict[e][0]==proton number
     iDict['None']=[0,{0:[0]}]
@@ -72,6 +74,7 @@ def populateDict2(iDict):
     listLen=len(listStuff)
     #iDict[e][0]==proton number
     enxList=putIsoData()
+    lines = [line.strip().split() for line in open(isoMassesLoc)]
     for i in range(listLen):
         for j in lines:
             if i == int(j[0]):
@@ -136,5 +139,30 @@ def getIsoVal():
     return [[f[3:index(f,'.')],int(f[0:3]),f] for f in listdir('excitedData')\
             if isfile(join('excitedData',f))] 
 
+def generateIsoMfromWebM():
+    FILE = open(isoMassesLoc,"w")
+    lines = [line.strip().split() for line in open(wMLoc)]
+    for line in lines:
+        #Omitting empty lines and beginning with #
+        if len(line)>0 and line[0][0] != '#':
+            massP2=line[-2]
+            # if '#' in massP2:
+            #     continue #Omitting this values
+            newMassP2 = massP2.replace(".", "")
+            newerMassP2 = newMassP2.replace("#", "")
+            massP1= line[-3]
+            mass=float(massP1+"."+newerMassP2)
+            if line[4].isdigit():
+                symbol=line[5]
+                aVal=int(line[4])
+                pVal=int(line[3])
+            else:
+                symbol=line[4]
+                aVal=int(line[3])
+                pVal=int(line[2])
+            myString=str(pVal)+"\t\t"+str(aVal)+"\t"+str(mass)+"\n"
+            print myString
+            FILE.write(myString)
+    FILE.close()
 # print isoVal
 # print len(isoVal)
