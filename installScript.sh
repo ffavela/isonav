@@ -41,7 +41,7 @@ fi
 if [ ! -d data1p4 ]
 then
     printf "${RED}Error; no data directory${NC}\n"
-    echo "Download it from:"
+    echo "Download the new database from:"
     echo "https://mega.co.nz/#!uFEymJZR!BTWxcO9vsn48OBJDyxZ6VdlNDmrXeuNto9FI3Wf4qOw"
     echo "And uncompress it inside the repo's directory"
     exit 2
