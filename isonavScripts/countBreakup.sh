@@ -42,9 +42,11 @@ function getIsoB {
     echo $maxIso $maxW
 }
 
+echo -e "#Z\tSymbol\tiso\tNumberOfBreakups"
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)
     maxV=$(getIsoB $s)
-    echo $n $s $maxV
+    maxV=$(echo $maxV | tr " " "\t")
+    echo -e "$n\t$s\t$maxV"
 done

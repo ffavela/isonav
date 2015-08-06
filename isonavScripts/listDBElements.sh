@@ -5,7 +5,7 @@
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)
-    echo $n $s
+    echo -e "$n\t$s"
 done
 
 exit 0

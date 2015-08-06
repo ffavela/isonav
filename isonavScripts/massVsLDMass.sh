@@ -50,6 +50,8 @@ isoMax="n"
 
 counter=0
 avg=0
+
+echo -e "#iso\tmass[MeV]\tLDmass[MeV]\tmassDiff"
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)

@@ -8,11 +8,13 @@ maxN=0
 maxS="n"
 maxIsoC=0
 
+echo -e "#Z\tSymbol\tNum of isos"
+
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)
     isoCount=$(isonav $s -i | wc -l)
-    echo $n $s $isoCount
+    echo -e "$n\t$s\t$isoCount"
 
     if [ $isoCount -ge $maxIsoC ]
     then
@@ -23,5 +25,5 @@ do
 done
 
 echo "The max values are:"
-echo $maxN $maxS $maxIsoC
+echo -e "$maxN\t$maxS\t$maxIsoC"
 
