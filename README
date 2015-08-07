@@ -22,6 +22,10 @@ To those unfamiliar to github, simply write on the command line:
 
 $ git clone https://github.com/ffavela/isonav
 
+(Note: if you have already cloned in order to get the newer version do a
+$ git push
+whithin the isonav directory)
+
 And the repository will be cloned to your computer.
 
 Requirements:
@@ -387,6 +391,12 @@ $ isonav 235U --decay
 .Lots of stuff
 .
 
+
+$ isonav 151Lu --pEmission
+1H	150Yb		1.232	0.008	1.241
+
+$ isonav 13Be --nEmission
+1n	12Be		0.471	0.039	0.510
 
 $ isonav n --compton -v
 #The compton wavelength in fm

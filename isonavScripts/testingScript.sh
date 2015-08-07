@@ -38,6 +38,13 @@ echo ""
 echo "$ isonav 12C --levels --limit=10"
 isonav 12C --levels --limit=10
 echo ""
+echo "$ isonav 151Lu --pEmission"
+isonav 151Lu --pEmission
+echo ""
+echo "$ isonav 13Be --nEmission"
+isonav 13Be --nEmission
+isonav 12C --levels --limit=10
+echo ""
 echo "$ isonav 12C --Elab=2.0 --redDeBroglie"
 isonav 12C --Elab=2.0 --redDeBroglie
 echo ""
