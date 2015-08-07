@@ -264,7 +264,8 @@ def argHand(args):
 
     if alpha or nEmit or pEmit:
         if verbose:
-            print "Decay for the cases of alpha and proton or neutron emission "
+            print "#Decay for the cases of alpha and proton or neutron emission "
+            print "#No emission from excited states for now"
         if alpha:
             pDecay(iso,"4He")
             return 0

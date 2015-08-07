@@ -287,6 +287,7 @@ def QDecay(iso1):
 
 #Not very elegant for now (Calls QDecay) But it was a quick and easy
 #solution ;) For proton and neutron emission do emit="1H" or emit="1n"
+#Note: only for the base state for now.
 def emitDecay(iso,emit="4He"):
     qDecList=QDecay(iso)
     for e in qDecList:
