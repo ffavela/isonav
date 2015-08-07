@@ -24,6 +24,7 @@
   isonav <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
   isonav <iso> [-v] --Elab=val [--redDeBroglie]
   isonav <iso> [-v] --decay
+  isonav <iso> [-v] (--alpha | --nEmission | --pEmission )
   isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
   isonav <iso1> <iso2> [-v] (--coulomb | --reactions [--latex] )
   isonav <iso1> <iso2> [-v] --fussion [--Elab=val]

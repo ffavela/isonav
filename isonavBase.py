@@ -271,7 +271,7 @@ def nReaction(iso1,iso2):
     return ls
 
 
-#Not yet perfect, only uses Q
+#Not yet perfect
 #Not any beta decays
 def QDecay(iso1):
     decayCand=nReaction(iso1,'0None')
@@ -284,6 +284,14 @@ def QDecay(iso1):
         d=[d[0],d[1],E1cm,E2cm,d[2]]
         ndec.append(d)
     return ndec
+
+#Not very elegant for now (Calls QDecay) But it was a quick and easy
+#solution ;) For proton and neutron emission do emit="1H" or emit="1n"
+def emitDecay(iso,emit="4He"):
+    qDecList=QDecay(iso)
+    for e in qDecList:
+        if emit in e[0:2]:
+            return e
 
 #Still working on this
 # #Given an isotope, the ejectile nucleus, the Daughter and the available

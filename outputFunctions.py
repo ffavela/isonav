@@ -144,10 +144,16 @@ def pIsotopes(iso,mFlag=False,flag=True):
         print i[0]
     return 0
 
-def pDecay(iso):
-    dec=QDecay(iso)
-    for d in dec:
-        print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d)
+def pDecay(iso,emit=""):
+    if emit == "":
+        dec=QDecay(iso)
+        for d in dec:
+            print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d)
+    else:
+        dec=emitDecay(iso,emit)
+        if dec==None:
+            return 1
+        print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(dec)
 
 def pFussion(iso1,iso2,Elab):
     l=fussionCase(iso1,iso2,Elab)
