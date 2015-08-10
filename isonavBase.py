@@ -137,6 +137,14 @@ def checkIsoExistence(iso1,iso2):
         return False
     return True
 
+def checkIsoExist1(iso):
+    a,key=getIso(iso)
+
+    if key not in iDict:
+        # print "Error: keys have to be in the dictionary"
+        return False
+    return True
+
 def nRadius(iso):
     #In fermis
     A,k=getIso(iso)
@@ -294,6 +302,62 @@ def emitDecay(iso,emit="4He"):
         if emit in e[0:2]:
             return e
 
+#This is the more careful solution###
+def emitDecay(iso,emit="4He",num=1):
+    newIso=getNewIso(iso,emit,num)
+    if not newIso:
+        print "newIso is false"
+        return False
+
+    QVal=emitDecayQVal(iso,emit,num)
+    if not QVal or QVal<0:
+        print "QVal false val"
+        return False
+
+    return [iso,emit,num,newIso,QVal]
+
+def emitDecayQVal(iso,emit="4He",num=1):
+    newIso=getNewIso(iso,emit,num)
+    if not newIso:
+        return False
+    isoEMass=getEMass(iso)
+    emitEMass=getEMass(emit)
+    newIsoEMass=getEMass(newIso)
+
+    QVal=getQVal(isoEMass,0,newIsoEMass,emitEMass*num)
+    return QVal
+    
+def getNewIso(iso,emit="4He",num=1):
+    isoN=getNnum(iso)
+    isoP=getPnum(iso)
+
+    emitN=getNnum(emit)
+    emitP=getPnum(emit)
+
+    newIsoN=isoN-emitN*num
+    newIsoP=isoP-emitP*num
+
+    #Still not sure about this condition, maybe neutron condition can be
+    #loosened, check special cases such as deuteron
+    if newIsoP<=0 or newIsoP<=0:
+        print "New iso vals are low"
+        return False
+
+    newA=newIsoP+newIsoN
+    newKey=getKey(newIsoP)
+    if not newKey:
+        print "New jey is false"
+        return False
+
+    newIso=str(newA)+newKey
+    print "newIso = ", newIso
+    if not checkIsoExist1(newIso):
+        print "iso does not exist"
+        return False
+
+    return newIso
+    
+    
 #Still working on this
 # #Given an isotope, the ejectile nucleus, the Daughter and the available
 # #energy (in CM, not Q), it returns all the possible combinations of
