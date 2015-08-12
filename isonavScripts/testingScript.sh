@@ -43,6 +43,9 @@ isonav 151Lu --pEmission
 echo ""
 echo "$ isonav 13Be --nEmission"
 isonav 13Be --nEmission
+echo ""
+echo "$ isonav 45Fe --pEmission --num=2"
+isonav 45Fe --pEmission --num=2
 isonav 12C --levels --limit=10
 echo ""
 echo "$ isonav 12C --Elab=2.0 --redDeBroglie"

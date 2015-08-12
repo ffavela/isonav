@@ -7,7 +7,7 @@ function getIsotopes {
     echo $iso | tr " " "\n"
 }
 counter=0
-echo -e "#iso\teject\tdaughter\textra stuff"
+echo -e "#iso\teject\tdaughter\tQval"
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)
@@ -19,4 +19,4 @@ do
     done
 done
 
-echo "There are $counter isos with proton emission"
+echo "There are $counter isos with 1 proton emission"

@@ -59,6 +59,8 @@ def argHand(args):
     alpha=args["--alpha"]
     pEmit=args["--pEmission"]
     nEmit=args["--nEmission"]
+    Emit=args["--Emission"]
+    num=args["--num"]
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -263,21 +265,43 @@ def argHand(args):
         return 0
 
     if alpha or nEmit or pEmit:
+        if num:
+            num=int(num)
+        else:
+            num=1
+
         if verbose:
             print "#Decay for the cases of alpha and proton or neutron emission "
-            print "#No emission from excited states for now"
+            print "#By default num=1"
         if alpha:
-            pDecay(iso,"4He")
+            pDecay(iso,"4He",num)
             return 0
 
         if nEmit:
-            pDecay(iso,"1n")
+            pDecay(iso,"1n",num)
             return 0
 
         if pEmit:
-            pDecay(iso,"1H")
+            pDecay(iso,"1H",num)
             return 0
 
+    if Emit:
+        if verbose:
+            print "#eject\tdaughter\tQval[MeV]"
+        #Adding the common abbreviations
+        if Emit=="p":
+            Emit="1H"
+        if Emit=="n":
+            Emit="1n"
+        if Emit=="d":
+            Emit="2H"
+        if Emit=="t":
+            Emit="3H"
+        if Emit=="a":
+            Emit="4He"
+        num=int(num)
+        pDecay2(iso,Emit,num)
+        return 0
 
     if args["--fussion"]:
         if not checkIsoExistence(iso1,iso2):

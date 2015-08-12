@@ -24,7 +24,8 @@
   isonav <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
   isonav <iso> [-v] --Elab=val [--redDeBroglie]
   isonav <iso> [-v] --decay
-  isonav <iso> [-v] (--alpha | --nEmission | --pEmission )
+  isonav <iso> [-v] (--alpha | --nEmission | --pEmission ) [--num=val]
+  isonav <iso> [-v] --Emission=val [--num=val]
   isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
   isonav <iso1> <iso2> [-v] (--coulomb | --reactions [--latex] )
   isonav <iso1> <iso2> [-v] --fussion [--Elab=val]
@@ -43,6 +44,6 @@ import sqlite3
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='v1.4.1')
+    args = docopt(__doc__, version='v1.4.2')
     # print(args)
     argHand(args)

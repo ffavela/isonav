@@ -14,6 +14,10 @@ https://www-nds.iaea.org/amdc/ame2012/mass.mas12
 
 Thank you Silpion!
 
+In the newest versio (v1.4.2), a BE horrible BUG was found and corrected. Also
+added a script to get the most tightly bound isotope. And options for
+multiple emission of particles from a nucleus.
+
 INSTALLATION:
 
 The installation process was tested only on Ubuntu 14.04 machines.
@@ -397,6 +401,10 @@ $ isonav 151Lu --pEmission
 
 $ isonav 13Be --nEmission
 1n	12Be		0.471	0.039	0.510
+
+#Double proton emission
+$ isonav 45Fe --pEmission --num=2
+2(1H)	43Cr		1.154
 
 $ isonav n --compton -v
 #The compton wavelength in fm
