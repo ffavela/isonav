@@ -303,26 +303,31 @@ def emitDecay(iso,emit="4He"):
             return e
 
 #This is the more careful solution###
-def emitDecay(iso,emit="4He",num=1):
+def emitDecay2(iso,emit="4He",num=1):
     newIso=getNewIso(iso,emit,num)
     if not newIso:
-        print "newIso is false"
         return False
 
     QVal=emitDecayQVal(iso,emit,num)
     if not QVal or QVal<0:
-        print "QVal false val"
         return False
 
-    return [iso,emit,num,newIso,QVal]
+    nEmit=str(num)+"("+emit+")"
+    return [nEmit,newIso,QVal]
 
 def emitDecayQVal(iso,emit="4He",num=1):
     newIso=getNewIso(iso,emit,num)
     if not newIso:
         return False
     isoEMass=getEMass(iso)
+    if not isoEMass:
+        return False
     emitEMass=getEMass(emit)
+    if not emitEMass:
+        return False
     newIsoEMass=getEMass(newIso)
+    if not newIsoEMass:
+        return False
 
     QVal=getQVal(isoEMass,0,newIsoEMass,emitEMass*num)
     return QVal
@@ -340,19 +345,15 @@ def getNewIso(iso,emit="4He",num=1):
     #Still not sure about this condition, maybe neutron condition can be
     #loosened, check special cases such as deuteron
     if newIsoP<=0 or newIsoP<=0:
-        print "New iso vals are low"
         return False
 
     newA=newIsoP+newIsoN
     newKey=getKey(newIsoP)
     if not newKey:
-        print "New jey is false"
         return False
 
     newIso=str(newA)+newKey
-    print "newIso = ", newIso
     if not checkIsoExist1(newIso):
-        print "iso does not exist"
         return False
 
     return newIso
@@ -634,6 +635,9 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
 
 def getEMass(iso1):
     A,k=getIso(iso1)
+    vals=[i[0] for i in getIsotopes(iso1)]
+    if iso1 not in vals:
+        return False
     return iDict[k][1][A][0]*eCoef
 
 #Still work to be done, assuming the nucleus only gets increased mass
@@ -980,13 +984,13 @@ def getBE(iso):
     #proton mass
     pm=getEMass("1H")
     #neutron mass
-    nm=getEMass("n")
+    nm=getEMass("1n")
     return em-z*pm-(A-z)*nm
 
 #Binding Energy per nucleon
 def getBEperNucleon(iso):
     A,k=getIso(iso)
-    return getBE(iso)/A
+    return 1.0*getBE(iso)/A
 
 #Using the liquid drop model for the binding energy
 #Values taken from A. Das and T. Ferbel book
