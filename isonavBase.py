@@ -634,6 +634,8 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     return vE,vR,Vcm,Ef
 
 def getEMass(iso1):
+    if iso1 == "n":
+        iso1="1n"
     A,k=getIso(iso1)
     vals=[i[0] for i in getIsotopes(iso1)]
     vals.append("p")
