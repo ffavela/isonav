@@ -636,6 +636,10 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
 def getEMass(iso1):
     A,k=getIso(iso1)
     vals=[i[0] for i in getIsotopes(iso1)]
+    vals.append("p")
+    vals.append("d")
+    vals.append("t")
+    vals.append("a")
     if iso1 not in vals:
         return False
     return iDict[k][1][A][0]*eCoef
