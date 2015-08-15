@@ -22,7 +22,8 @@ INSTALLATION:
 
 The installation process was tested only on Ubuntu 14.04 machines.
 
-To those unfamiliar to github, simply write on the command line:
+To those unfamiliar to github, simply write on the command line (if you
+haven't already):
 
 $ git clone https://github.com/ffavela/isonav
 
