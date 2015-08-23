@@ -1,11 +1,12 @@
 #!/bin/bash
-#Simply list the elements of the database
-#With proton number and symbol
+
+#Prints out the name of each element, along with proton # and symbol
 
 for n in $(seq 0 118)
 do
     s=$(isonav $n -s)
-    echo -e "$n\t$s"
+    name=$(isonav $s --name)
+    echo -e "$n\t$s\t$name"
 done
 
 exit 0
