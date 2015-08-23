@@ -28,7 +28,7 @@ haven't already):
 $ git clone https://github.com/ffavela/isonav
 
 (Note: if you have already cloned in order to get the newer version do a
-$ git push
+$ git pull
 whithin the isonav directory)
 
 And the repository will be cloned to your computer.
