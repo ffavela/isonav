@@ -113,6 +113,7 @@ $ isonav
 Usage:
   isonav <number> [-v] (-s|--symbol)
   isonav <symbol> [-v] ([-p|--protons])
+  isonav <symbol> [-v] (--name)
   isonav <iso> [-v] [-n|--neutrons] [[-i|--isotopes] [-m --amu]]
   isonav <iso> [-v] ([-m|--mass]|--compton) [--amu --liquidDrop]
   isonav <iso> [-v] --mirror
@@ -135,6 +136,9 @@ Ti
 
 $ isonav Au --protons #A value can be ommited here
 79
+
+$ isonav Ag --name
+Silver
 
 $ isonav 195Au --neutrons
 116

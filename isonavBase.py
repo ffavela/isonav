@@ -63,6 +63,11 @@ def getMass(iso):
     a,key=getIso(iso)
     return iDict[key][1][a][0]
 
+def getNameFromSymbol(s):
+    if s not in nameDict:
+        return False
+    return nameDict[s]
+
 def printElemList():
     i=0
     for e in listStuff:

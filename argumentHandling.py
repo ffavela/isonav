@@ -61,6 +61,9 @@ def argHand(args):
     nEmit=args["--nEmission"]
     Emit=args["--Emission"]
     num=args["--num"]
+    name=args["--name"]
+    symbol=args["<symbol>"]
+
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -84,9 +87,15 @@ def argHand(args):
     if args["--protons"] or args["-p"]:
         if verbose:
             print "#Given an isotope or purely the symbol it returns the number of protons"
-        symbol=args["<symbol>"]
         print getPnum(symbol)
         return 0
+
+    if name:
+        if verbose:
+            print "#Given an element symbol it prints out the name"
+        pName(symbol)
+        return 0
+
     if args["--neutrons"] or args["-n"]:
 
         if not makeSureIso(iso):

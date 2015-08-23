@@ -18,6 +18,7 @@
 """Usage:
   isonav <number> [-v] (-s|--symbol)
   isonav <symbol> [-v] ([-p|--protons])
+  isonav <symbol> [-v] (--name)
   isonav <iso> [-v] [-n|--neutrons] [[-i|--isotopes] [-m --amu]]
   isonav <iso> [-v] ([-m|--mass]|--compton) [--amu --liquidDrop]
   isonav <iso> [-v] --mirror

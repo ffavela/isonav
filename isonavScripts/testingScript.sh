@@ -11,6 +11,9 @@ echo ""
 echo "$ isonav Au --protons"
 isonav Au --protons
 echo ""
+echo "$ isonav Ag --name"
+isonav Ag --name
+echo ""
 echo "$ isonav 195Au --neutrons"
 isonav 195Au --neutrons
 echo ""

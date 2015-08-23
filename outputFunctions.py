@@ -185,3 +185,8 @@ def pDonation(flag=False):
         disp=webbrowser.open(isonavQR)
     print  "1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2"
     return 0
+
+def pName(s):
+    eName=getNameFromSymbol(s)
+    if eName != False:
+        print eName
