@@ -439,8 +439,8 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
 
     # potential BUG, the signs switch sometimes when comparing with the
     # solutions above
-    s1=analiticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
-    s2=analiticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
+    s1=analyticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
+    s2=analyticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
 
     solution=[s1,s2]
     return solution
@@ -678,7 +678,7 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
         # numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
         #                     exList=exList)
 
-        numSol=analiticSol(iso1,iso2,isoEject,isoRes,\
+        numSol=analyticSol(iso1,iso2,isoEject,isoRes,\
                            E1L,E2L,angle=ang,exList=exList)
         if numSol[0]==False:
             break
@@ -894,9 +894,9 @@ def getAngs(iso1,iso2,isoE,isoR,E1L,exList,thetaL):
     return thetaCMf,thetaCMb
 
 #This is now deprecated
-def getEsAndAngs(thetaL,iso1,iso2,isoE,isoR,E1L,E2L=0,\
+def getEsAndAngs(iso1,iso2,isoE,isoR,E1L,E2L=0,thetaL=0,\
                  exList=[0,0,0,0],direction="f"):
-    angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0])[0]
+    angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L,exList)[0]
     #Keeping angles in degrees
     if thetaL>angMax:
         print "Angle is too big, no solution found"
@@ -1255,18 +1255,22 @@ def getEFromV(iso,v,xMass=0):
     return 0.5*m*(v/c)**2
     
 #Testing the non numeric solution
-def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
+def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
     if vEcm == False:
         return [False,False,False,False]
-    angle=radians(angle)
-    kAng=tan(angle)
-    k1=1.0*vEcm/Vcm
     maxAng=getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)[0]
     if maxAng=="NaN":
         return "NaN"
-    maxAng=radians(maxAng)
-   
+    # maxAng=radians(maxAng) #not sure about this
+    angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
+    # angLA1,Ea1,angLB1,Eb1=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
+    return [degrees(angLA1),Ea1,degrees(angLB1),Eb1]
+
+def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
+    angle=radians(angle)
+    kAng=tan(angle)
+    k1=1.0*vEcm/Vcm
     discr=1-(1+kAng**2)*(1-k1**2)
     if discr<0:
         # print "Angle maybe too large"
@@ -1314,7 +1318,8 @@ def analiticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
-    return [degrees(angLA1),Ea1,degrees(angLB1),Eb1]
+    #Angle is in radians
+    return [angLA1,Ea1,angLB1,Eb1]
 
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
@@ -1359,6 +1364,29 @@ def getIsotopes(s):
 # iDict=populateDict()
 iDict=fastPopulateDict()
 
+def gamowE(iso1,iso2):
+    #In MeV
+    z1=getPnum(iso1)
+    z2=getPnum(iso2)
+    em1=getEMass(iso1)
+    em2=getEMass(iso1)
+    eMu=em1*em2/(em1+em2)
+    GE=2*(pi*z1*z2*alpha)**2*eMu
+    return GE
+
+def gamowPeak(iso1,iso2,T):
+    GE=gamowE(iso1,iso2)
+    TE=temp2E(T)/10**6 #Converting to MeV
+    GP=(TE**2*GE/4)**(1.0/3)
+    return GP
+
+def temp2E(T):
+    #Energy given is in eV
+    #Ta=300K, Ea=1/40eV
+    Ta=300
+    Ea=0.025
+    TE=T/Ta*Ea
+    return TE
 
 #Don't forget this?
 #conn.close()
