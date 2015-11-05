@@ -29,6 +29,7 @@
   isonav <iso> [-v] --Emission=val [--num=val]
   isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
   isonav <iso1> <iso2> [-v] (--coulomb | --reactions [--latex] )
+  isonav <iso1> <iso2> [-v] (--gamowEnergy | --T=temp --gamowPeak )
   isonav <iso1> <iso2> [-v] --fussion [--Elab=val]
   isonav <iso1> <iso2> [-v] --Elab=val --angle=val [[--xTreme|-x] --latex]
   isonav <iso1> <iso2> [-v] --scatE=val --angle=val

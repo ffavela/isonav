@@ -33,7 +33,7 @@ def testVal(stuff,strFlag="E"):
         stuff=None
     val=isinstance(stuff,float) or isinstance(stuff,int)
     if val:
-        if strFlag=="E":
+        if strFlag=="E" or strFlag=="T":
             if not 0<=stuff:
                 return False
         if strFlag=="angle":
@@ -63,6 +63,7 @@ def argHand(args):
     num=args["--num"]
     name=args["--name"]
     symbol=args["<symbol>"]
+    T=args["--T"]
 
 
     if iso:
@@ -261,6 +262,23 @@ def argHand(args):
 
         print coulombE(iso1,iso2)
         return 0
+
+    if args["--gamowEnergy"] or args["--gamowPeak"]:
+        if verbose:
+            print "#Gamow functions, in MeV"
+
+        if args["--gamowEnergy"]:
+            print gamowE(iso1,iso2)
+            return 0
+
+        if args["--gamowPeak"]:
+            if not testVal(T,"T"):
+                print "Error; temperature has to be a positive number"
+                return 8889
+
+            T=float(T)
+            print gamowPeak(iso1,iso2,T)
+            return 0
 
     if args["--decay"] and iso:
         if verbose:
