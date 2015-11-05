@@ -1263,8 +1263,8 @@ def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     if maxAng=="NaN":
         return "NaN"
     # maxAng=radians(maxAng) #not sure about this
-    angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
-    # angLA1,Ea1,angLB1,Eb1=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
+    # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
+    angLA1,Ea1,angLB1,Eb1=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
     return [degrees(angLA1),Ea1,degrees(angLB1),Eb1]
 
 def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
