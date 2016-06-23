@@ -26,16 +26,16 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     fR=react[0][1:]
     sR=react[1][1:]
     stringFormat="%.3f\t"*(len(fR)-1)+"%.3f"
-    print(isoEject,isoRes)
+    print(str(isoEject)+'\t'+str(isoRes))
     print(stringFormat % tuple(fR))
     print("")
-    print(isoRes,isoEject)
+    print(str(isoRes)+'\t'+str(isoEject))
     print(stringFormat % tuple(sR))
     print("")
 
 def pXReaction(xReact):
     for e in xReact:
-        print(e[0][0],'+',e[0][1])
+        print(str(e[0][0])+'\t'+str(e[0][1]))
         stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
         for ee in e[1]:
             level=ee[0][0]
@@ -96,9 +96,12 @@ def tNReaction(iso1,iso2):
     rList=nReaction(iso1,iso2)
     for e in rList:
         if e[2]=='None':
-            print(e[0]+'\t'+e[1]+'\t',e[2],'\t',"{0:0.2f}".format(float(e[3])))
+            string1=str(e[0])+'\t'+str(e[1])+'\t'+str(e[2])+'\t'
+            print(string1+"{0:0.2f}".format(float(e[3])))
         else:
-            print(e[0]+'\t'+e[1]+'\t',"{0:0.2f}".format(float(e[2])),'\t',"{0:0.2f}".format(float(e[3])))
+            string2=e[0]+'\t'+e[1]+'\t'+"{0:0.2f}".format(float(e[2]))
+            string3='\t'+"{0:0.2f}".format(float(e[3]))
+            print(string2+string3)
 
 ##Printing latex fiendly nReaction
 def latexNReaction(iso1,iso2):
@@ -139,7 +142,7 @@ def pIsotopes(iso,mFlag=False,flag=True):
             return False
         for i in val:
             i[1]*=eCoef
-            print(i[0],"\t",i[1])
+            print(str(i[0])+"\t"+str(i[1]))
         return 0
     for i in val:
         print(i[0])
@@ -171,14 +174,14 @@ def pLevels(iso,limit="NaN"):
     levs=getAllLevels(iso)
     if limit=="NaN":
         for l in levs:
-            print(l[0],l[1])
+            print(str(l[0])+'\t'+str(l[1]))
         return 0
     counter=0
     for l in levs:
         counter+=1
         if counter > limit:
             break
-        print(l[0],l[1])
+        print(str(l[0])+'\t'+str(l[1]))
     return 0
 
 def pDonation(flag=False):
