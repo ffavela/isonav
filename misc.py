@@ -5,7 +5,7 @@ def firstNoQNeg(val=5):
     fQDict={}
     for i in range(117):
         k=getKey(i+1)
-        print i+1,k
+        print(i+1,k)
         if k==False:
             continue
         for iso in iDict[k][1]:
@@ -16,8 +16,8 @@ def firstNoQNeg(val=5):
         if d!=[]:
             fQDict[k]=[i+1,iso]
             val-=1
-            print "Here again!",iso,d
-            print iso #,d
+            print("Here again!",iso,d)
+            print(iso) #,d
         if val<=0:
             return fQDict
     return fQDict
@@ -25,13 +25,13 @@ def firstNoQNeg(val=5):
 def numberReact(iso1):
     for e in iDict:
         for i in iDict[e][1]:
-            print e,i
+            print(e,i)
             iso2=str(i)+e
             nR=nReaction(iso1,iso2)
             if nR==False:
-                print 0
+                print(0)
             else:
-                print len(nR)
+                print(len(nR))
 
 
 #Print out the first unstable elements
@@ -41,7 +41,7 @@ def firstQPos(val=5):
     fQListY=[]
     for i in range(117):
         k=getKey(i+1)
-        print i+1,k
+        print(i+1,k)
         if k==False:
             continue
         for iso in iDict[k][1]:
@@ -53,8 +53,8 @@ def firstQPos(val=5):
                 fQListX.append(i+1)
                 fQListY.append(iso)
                 val-=1
-                print "Here!",iso #,d
-                print iso #,d
+                print("Here!",iso) #,d
+                print(iso) #,d
                 break
             else:#Just testing
                 fQListX.append(i+1)

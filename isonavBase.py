@@ -71,7 +71,7 @@ def getNameFromSymbol(s):
 def printElemList():
     i=0
     for e in listStuff:
-        print i,e
+        print(i,e)
         i+=1
 
 ##This functions should be somewhat equivalent to getCoef but I'll leave
@@ -120,12 +120,12 @@ def getAllVs(iso1,iso2,isoE,isoR,E1L):
     v1cm,v2cm,Vcm=getVelcm(iso1,iso2,E1L)
     EcmAvail=getAvailEnergy(iso1,iso2,isoE,isoR,E1L)
     ejectE,resE=getEcmsFromECM(isoE,isoR,EcmAvail)
-    print ejectE,resE
+    print(ejectE,resE)
     vE=sqrt(2.0*ejectE/getEMass(isoE))*c
     vR=sqrt(2.0*resE/getEMass(isoR))*c
-    print v1cm,v2cm
-    print Vcm
-    print vE,vR
+    print(v1cm,v2cm)
+    print(Vcm)
+    print(vE,vR)
 
 ############################################
 
@@ -134,11 +134,11 @@ def checkIsoExistence(iso1,iso2):
     a2,key2=getIso(iso2)
 
     if key1 not in iDict or key2 not in iDict:
-        print "Error: keys have to be in the dictionary"
+        print("Error: keys have to be in the dictionary")
         return False
 
     if a1 not in iDict[key1][1] or a2 not in iDict[key2][1]:
-        print "Error: isotopes have to exist"
+        print("Error: isotopes have to exist")
         return False
     return True
 
@@ -274,9 +274,9 @@ def reaction(iso1,iso2):
 def nReaction(iso1,iso2):
     ls=reaction(iso1,iso2)
     if ls==[]:
-        print "Nuclei might be too big"
+        print("Nuclei might be too big")
     if ls==False:
-        print "An error ocurred"
+        print("An error ocurred")
         return False
     #Sort the list elements in terms of their 
     #Q value
@@ -393,16 +393,16 @@ def checkReaction(iso1,iso2,isoEject,isoRes):
     aRes,res=getIso(isoRes)
     #Making sure that the cases 'n' are '1n' 'p' is '1H' etc
     if eject==None or res==None:
-        print "Reaction is invalid"
+        print("Reaction is invalid")
         return False
     isoEject=str(aEject)+eject
     isoRes=str(aRes)+res
     if not checkIsoExistence(iso1,iso2):
-        print "Entered first cond"
+        print("Entered first cond")
         return False
 
     if not checkIsoExistence(isoEject,isoRes):
-        print "Entered second cond"
+        print("Entered second cond")
         return False
     reactionStuffa=[eject,aEject,res,aRes]
     reactionStuffb=[res,aRes,eject,aEject]
@@ -414,7 +414,7 @@ def checkReaction(iso1,iso2,isoEject,isoRes):
         #Excluding the threshold and the QValue
         if reactionStuffa==ret[:2] or reactionStuffb==ret[:2]:
             return ret
-    print "Reaction is invalid"
+    print("Reaction is invalid")
     return False
 
 def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
@@ -451,10 +451,10 @@ def checkSecSol(emp,emt,emE,emR,ELab):
     if Q<0:
         Ethres=-Q*(emR+emE)/(emR+emE-emp)
         Emax=-Q*emR/(emR-emp)
-        print "Ethres,Emax"
-        print Ethres,Emax
+        print("Ethres,Emax")
+        print(Ethres,Emax)
         if Ethres<ELab<Emax:
-            print "Possible second solution"
+            print("Possible second solution")
             thetaM=acos(sqrt(-(emR+emE)*(emR*Q+(emR-emp)*ELab)/(emp*emE*ELab)))
             return thetaM
     return False
@@ -481,8 +481,8 @@ def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
         ### deltaPz=(vEz*emE+vRz*emR)*1.0/c**2
         # print deltaPy,deltaPz
         if (vEz+Vcm)==0 or (vRz+Vcm)==0:
-            print "No solution was found, div by zero"
-            print "#####################################################"
+            print("No solution was found, div by zero")
+            print("#####################################################")
             return False
         thEjectLab=atan(1.0*vEy/(vEz+Vcm))
         ELabEject=emE*(1.0*vEy**2+(vEz+Vcm)**2)/(2*c**2)
@@ -564,7 +564,7 @@ def getCorrespLevE(iso,E):
             lev,lEMax=e-1,iDict[eName][1][aVal][1][e-1][0]
             break
     if E>0 and lev==0:
-        print "#Energy over max level in db"
+        print("#Energy over max level in db")
         lev,lEMax=e,iDict[eName][1][aVal][1][e][0]
     return lev,lEMax
 
@@ -628,8 +628,8 @@ def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
     Edisp=ELab-EcmSys
     Ef=Edisp+Q
     if Ef<0:
-        print "Inside getCoef Ef = ", Ef
-        print "Not enough energy for reaction"
+        print("Inside getCoef Ef = ", Ef)
+        print("Not enough energy for reaction")
         return False,False,Vcm,Ef
     #Final momentum, in cm.
     muf=1.0*emE*emR/(emE+emR)
@@ -668,7 +668,7 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
     for e in popLevels:
         # print e
         if e[1] == False and e[0] != 1:
-            print "Entered false for e[1] en exLevReact"
+            print("Entered false for e[1] en exLevReact")
             continue
         if eVal==1:
             exList[3]=e[1]
@@ -761,14 +761,14 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
 
 def checkArguments(ELab,react,eject,res):
     if ELab<=0:
-        print "Lab energy has to be positive"
+        print("Lab energy has to be positive")
         return False
 
     if not react:
         return False
 
     if eject=='None' or res=='None':
-        print "Reaction must have at least 2 final elements"
+        print("Reaction must have at least 2 final elements")
         return False
 
     return True
@@ -791,9 +791,9 @@ def getAllEMasses(iso1,iso2,isoEject,isoRes,exList=[0,0,0,0]):
 #tolerance it returns values to hint where it might be from
 def fReact(E,bE,angle,rList,tol=140):
     for iR in rList:
-        print "######################"
-        print iR
-        print "######################"
+        print("######################")
+        print(iR)
+        print("######################")
         XXList=xXTremeTest(iR[0],iR[1],bE,angle)
         # pXXTremeTest(XXList)
         pFReact(E,tol,XXList)
@@ -805,7 +805,7 @@ def pFReact(E,tol,XXList):
                 if states[1]==False:
                     continue
                 if abs(states[1][1]-E)<=tol:
-                    print e[0],ee[0],states
+                    print(e[0],ee[0],states)
 
 def findOE(Eang,ang,iso1,iso2):
     E=Eang
@@ -899,7 +899,7 @@ def getEsAndAngs(iso1,iso2,isoE,isoR,E1L,E2L=0,thetaL=0,\
     angMax=getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L,exList)[0]
     #Keeping angles in degrees
     if thetaL>angMax:
-        print "Angle is too big, no solution found"
+        print("Angle is too big, no solution found")
         return [False,False,False,False]
 
     #Getting the coefficients
@@ -936,7 +936,7 @@ def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
     # v2=0 #Zero for now
     vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoE,isoR,E1L,exList)
     if vE==False:
-        print "Not enough energy to get angle"
+        print("Not enough energy to get angle")
         return False
 
     r1=1.0*vE/Vcm

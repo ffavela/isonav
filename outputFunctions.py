@@ -21,29 +21,29 @@ import webbrowser
 def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     react=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
     if not react:
-        print "Reaction is invalid"
+        print("Reaction is invalid")
         return 0
     fR=react[0][1:]
     sR=react[1][1:]
     stringFormat="%.3f\t"*(len(fR)-1)+"%.3f"
-    print isoEject,isoRes
-    print stringFormat % tuple(fR)
-    print ""
-    print isoRes,isoEject
-    print stringFormat % tuple(sR)
-    print ""
+    print(isoEject,isoRes)
+    print(stringFormat % tuple(fR))
+    print("")
+    print(isoRes,isoEject)
+    print(stringFormat % tuple(sR))
+    print("")
 
 def pXReaction(xReact):
     for e in xReact:
-        print e[0][0],'+',e[0][1]
+        print(e[0][0],'+',e[0][1])
         stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
         for ee in e[1]:
             level=ee[0][0]
             lE=ee[0][1]
             rest=ee[1][1:]
             tup=(level,lE, rest[0],rest[1],rest[2])
-            print stringFormat % tuple(tup)
-        print ""
+            print(stringFormat % tuple(tup))
+        print("")
             
 def pXXTremeTest(XXList):
     stringFormat="%d\t%0.3f\t\t"+"%.3f\t"*2+"%.3f"
@@ -58,7 +58,7 @@ def pXXTremeTest(XXList):
             if len(ee[1])>0:
                 isoE=ee[0][0]
                 isoR=ee[0][1]
-                print isoE+'\t'+isoR
+                print(isoE+'\t'+isoR)
                 for states in ee[1]:
                     level=states[0][0]
                     levE=states[0][1]
@@ -66,8 +66,8 @@ def pXXTremeTest(XXList):
                     resAng=states[1][2]
                     resE=states[1][3]
                     tup=(level,levE,ejectE,resAng,resE)
-                    print stringFormat % tup
-                print ""
+                    print(stringFormat % tup)
+                print("")
 
     
 def pXTremeTest(iso1,iso2,Elab,angle):
@@ -80,14 +80,14 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         resAng=v[1][0][2]
         resE=v[1][0][3]
         tup=(ejectE,resAng,resE)
-        print isoE,"\t",isoR
-        print stringFormat % tuple(tup)
+        print(isoE,"\t",isoR)
+        print(stringFormat % tuple(tup))
         ejectE=v[1][1][1]
         resAng=v[1][1][2]
         resE=v[1][1][3]
         tup=(ejectE,resAng,resE)
-        print stringFormat % tuple(tup)
-        print ""
+        print(stringFormat % tuple(tup))
+        print("")
 
 
 #Printing it nicely for a spreadsheet.
@@ -95,9 +95,9 @@ def tNReaction(iso1,iso2):
     rList=nReaction(iso1,iso2)
     for e in rList:
         if e[2]=='None':
-            print e[0]+'\t'+e[1]+'\t',e[2],'\t',"{0:0.2f}".format(float(e[3]))
+            print(e[0]+'\t'+e[1]+'\t',e[2],'\t',"{0:0.2f}".format(float(e[3])))
         else:
-            print e[0]+'\t'+e[1]+'\t',"{0:0.2f}".format(float(e[2])),'\t',"{0:0.2f}".format(float(e[3]))
+            print(e[0]+'\t'+e[1]+'\t',"{0:0.2f}".format(float(e[2])),'\t',"{0:0.2f}".format(float(e[3])))
 
 ##Printing latex fiendly nReaction
 def latexNReaction(iso1,iso2):
@@ -106,9 +106,9 @@ def latexNReaction(iso1,iso2):
     a2,key2=getIso(iso2)
     sa1=str(a1)
     sa2=str(a2)
-    print """\\begin{eqnarray*} """
+    print("""\\begin{eqnarray*} """)
     
-    print ' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&',
+    print(' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&', end=' ')
     maxVal=len(reacList)
     for r in reacList:
         if r==reacList[3]:
@@ -121,11 +121,11 @@ def latexNReaction(iso1,iso2):
         aRes,kRes=getIso(r[1])
         aEject,aRes=str(aEject),str(aRes)
         if kEject==None:
-            print ' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr
+            print(' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr)
             continue
 
-        print '& ^{'+aEject+'}\!'+kEject+'+'+' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr
-    print '\end{eqnarray*}'
+        print('& ^{'+aEject+'}\!'+kEject+'+'+' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr)
+    print('\end{eqnarray*}')
 
 def pIsotopes(iso,mFlag=False,flag=True):
     val=getIsotopes(iso)
@@ -134,59 +134,59 @@ def pIsotopes(iso,mFlag=False,flag=True):
         if flag:
             eCoef=931.4941
         if val == False:
-            print "Symbol not in database"
+            print("Symbol not in database")
             return False
         for i in val:
             i[1]*=eCoef
-            print i[0],"\t",i[1]
+            print(i[0],"\t",i[1])
         return 0
     for i in val:
-        print i[0]
+        print(i[0])
     return 0
 
 def pDecay(iso,emit="",num=1):
     if emit == "":
         dec=QDecay(iso)
         for d in dec:
-            print "%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d)
+            print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
     else:
         dec=emitDecay2(iso,emit,num)
         if dec==None or dec==False:
             return 1
-        print "%s\t%s\t\t%.3f" % tuple(dec)
+        print("%s\t%s\t\t%.3f" % tuple(dec))
 
 def pDecay2(iso,emit,num=1):
     dec=emitDecay2(iso,emit,num)
     if dec==None or dec==False:
         return 1
-    print "%s\t%s\t\t%.3f" % tuple(dec)
+    print("%s\t%s\t\t%.3f" % tuple(dec))
 
 def pFussion(iso1,iso2,Elab):
     l=fussionCase(iso1,iso2,Elab)
     stringFormat="%s\t%d\t%.3f\t%.3f"
-    print stringFormat % tuple(l)
+    print(stringFormat % tuple(l))
 
 def pLevels(iso,limit="NaN"):
     levs=getAllLevels(iso)
     if limit=="NaN":
         for l in levs:
-            print l[0],l[1]
+            print(l[0],l[1])
         return 0
     counter=0
     for l in levs:
         counter+=1
         if counter > limit:
             break
-        print l[0],l[1]
+        print(l[0],l[1])
     return 0
 
 def pDonation(flag=False):
     if flag==True:
         disp=webbrowser.open(isonavQR)
-    print  "1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2"
+    print("1LgQ8NuSVxbLmuhVjh9kxpoacKPr7kt4s2")
     return 0
 
 def pName(s):
     eName=getNameFromSymbol(s)
     if eName != False:
-        print eName
+        print(eName)

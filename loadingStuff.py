@@ -28,8 +28,8 @@ if os.path.dirname(__file__) == "/usr/share/isonav":
 else:
     # fileName=os.path.dirname(__file__)
     DATA_PATH ="./data1p4"
-    print "#You do not have a working installation of isonav"
-    print "#See the installation procedure in the README file"
+    print("#You do not have a working installation of isonav")
+    print("#See the installation procedure in the README file")
     # sys.exit(1)
 
 isoDictLoc=os.path.join(DATA_PATH, "isoDict.pkl")
@@ -133,7 +133,7 @@ def populateDict():
         # print "#Dictionary file exists, loading it"
         iDict = pickle.load(open(isoDictLoc, "rb" ))
     else:
-        print "#Dictionary file does not exist, creating it"
+        print("#Dictionary file does not exist, creating it")
         iDict=populateDict1()
         iDict=populateDict2(iDict)
         pickle.dump(iDict,open(isoDictLoc,"wb"))
@@ -144,7 +144,7 @@ def fastPopulateDict():
         # print "#Dictionary file exists, loading it"
         iDict = pickle.load(open(isoDictMassLoc, "rb" ))
     else:
-        print "#Dictionary file does not exist, creating it"
+        print("#Dictionary file does not exist, creating it")
         iDict=populateDict1()
         pickle.dump(iDict,open(isoDictMassLoc,"wb"))
     return iDict
@@ -194,7 +194,7 @@ def generateIsoMfromWebM():
                 aVal=int(line[3])
                 pVal=int(line[2])
             myString=str(pVal)+"\t\t"+str(aVal)+"\t"+str(mass)+"\n"
-            print myString
+            print(myString)
             FILE.write(myString)
     FILE.close()
 # print isoVal

@@ -15,7 +15,7 @@ def myString2List(s):
 c.execute('SELECT * FROM isoMasses')
 massVal=c.fetchall()
 
-print "Creating a dictionary"
+print("Creating a dictionary")
 myDict={}
 for m in massVal:
     A,k=getIso(m[0])
@@ -49,6 +49,6 @@ for m in massVal:
 #         print "myDict", myDict[e]
 #         print "iDict", iDict[e]
 
-print "If only n and None are the anomalies, its probably fine"
+print("If only n and None are the anomalies, its probably fine")
 # print listStuff
 conn.close()

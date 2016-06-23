@@ -9,7 +9,7 @@ conn = sqlite3.connect('isoData.db')
 
 c = conn.cursor()
 
-print "#Populating the dictionary"
+print("#Populating the dictionary")
 iDict=populateDict()
 # Create table
 c.execute('''CREATE TABLE isoMasses
