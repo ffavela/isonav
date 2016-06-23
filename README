@@ -7,6 +7,8 @@ program is callable either from a user or from another program. This is
 very attractive for various applications. See the "isonavScripts/"
 directory for just a few script examples made for BaSH.
 
+Works with python 2.x and 3.x.
+
 In this new version (v1.4), the database was improved greatly by
 incorporating data from:
 
