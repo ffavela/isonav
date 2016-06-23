@@ -108,23 +108,23 @@ def latexNReaction(iso1,iso2):
     sa2=str(a2)
     print("""\\begin{eqnarray*} """)
     
-    print(' ^{'+sa1+'}\!'+key1+'+'+' ^{'+sa2+'}\!'+key2+'\longrightarrow&', end=' ')
+    print(' ^{'+sa1+'}\mathrm{'+key1+'}+'+' ^{'+sa2+'}\mathrm{'+key2+'}\longrightarrow', end=' ')
     maxVal=len(reacList)
     for r in reacList:
         if r==reacList[3]:
-            fStr='MeV'
+            fStr='\\rm{MeV}'
         else:
-            fStr='MeV\\\\'
+            fStr='\\rm{MeV}\\\\'
 
         r[3]=str(round(r[3],2))
         aEject,kEject=getIso(r[0])
         aRes,kRes=getIso(r[1])
         aEject,aRes=str(aEject),str(aRes)
         if kEject==None:
-            print(' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr)
+            print(' ^{'+aRes+'}'+kRes+'&Q='+r[3]+fStr)
             continue
 
-        print('& ^{'+aEject+'}\!'+kEject+'+'+' ^{'+aRes+'}\!'+kRes+'&Q='+r[3]+fStr)
+        print('& ^{'+aEject+'}\mathrm{'+kEject+'}+'+' ^{'+aRes+'}\mathrm{'+kRes+'}&Q='+r[3]+fStr)
     print('\end{eqnarray*}')
 
 def pIsotopes(iso,mFlag=False,flag=True):
