@@ -108,13 +108,13 @@ def latexNReaction(iso1,iso2):
     sa2=str(a2)
     print("""\\begin{eqnarray*} """)
     
-    print(' ^{'+sa1+'}\mathrm{'+key1+'}+'+' ^{'+sa2+'}\mathrm{'+key2+'}\longrightarrow', end=' ')
+    print(' ^{'+sa1+'}\mathrm{'+key1+'}+'+' ^{'+sa2+'}\mathrm{'+key2+'}\longrightarrow ')
     maxVal=len(reacList)
     for r in reacList:
         if r==reacList[3]:
-            fStr='\\rm{MeV}'
+            fStr='\\:\\rm{MeV}'
         else:
-            fStr='\\rm{MeV}\\\\'
+            fStr='\\:\\rm{MeV}\\\\'
 
         r[3]=str(round(r[3],2))
         aEject,kEject=getIso(r[0])
