@@ -73,6 +73,7 @@ def pXXTremeTest(XXList):
 def pXTremeTest(iso1,iso2,Elab,angle):
     val=xTremeTest(iso1,iso2,Elab,angle)
     stringFormat="%.3f\t%.3f\t%.3f"
+    stringFormat2="%s\t%s"
     for v in val:
         isoE=v[0][0]
         isoR=v[0][1]
@@ -80,7 +81,7 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         resAng=v[1][0][2]
         resE=v[1][0][3]
         tup=(ejectE,resAng,resE)
-        print(isoE,"\t",isoR)
+        print(stringFormat2 %(isoE,isoR))
         print(stringFormat % tuple(tup))
         ejectE=v[1][1][1]
         resAng=v[1][1][2]
