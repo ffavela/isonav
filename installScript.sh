@@ -59,6 +59,8 @@ cp enxParser.py /usr/share/isonav
 cp outputFunctions.py /usr/share/isonav
 cp argumentHandling.py /usr/share/isonav
 
+chmod -R o=rx /usr/share/isonav
+
 if [ -f /usr/local/bin/isonav ] || [ -L /usr/local/bin/isonav ]
 then
     echo "/usr/local/bin/isonav exists"
