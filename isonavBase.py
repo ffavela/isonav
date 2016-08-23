@@ -1275,8 +1275,12 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     if discr<0:
         # print "Angle maybe too large"
         return [False,False,False,False,]
+    if angle <= pi/2:
+        vxa1=Vcm*(1+sqrt(discr))/(1+kAng**2)
+    else: #angle >= pi/2
+        #Using the second solution for this case
+        vxa1=Vcm*(1-sqrt(discr))/(1+kAng**2)
 
-    vxa1=Vcm*(1+sqrt(discr))/(1+kAng**2)
     #Ignoring the second solutions for now
     # vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
     vya1=kAng*vxa1
