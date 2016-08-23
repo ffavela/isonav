@@ -21,6 +21,7 @@ dbExample.py
 example.db
 dbOpen.py
 throwaway.py
+.#*
 
 data/
 isonavScripts/*~
