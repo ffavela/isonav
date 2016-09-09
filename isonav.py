@@ -36,6 +36,8 @@
   isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]
+  isonav <ion> [-v] --material=materialName --Elab=val --thickness=val [--depositedE]
+  isonav [-v] --listMaterials [--printProperties]
   isonav [-v] ( -d | --donate ) [--QR]
   isonav -h | --version
 """

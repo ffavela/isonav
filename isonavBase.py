@@ -31,7 +31,8 @@ eCoef=931.4941 #amu to MeV convertion coef
 hc=1.23984193 #MeV-pm
 hbc=197.33 #MeV-fm
 alpha=1/137.036 #fine structure
-
+electEMass=0.5109989461 # mass of the electron in MeV
+N_a=6.022140857e23 #mol^-1, Avogadro constant
 # cfm=1 #in fm/s
 
 #utility functions for nuclear physics reactions
@@ -1253,7 +1254,7 @@ def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
 def getEFromV(iso,v,xMass=0):
     m=getEMass(iso)+xMass
     return 0.5*m*(v/c)**2
-    
+
 #Testing the non numeric solution
 def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
@@ -1318,7 +1319,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # vxb2=vxb2CM+Vcm
     # vyb2=vyb2CM
     # vb2=sqrt(vxb2**2+vyb2**2)
-    angLB1=atan(vyb1/vxb1) 
+    angLB1=atan(vyb1/vxb1)
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
@@ -1392,5 +1393,84 @@ def temp2E(T):
     TE=T/Ta*Ea
     return TE
 
+#Bethe-Bloch energy loss stuff
+def getBeta(iso,E):
+    m=getEMass(iso)
+    #Treating for now the non relativistic version; using
+    #v=sqrt(2.0*E/m)*c, and beta=v/c
+    beta=sqrt(2.0*E/m)
+    return beta
+
+def getElectDensity(Z,A_r,rho):
+    """Returns the electron density, in #e^-/cm^3"""
+    #Properly is; n=(N_a*Z*rho)/(A*M_u), but M_u=1 g/mol
+    n=(N_a*Z*rho)/A_r
+    return n
+    
+def getIonizationPot(Z):
+    """Returns the ionization potential in eV"""
+    #For now it uses the Bloch equation, but the proper ionization
+    #potential table should be implemented.
+    I=10*Z
+    return I
+
+#Using this for now, this has to be improved through a database or a
+#pickle file!!. Format will probably change. The list format (for now)
+#is Z, A_r, rho(at solid state).
+materialDict={"silicon":[14,28.085,2.3290],
+              "gold":[79,196.966569,19.30],
+              "aluminum":[13,26.9815385,2.70],
+              "copper":[29,63.54,8.96]}
+
+def checkMaterial(material):
+    if material in materialDict:
+        return True
+    return False
+
+def getMaterialProperties(material):
+    if material not in materialDict:
+        return False
+    return materialDict[material]
+
+def getBetheLoss(iso,E,material):
+    """Gets the Bethe energy loss differential of an ion through a
+    material
+
+    """
+    Z,A_r,rho=getMaterialProperties(material)
+    n=getElectDensity(Z,A_r,rho)
+    #n has to be given in #e^-/fm^3
+    n*=10**(-39)
+    zNum=getPnum(iso)
+    #It doesn't use the relativistic expression yet.
+    beta=getBeta(iso,E)
+    beta2=beta**2
+    I=getIonizationPot(Z)
+    #"I" was given in eV so it has to be converted in MeV
+    I*=10**(-6)
+    #remember dE/dx is negative, it is the relativistic formula
+    dEx=4*pi/electEMass*n*zNum**2/beta2*(hbc*alpha)**2*\
+        (log((2*electEMass*beta2)/(I*(1-beta2)))-beta2)
+    dEx*=10**(9) #Converting the units into MeV/mu^3
+    return dEx
+
+def integrateELoss(iso,E,material,thick):
+    """Gets the final energy of an ion going through a material with a
+    certain thickness.
+
+    """
+    partitionSize=10000
+    dx=1.0*thick/partitionSize
+    for i in range(partitionSize):
+        dEx=getBetheLoss(iso,E,material)
+        E-=dEx*dx
+        if E<=0:
+            #This probably won't ever happen
+            return -1
+    return E
+#Note that the DeltaEs for alphas of 5.15, 5.48, 5.80 are 2.55, 2.41,
+#2.29 for an 11 micron silicon detector (and I think with a 1 micron
+#gold coating)
+
 #Don't forget this?
-#conn.close()
+conn.close()

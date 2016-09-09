@@ -64,7 +64,12 @@ def argHand(args):
     name=args["--name"]
     symbol=args["<symbol>"]
     T=args["--T"]
-
+    ion=args["<ion>"]
+    material=args["--material"]
+    thick=args["--thickness"]
+    deltaE=args["--depositedE"]
+    lsMat=args["--listMaterials"]
+    printProp=args["--printProperties"]
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -445,6 +450,46 @@ def argHand(args):
         pSReaction(isop,isot,isoE,isoR,Elab,angle)
         return 0
 
+    if args["--material"] and Elab != None:
+        if verbose:
+            print("Given the ion, it's energy, the material name and the material")
+            print("thickness (in microns) it prints the final energy of the ion.")
+            print("If the --depositedE flag is used, then the deposited energy in the")
+            print("material is given (deltaE). Use the format for --listMaterials to")
+            print("see a list of implemented materials.")
+        if not makeSureIso(ion):
+            print("Ion has to be a valid isotope")
+            return 1
+        if not testVal(Elab,"E"):
+            print("Error; ion energy has to be a positive number")
+            return 12345
+        E=float(Elab)
+        if not testVal(thick,"E"):
+            print ("Error; thickness has to be a positive number")
+            return 12346
+        thick=float(thick)
+        if not checkMaterial(material):
+            print("Error; material not yet implemented :(")
+            return 12347
+        if deltaE != False:
+            val2Print=E-integrateELoss(ion,E,material,thick)
+        else:
+            val2Print=integrateELoss(ion,E,material,thick)
+        print(val2Print)
+        return 0
+
+    if lsMat:
+        if verbose:
+            print("Prints a list of the implemented materials")
+            print("if --printProperties flag is used it will print")
+            print("the Z, A_r and density (in gm/cm^3)")
+        for e in materialDict:
+            if printProp:
+                print(e,materialDict[e])
+            else:
+                print(e)
+            
+    
     if args["-d"] or args["--donate"]:
         if verbose:
             print("#Make a donation through bitcoin ;)")
