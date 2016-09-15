@@ -430,6 +430,8 @@ def argHand(args):
     if angle and args["<isoRes>"]:
         if verbose:
             print("#Prints the energies that'll reach the detector")
+            print("If the --xF format is used then it takes the energy levels from")
+            print("a single column txt file")
 
         if not testVal(Elab,"E"):
             print("Error; energy has to be a positive number")
