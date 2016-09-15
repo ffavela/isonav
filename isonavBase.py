@@ -601,18 +601,28 @@ def getPopLevels(iso1,aE):
     return levels
 
 #If the excitation data is needed then this loads it.
-def getMoreData(iso):
+def getMoreData(iso,xFile=None):
     #Careful with neutrons and Nones
     A,k=getIso(iso)
     levDict={}
     if len(iDict[k][1][A])<2:
-        t=(iso,)
-        cursor.execute('SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t)
-        #Creating subDictionary
-        for exData in cursor.fetchall():
-            if int(exData[0]) not in levDict:
-                levDict[exData[0]]=[float(exData[1]),myString2List(exData[2])]
-        iDict[k][1][A].append(levDict)
+        if xFile == None:
+            t=(iso,)
+            cursor.execute('SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t)
+            #Creating subDictionary
+            for exData in cursor.fetchall():
+                if int(exData[0]) not in levDict:
+                    levDict[exData[0]]=[float(exData[1]),myString2List(exData[2])]
+                    #print("Debug in getMoreData",levDict[exData[0]])
+                    iDict[k][1][A].append(levDict)
+        else:
+            with open(xFile) as myFileObj:
+                lineLst=myFileObj.readlines()
+
+            for a,b in zip(lineLst,range(len(lineLst))):
+                levDict[b]=[float(a),[]]
+                iDict[k][1][A].append(levDict)
+
 
 #This is now deprecated
 def getCoef(iso1,iso2,isoE,isoR,ELab,exList=[0,0,0,0]):
@@ -669,7 +679,7 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
     for e in popLevels:
         # print e
         if e[1] == False and e[0] != 1:
-            print("Entered false for e[1] en exLevReact")
+            #print("#Entered false for e[1] en exLevReact")
             continue
         if eVal==1:
             exList[3]=e[1]
@@ -706,7 +716,7 @@ def getIsoQValAMU(iso1,iso2,iso3,iso4):
 def iso2String(k,iso,eVal=''):
     return eVal+str(iso)+k
 
-def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
+def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30,xf1=None,xf2=None):
     a1,key1=getIso(iso1)
     a2,key2=getIso(iso2)
     aEject,eject=getIso(isoEject)
@@ -724,6 +734,12 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     E1L=ELab
     #For now E2L=0
     E2L=0
+    if xf1 != None:
+        getMoreData(isoEject,xf1)
+
+    if xf2 != None:
+        getMoreData(isoRes,xf2)
+
     c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
     lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,0)])
@@ -1407,7 +1423,7 @@ def getElectDensity(Z,A_r,rho):
     n=(N_a*Z*rho)/A_r
     return n
     
-def getIonizationPot(Z):
+def getMeanExcE(Z):
     """Returns the ionization potential in eV"""
     #For now it uses the Bloch equation, but the proper ionization
     #potential table should be implemented.
@@ -1445,7 +1461,7 @@ def getBetheLoss(iso,E,material):
     #It doesn't use the relativistic expression yet.
     beta=getBeta(iso,E)
     beta2=beta**2
-    I=getIonizationPot(Z)
+    I=getMeanExcE(Z)
     #"I" was given in eV so it has to be converted in MeV
     I*=10**(-6)
     #remember dE/dx is negative, it is the relativistic formula
@@ -1473,4 +1489,5 @@ def integrateELoss(iso,E,material,thick):
 #gold coating)
 
 #Don't forget this?
-conn.close()
+#Leave it commented or else errors occur :(
+# conn.close()

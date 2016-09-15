@@ -70,6 +70,8 @@ def argHand(args):
     deltaE=args["--depositedE"]
     lsMat=args["--listMaterials"]
     printProp=args["--printProperties"]
+    xF1=args["--xF1"]
+    xF2=args["--xF2"]
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -444,7 +446,7 @@ def argHand(args):
             return 666
 
         if args["-x"] or args["--xTreme"]:
-            pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle))
+            pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2))
             return 0
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
         pSReaction(isop,isot,isoE,isoR,Elab,angle)

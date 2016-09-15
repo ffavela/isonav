@@ -35,7 +35,7 @@
   isonav <iso1> <iso2> [-v] --scatE=val --angle=val
   isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
-  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [(-x|--xTreme) [--xF1=xFileEject.txt] [--xF2=xFileRes.txt] ]
   isonav <ion> [-v] --material=materialName --Elab=val --thickness=val [--depositedE]
   isonav [-v] --listMaterials [--printProperties]
   isonav [-v] ( -d | --donate ) [--QR]
