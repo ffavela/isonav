@@ -1412,9 +1412,11 @@ def temp2E(T):
 #Bethe-Bloch energy loss stuff
 def getBeta(iso,E):
     m=getEMass(iso)
-    #Treating for now the non relativistic version; using
+    #The non relativistic version is:
     #v=sqrt(2.0*E/m)*c, and beta=v/c
-    beta=sqrt(2.0*E/m)
+    # beta=sqrt(2.0*E/m)
+    #Using the relativistic version
+    beta=sqrt(1-(1/(E/m+1))**2)
     return beta
 
 def getElectDensity(Z,A_r,rho):
