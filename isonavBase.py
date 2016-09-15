@@ -620,7 +620,7 @@ def getMoreData(iso,xFile=None):
                 lineLst=myFileObj.readlines()
 
             for a,b in zip(lineLst,range(len(lineLst))):
-                levDict[b]=[float(a),[]]
+                levDict[b+1]=[float(a),[]]
                 iDict[k][1][A].append(levDict)
 
 
