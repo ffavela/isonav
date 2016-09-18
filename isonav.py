@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2015 Francisco Favela
+#   Copyright (C) 2016 Francisco Favela
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@
   isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [(-x|--xTreme) [--xF1=xFileEject.txt] [--xF2=xFileRes.txt] ]
-  isonav <ion> [-v] --material=materialName --Elab=val --thickness=val [--depositedE]
-  isonav [-v] --listMaterials [--printProperties]
+  isonav <ion> [-v] --material=matName --Elab=val --thickness=val [--depositedE] [--bloch] [--density=dens]
+  isonav [-v] --listMaterials [--material=matName]
   isonav [-v] ( -d | --donate ) [--QR]
   isonav -h | --version
 """
@@ -48,6 +48,6 @@ import sqlite3
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='v1.4.2')
+    args = docopt(__doc__, version='v1.4.3')
     # print(args)
     argHand(args)

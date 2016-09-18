@@ -1,4 +1,4 @@
-#   Copyright (C) 2015 Francisco Favela
+#   Copyright (C) 2016 Francisco Favela
 
 #   This file is part of isonav
 
@@ -23,11 +23,11 @@ import sys
 from enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
-    DATA_PATH = "/usr/share/isonav/data1p4"
+    DATA_PATH = "/usr/share/isonav/data1p4p3"
 # elif os.path.dirname(__file__) == ".":
 else:
     # fileName=os.path.dirname(__file__)
-    DATA_PATH ="./data1p4"
+    DATA_PATH ="./data1p4p3"
     print("#You do not have a working installation of isonav")
     print("#See the installation procedure in the README file")
     # sys.exit(1)
@@ -38,6 +38,8 @@ isoDictMassLoc=os.path.join(DATA_PATH, "isoDictMass.pkl")
 isoDatadb=os.path.join(DATA_PATH, "isoData.db")
 isonavQR=os.path.join(DATA_PATH, "isonavQR.png")
 wMLoc=os.path.join(DATA_PATH, "webMasses.txt")
+chemTxt=os.path.join(DATA_PATH,"materialTable.txt")
+chemPkl=os.path.join(DATA_PATH,"matTab.pkl")
 
 #Isotope dictionary
 iDict={}
@@ -199,3 +201,40 @@ def generateIsoMfromWebM():
     FILE.close()
 # print isoVal
 # print len(isoVal)
+
+def getChemDict(chemTxtFile):
+    """Loads a txt file with the properties for the energy loss
+    calculations"""
+    with open(chemTxtFile) as chemFile:
+        theLines=chemFile.readlines()
+
+    chemDict={}
+    for line in theLines:
+        if line[0] == '#':
+            continue
+        myList=line.split()
+        if len(myList) > 0:
+            symbol=myList[0]
+            Z=int(myList[1])
+            A_r=myList[2]
+            if A_r[0] == '(':
+                A_r=A_r[1:-1]
+            A_r=float(A_r)
+            density=myList[5]
+            I=myList[-1]
+            if density != '-':
+                density=float(density)
+            if I != '-':
+                I=float(I)
+            chemDict[symbol]=[Z,A_r,density,I]
+    return chemDict
+
+#If the material database has to be modified then edit the txt file and
+#then run this command inside the repo's folder: saveChemDat()
+def saveChemDat():
+    chemDict=getChemDict(chemTxt)
+    pickle.dump(chemDict,open(chemPkl,"wb"))
+
+def getChemDictFromFile():
+    chemDict=pickle.load(open(chemPkl,"rb"))
+    return chemDict

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015 Francisco Favela
+#   Copyright (C) 2016 Francisco Favela
 
 #   This file is part of isonav
 
@@ -1425,37 +1425,54 @@ def getElectDensity(Z,A_r,rho):
     n=(N_a*Z*rho)/A_r
     return n
     
-def getMeanExcE(Z):
-    """Returns the ionization potential in eV"""
-    #For now it uses the Bloch equation, but the proper ionization
-    #potential table should be implemented.
+def getBlochMeanExcE(Z):
+    """Returns the Bloch approximation of the mean ionization potential in
+    eV """
     I=10*Z
     return I
 
 #Using this for now, this has to be improved through a database or a
 #pickle file!!. Format will probably change. The list format (for now)
 #is Z, A_r, rho(at solid state).
-materialDict={"silicon":[14,28.085,2.3290],
-              "gold":[79,196.966569,19.30],
-              "aluminum":[13,26.9815385,2.70],
-              "copper":[29,63.54,8.96]}
+# materialDict={"silicon":[14,28.085,2.3290],
+#               "gold":[79,196.966569,19.30],
+#               "aluminum":[13,26.9815385,2.70],
+#               "copper":[29,63.54,8.96]}
 
-def checkMaterial(material):
-    if material in materialDict:
-        return True
-    return False
-
-def getMaterialProperties(material):
-    if material not in materialDict:
+def checkMaterial(material,bloch=False,density=None):
+    #Calls get material properties to fill the cache only once
+    vals=getMaterialProperties(material,bloch,density)
+    if vals[-1] == False:
         return False
+    return True
+
+#Global variable to avoid loading the pkl file over and over again.
+materialDictCache={}
+
+def getMaterialProperties(material,bloch=False,density=None):
+    if material in materialDictCache:
+        return materialDictCache[material]
+    materialDict=getChemDictFromFile()
+    if material not in materialDict:
+        return False,False,False,False
+    if bloch:
+        Z=materialDict[material][0]
+        materialDict[material][-1] = getBlochMeanExcE(Z)
+    if density != None:
+        materialDict[material][2]=density
+    if materialDict[material][-1] == '-':
+        return False,False,False,False
+    materialDictCache[material]=materialDict[material]
     return materialDict[material]
 
 def getBetheLoss(iso,E,material):
     """Gets the Bethe energy loss differential of an ion through a
-    material
+    material, it includes soft and hard scattering.
 
     """
-    Z,A_r,rho=getMaterialProperties(material)
+    Z,A_r,rho,I=getMaterialProperties(material)
+    if rho == False:
+        return None
     n=getElectDensity(Z,A_r,rho)
     #n has to be given in #e^-/fm^3
     n*=10**(-39)
@@ -1463,7 +1480,6 @@ def getBetheLoss(iso,E,material):
     #It doesn't use the relativistic expression yet.
     beta=getBeta(iso,E)
     beta2=beta**2
-    I=getMeanExcE(Z)
     #"I" was given in eV so it has to be converted in MeV
     I*=10**(-6)
     #remember dE/dx is negative, it is the relativistic formula
@@ -1481,6 +1497,9 @@ def integrateELoss(iso,E,material,thick):
     dx=1.0*thick/partitionSize
     for i in range(partitionSize):
         dEx=getBetheLoss(iso,E,material)
+        if dEx == None:
+            #No material was found
+            return -2
         E-=dEx*dx
         if E<=0:
             #This probably won't ever happen

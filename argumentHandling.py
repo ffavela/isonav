@@ -1,4 +1,4 @@
-#   Copyright (C) 2015 Francisco Favela
+#   Copyright (C) 2016 Francisco Favela
 
 #   This file is part of isonav
 
@@ -17,6 +17,15 @@
 
 from isonavBase import *
 from outputFunctions import *
+from operator import itemgetter
+
+def getOrdMatList(matDict):
+    newList=[]
+    for e in matDict:
+        vl=matDict[e]
+        newList.append([e,vl[0],vl[1],vl[2],vl[3]])
+    sortList=sorted(newList,key=itemgetter(2))
+    return sortList
 
 def makeSureIso(iso):
     A,k=getIso(iso)
@@ -68,8 +77,9 @@ def argHand(args):
     material=args["--material"]
     thick=args["--thickness"]
     deltaE=args["--depositedE"]
+    bloch=args["--bloch"]
+    density=args["--density"]
     lsMat=args["--listMaterials"]
-    printProp=args["--printProperties"]
     xF1=args["--xF1"]
     xF2=args["--xF2"]
 
@@ -460,7 +470,9 @@ def argHand(args):
             print("thickness (in microns) it prints the final energy of the ion.")
             print("If the --depositedE flag is used, then the deposited energy in the")
             print("material is given (deltaE). Use the format for --listMaterials to")
-            print("see a list of implemented materials.")
+            print("see a list of implemented materials. If --bloch flag is used then")
+            print("the Bloch mean iotization potential is used even if it's")
+            print("reported as '-'. Density values can also be overriden.")
         if not makeSureIso(ion):
             print("Ion has to be a valid isotope")
             return 1
@@ -472,27 +484,54 @@ def argHand(args):
             print ("Error; thickness has to be a positive number")
             return 12346
         thick=float(thick)
-        if not checkMaterial(material):
+        #Note checkMaterial loads the proper I (and rho) to a global
+        #dictionary so no need to put it as argument in other functions
+        #;-)
+        if density != None:
+            density=float(density)
+            if not testVal(density,"E"):
+                print("Error; density has to be a positive number (g/cm^3)")
+                return 12347
+
+        if not checkMaterial(material,bloch,density):
             print("Error; material not yet implemented :(")
             return 12347
         if deltaE != False:
             val2Print=E-integrateELoss(ion,E,material,thick)
         else:
             val2Print=integrateELoss(ion,E,material,thick)
-        print(val2Print)
+        print("%.3f" % val2Print)
         return 0
 
     if lsMat:
         if verbose:
-            print("Prints a list of the implemented materials")
-            print("if --printProperties flag is used it will print")
-            print("the Z, A_r and density (in gm/cm^3)")
-        for e in materialDict:
-            if printProp:
-                print(e,materialDict[e])
-            else:
-                print(e)
-            
+            print("#Prints a list of the implemented materials")
+            print("#the Z, A_r,density (in gm/cm^3) and I (mean excitation")
+            print("#potential in eV)\n")
+            print("#Mat\tZ\tA_r\trho\t\tI")
+        materialDict=getChemDictFromFile()
+        if material != None:
+            if not checkMaterial(material):
+                print("Error; material not yet implemented :(")
+                return 4321
+
+            stringStuff=[str(val) for val in materialDict[material]]
+            #TODO: improve this printout
+            finalString=material
+            for s in stringStuff[0:-1]:
+                finalString+='\t'+s
+            finalString+='\t\t'+stringStuff[-1]
+            print(finalString)
+            return 0
+        sortMatList=getOrdMatList(materialDict)
+        for e in sortMatList:
+            stringStuff=[str(val) for val in e]
+            finalString=e[0]
+            for s in stringStuff[1:-1]:
+                finalString+='\t'+s
+            finalString+='\t\t'+stringStuff[-1]
+            print(finalString)
+        return 0
     
     if args["-d"] or args["--donate"]:
         if verbose:
