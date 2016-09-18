@@ -38,11 +38,11 @@ then
     exit 1
 fi
 
-if [ ! -d data1p4 ]
+if [ ! -d data1p4p3 ]
 then
     printf "${RED}Error; no data directory${NC}\n"
     echo "Download the new database from:"
-    echo "https://mega.co.nz/#!uFEymJZR!BTWxcO9vsn48OBJDyxZ6VdlNDmrXeuNto9FI3Wf4qOw"
+    echo "https://mega.nz/#!PcNkWQ4T!SJdNcTQrueI4uVZC-b96GpksvPn0qw8rSc1QEjig-po"
     echo "And uncompress it inside the repo's directory"
     exit 2
 fi
@@ -50,7 +50,7 @@ fi
 mkdir /usr/share/isonav
 [ $? -ne 0 ] && echo "Error; try running with sudo" && exit 3
 chmod +x isonav.py
-cp -r data1p4 /usr/share/isonav
+cp -r data1p4p3 /usr/share/isonav
 cp isonav.py /usr/share/isonav
 cp isoParser.py /usr/share/isonav
 cp isonavBase.py /usr/share/isonav
