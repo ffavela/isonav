@@ -40,7 +40,7 @@ Requirements:
 After you have cloned the repository download the data1p4.zip file and
 uncompress it into the repository's directory:
 
-https://mega.co.nz/#!uFEymJZR!BTWxcO9vsn48OBJDyxZ6VdlNDmrXeuNto9FI3Wf4qOw
+https://mega.nz/#!PcNkWQ4T!SJdNcTQrueI4uVZC-b96GpksvPn0qw8rSc1QEjig-po
 
 The python package docopt is REQUIRED. In ubuntu the package can be
 installed via:
