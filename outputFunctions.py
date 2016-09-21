@@ -1,4 +1,4 @@
-#   Copyright (C) 2015 Francisco Favela
+#   Copyright (C) 2016 Francisco Favela
 
 #   This file is part of isonav
 
@@ -33,7 +33,8 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     print(stringFormat % tuple(sR))
     print("")
 
-def pXReaction(xReact):
+def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
+    xReact=xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
     for e in xReact:
         print(str(e[0][0])+'\t'+str(e[0][1]))
         stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
@@ -45,7 +46,8 @@ def pXReaction(xReact):
             print(stringFormat % tuple(tup))
         print("")
             
-def pXXTremeTest(XXList):
+def pXXTremeTest(iso1,iso2,Elab,angle):
+    XXList=xXTremeTest(iso1,iso2,Elab,angle)
     stringFormat="%d\t%0.3f\t\t"+"%.3f\t"*2+"%.3f"
     for e in XXList:
         isoE=e[0][0]
@@ -83,10 +85,12 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         tup=(ejectE,resAng,resE)
         print(stringFormat2 %(isoE,isoR))
         print(stringFormat % tuple(tup))
+        print("")
         ejectE=v[1][1][1]
         resAng=v[1][1][2]
         resE=v[1][1][3]
         tup=(ejectE,resAng,resE)
+        print(stringFormat2 %(isoR,isoE))
         print(stringFormat % tuple(tup))
         print("")
 

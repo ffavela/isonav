@@ -389,7 +389,7 @@ def argHand(args):
                 if verbose==True:
                     print("#Prints out angles and energies of the reactions")
                     print("#lev\tlevE\t\tEe\tang2L\tEr")
-                pXXTremeTest(xXTremeTest(iso1,iso2,Elab,angle))
+                pXXTremeTest(iso1,iso2,Elab,angle)
                 return 0
                     
             # print xTremeTest(iso1,iso2,Elab,angle)
@@ -436,7 +436,7 @@ def argHand(args):
         a=getMaxAngles(isop,isot,isoE,isoR,Elab)
         print(a[0], a[1])
         return 0
-
+    #if angle means angle!=0 but there might be a problem here.
     if angle and args["<isoRes>"]:
         if verbose:
             print("#Prints the energies that'll reach the detector")
@@ -458,7 +458,7 @@ def argHand(args):
             return 666
 
         if args["-x"] or args["--xTreme"]:
-            pXReaction(xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2))
+            pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
             return 0
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
         pSReaction(isop,isot,isoE,isoR,Elab,angle)
