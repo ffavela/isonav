@@ -385,7 +385,7 @@ def argHand(args):
                 print("Error, give a positive angle")
                 return 222
 
-            if args["--xTreme"]==True:
+            if args["--xTreme"]==True or args["-x"]==True:
                 if verbose==True:
                     print("#Prints out angles and energies of the reactions")
                     print("#lev\tlevE\t\tEe\tang2L\tEr")
