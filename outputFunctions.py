@@ -53,7 +53,16 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
         print("")
 
 def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
-    xReact=xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
+    xReactL=xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
+    xReact=[]
+    for lr in xReactL:
+        exitReact=lr[0]
+        # print("exitReact = ", exitReact)
+        for info in lr[1:]:
+            # print("info = ", info)
+            firstSolEs=[[val[0],val[1][0]] for val in info]
+        xReact.append([exitReact,firstSolEs])
+
     for e in xReact:
         print(str(e[0][0])+'\t'+str(e[0][1]))
         stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
@@ -64,7 +73,7 @@ def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
             tup=(level,lE, rest[0],rest[1],rest[2])
             print(stringFormat % tuple(tup))
         print("")
-            
+
 def pXXTremeTest(iso1,iso2,Elab,angle):
     XXList=xXTremeTest(iso1,iso2,Elab,angle)
     stringFormat="%d\t%0.3f\t\t"+"%.3f\t"*2+"%.3f"

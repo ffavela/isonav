@@ -696,7 +696,7 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
 
         if numSol1[0]==False:
             break
-        levList.append([e,numSol1])
+        levList.append([e,[numSol1,numSol2]])
     return levList
     
 def getQVal(m1,m2,m3,m4):
@@ -745,19 +745,27 @@ def xReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30,xf1=None,xf2=None):
 
     c=[iso2String(eject,aEject,'*'),iso2String(res,aRes,'')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
-    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,0)])
+    exL1=exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,0)
+    # exL1=[[val[0],val[1][0]] for val in exL1L]
+    lL.append([c,exL1])
 
     c=[iso2String(eject,aEject,''),iso2String(res,aRes,'*')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,1)])
-    lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,1)])
+    exL2=exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,1)
+    # exL2=[[val[0],val[1][0]] for val in exL2L]
+    lL.append([c,exL2])
 
     c=[iso2String(res,aRes,'*'),iso2String(eject,aEject,'')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,0)])
-    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,0)])
+    exL3=exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,0)
+    # exL3=[[val[0],val[1][0]] for val in exL3L]
+    lL.append([c,exL3])
 
     c=[iso2String(res,aRes,''),iso2String(eject,aEject,'*')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,ELab,Ef,1)])
-    lL.append([c,exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,1)])
+    exL4=exLevReact(ang,iso1,iso2,isoRes,isoEject,E1L,E2L,1)
+    # exL4=[[val[0],val[1][0]] for val in exL4L]
+    lL.append([c,exL4])
 
     return lL
 
@@ -772,7 +780,18 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
         isoEject=e[0]
         isoRes=e[1]
 
-        react=xReaction(iso1,iso2,isoEject,isoRes,E,ang)
+        reactL=xReaction(iso1,iso2,isoEject,isoRes,E,ang)
+        react=[]
+
+        for lr in reactL:
+            exitReact=lr[0]
+            for info in lr[1:]:
+                firstSolEs=[[val[0],val[1][0]] for val in info]
+                react.append([exitReact,firstSolEs])
+
+        # for lr in reactL:
+        #     reactVal=[[val[0],val[1][0]] for val in lr]
+        #     react.append(reactVal)
         if react==False:
             break
 
