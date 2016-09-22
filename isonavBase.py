@@ -512,11 +512,13 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
             continue
         isoEject=e[0]
         isoRes=e[1]
-        react=sReaction(iso1,iso2,isoEject,isoRes,E,ang)
-        if react==False:
+        react1,react2=sReaction(iso1,iso2,isoEject,isoRes,E,ang)
+
+        if react1==False:
             break
-        if react[0][0]!=False and react[1][0]!=False:
-            l.append([e,react])
+        if react1[0]!=False and react1[1]!=[]:
+            # print("react1[0], react1[1] =", react1[0], react1[1])
+            l.append([e,react1])
     return l
 #returns the corresponding fused element, along with the max populated
 #level and the corresponding remaining energy
@@ -689,11 +691,12 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
         # numSol=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab,E2L=0,\
         #                     exList=exList)
 
-        numSol=analyticSol(iso1,iso2,isoEject,isoRes,\
+        numSol1,numSol2=analyticSol(iso1,iso2,isoEject,isoRes,\
                            E1L,E2L,angle=ang,exList=exList)
-        if numSol[0]==False:
+
+        if numSol1[0]==False:
             break
-        levList.append([e,numSol])
+        levList.append([e,numSol1])
     return levList
     
 def getQVal(m1,m2,m3,m4):
@@ -830,7 +833,8 @@ def findOE(Eang,ang,iso1,iso2):
     dE=0.01
     tolerance=0.00001
     while True:
-        sR= sReaction(iso1,iso2,iso1,iso2,E,ang)
+        sRList=sReaction(iso1,iso2,iso1,iso2,E,ang)
+        sR=sRList[0]
         diff=Eang-sR[0][1]
         if abs(diff)<tolerance:
             break
@@ -1275,28 +1279,36 @@ def getEFromV(iso,v,xMass=0):
 def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
     if vEcm == False:
-        return [False,False,False,False]
+        return [[False,False,False,False],[]]
     maxAng=getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)[0]
     if maxAng=="NaN":
         return "NaN"
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
-    angLA1,Ea1,angLB1,Eb1=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
-    return [degrees(angLA1),Ea1,degrees(angLB1),Eb1]
+    sol1,sol2=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
+    angLA1,Ea1,angLB1,Eb1=sol1
+    retVal2=[]
+    if sol2 != []:
+        angLA2,Ea2,angLB2,Eb2=sol2
+        retVal2=[degrees(angLA2),Ea2,degrees(angLB2),Eb2]
+    retVal1=[degrees(angLA1),Ea1,degrees(angLB1),Eb1]
+    return [retVal1,retVal2]
 
 def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     angle=radians(angle)
     kAng=tan(angle)
     k1=1.0*vEcm/Vcm
     discr=1-(1+kAng**2)*(1-k1**2)
+    secSol=True
     if discr<0:
         # print "Angle maybe too large"
-        return [False,False,False,False,]
+        return [[False,False,False,False],[]]
     if angle <= pi/2:
         vxa1=Vcm*(1+sqrt(discr))/(1+kAng**2)
     else: #angle >= pi/2
-        #Using the second solution for this case
+        #Using the backward solution for this case
         vxa1=Vcm*(1-sqrt(discr))/(1+kAng**2)
+        secSol=False
 
     #Ignoring the second solutions for now
     # vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
@@ -1339,8 +1351,44 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
+    firstSol=[angLA1,Ea1,angLB1,Eb1]
+
+    secSolList=[]
+    if secSol:
+        #Calculating the second solutions here
+        vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
+        vya2=kAng*vxa2
+        va2=sqrt(vxa2**2+vya2**2)
+        angLA2=atan(vya2/vxa2)
+
+        #To get the angle and velocity of the corresponding particle, we
+        #do the following 1.- Get the center of mass velocity of
+        #particle "a".
+        vxa2CM=vxa2-Vcm
+        vya2CM=vya2
+
+        #2.- Get the slopes
+        sa2=vya2CM/vxa2CM
+        #3.- The corresponding angles
+        angA2=atan(sa2)
+        # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
+        angB2=angA2-pi
+        #4.- The corresponding center of mass velocity values
+        vxb2CM=vRcm*cos(angB2)
+        vyb2CM=vRcm*sin(angB2)
+        #5.- The lab values
+        vxb2=vxb2CM+Vcm
+        vyb2=vyb2CM
+        vb2=sqrt(vxb2**2+vyb2**2)
+        # print(vb2)
+        angLB2=atan(vyb2/vxb2)
+        Ea2=getEFromV(isoEject,va2)
+        Eb2=getEFromV(isoRes,vb2)
+
+        secSol=[angLA2,Ea2,angLB2,Eb2]
+
     #Angle is in radians
-    return [angLA1,Ea1,angLB1,Eb1]
+    return [firstSol,secSol]
 
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):

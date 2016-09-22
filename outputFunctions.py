@@ -19,19 +19,38 @@ from isonavBase import *
 import webbrowser
 
 def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
-    react=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
-    if not react:
+    react1,react2=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
+    if not react1:
         print("Reaction is invalid")
         return 0
-    fR=react[0][1:]
-    sR=react[1][1:]
-    stringFormat="%.3f\t"*(len(fR)-1)+"%.3f"
-    print(str(isoEject)+'\t'+str(isoRes))
-    print(stringFormat % tuple(fR))
-    print("")
-    print(str(isoRes)+'\t'+str(isoEject))
-    print(stringFormat % tuple(sR))
-    print("")
+
+    fR1=react1[0][1:]
+    sR1=react1[1][1:]#switching the ejectile and the residue
+    if fR1[1] != False:
+        stringFormat="%.3f\t"*(len(fR1)-1)+"%.3f"
+        print(str(isoEject)+'\t'+str(isoRes))
+        print(stringFormat % tuple(fR1))
+        print("")
+    #The second solution
+    if react2 != []:
+        fR2=react2[0][1:]
+        sR2=react2[1][1:]
+        if fR2[0] != False:
+            if fR1[1] == False:
+                print(str(isoEject)+'\t'+str(isoRes))
+
+            stringFormat="%.3f\t"*(len(fR2)-1)+"%.3f"
+            print(stringFormat % tuple(fR2))
+            print("")
+
+    if sR1:
+        print(str(isoRes)+'\t'+str(isoEject))
+        print(stringFormat % tuple(sR1))
+        print("")
+    if sR2 != []:
+        stringFormat="%.3f\t"*(len(sR2)-1)+"%.3f"
+        print(stringFormat % tuple(sR2))
+        print("")
 
 def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
     xReact=xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
@@ -86,6 +105,7 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         print(stringFormat2 %(isoE,isoR))
         print(stringFormat % tuple(tup))
         print("")
+        # print("v = ",v)
         ejectE=v[1][1][1]
         resAng=v[1][1][2]
         resE=v[1][1][3]
