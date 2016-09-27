@@ -75,7 +75,8 @@ def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
     for e in xReactF:
         if e[1] == []:
             continue
-        print(e[0][0]+'\t'+e[0][1])
+        stringValue=e[0][0]+'\t'+e[0][1]
+        print(stringValue)
         for ee in e[1]:
             level=ee[0][0]
             lE=ee[0][1]
@@ -83,6 +84,17 @@ def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
             tup=(level,lE, rest[0],rest[1],rest[2])
             print(stringFormat % tuple(tup))
         print("")
+        if stringValue in xReactSDict:
+            for E in xReactSDict[stringValue]:
+                ee=E[0]
+                if ee[1] == []:
+                    break
+                level=ee[0][0]
+                lE=ee[0][1]
+                rest=ee[1][1:]
+                tup=(level,lE, rest[0],rest[1],rest[2])
+                print(stringFormat % tuple(tup))
+            print("")
 
 
 def pXXTremeTest(iso1,iso2,Elab,angle):
