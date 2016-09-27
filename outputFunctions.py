@@ -25,47 +25,57 @@ def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
         return 0
 
     fR1=react1[0][1:]
-    sR1=react1[1][1:]#switching the ejectile and the residue
+    sR1=react2[0][1:]#switching the ejectile and the residue
+    stringFormat="%.3f\t"*(3-1)+"%.3f"
     if fR1[1] != False:
-        stringFormat="%.3f\t"*(len(fR1)-1)+"%.3f"
-        print(str(isoEject)+'\t'+str(isoRes))
+        print(isoEject+'\t'+isoRes)
         print(stringFormat % tuple(fR1))
         print("")
     #The second solution
     if react2 != []:
-        fR2=react2[0][1:]
+        fR2=react1[1][1:]
         sR2=react2[1][1:]
-        if fR2[0] != False:
+        if fR2 != []:
             if fR1[1] == False:
-                print(str(isoEject)+'\t'+str(isoRes))
+                print(isoEject+'\t'+isoRes)
 
-            stringFormat="%.3f\t"*(len(fR2)-1)+"%.3f"
             print(stringFormat % tuple(fR2))
             print("")
 
-    if sR1:
-        print(str(isoRes)+'\t'+str(isoEject))
+    if sR1 != [False,False,False]:
+        print(isoRes+'\t'+isoEject)
         print(stringFormat % tuple(sR1))
         print("")
     if sR2 != []:
-        stringFormat="%.3f\t"*(len(sR2)-1)+"%.3f"
+        if sR1 == []:
+            print(isoRes+'\t'+isoEject)
+            print("\n")
         print(stringFormat % tuple(sR2))
         print("")
 
 def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
     xReactL=xReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
-    xReact=[]
+    xReactF=[]
+    xReactSDict={}
     for lr in xReactL:
         exitReact=lr[0]
+        exitRString=exitReact[0]+'\t'+exitReact[1]
+        if exitRString not in xReactSDict:
+            xReactSDict[exitRString]=[]
         # print("exitReact = ", exitReact)
         for info in lr[1:]:
             # print("info = ", info)
             firstSolEs=[[val[0],val[1][0]] for val in info]
-        xReact.append([exitReact,firstSolEs])
+            secSolEs=[[val[0],val[1][1]] for val in info]
+            xReactSDict[exitRString].append(secSolEs)
+        xReactF.append([exitReact,firstSolEs])
 
-    for e in xReact:
-        print(str(e[0][0])+'\t'+str(e[0][1]))
-        stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
+    stringFormat="%d\t"+"%.3f\t\t"+"%.3f\t"*2+"%.3f"
+
+    for e in xReactF:
+        if e[1] == []:
+            continue
+        print(e[0][0]+'\t'+e[0][1])
         for ee in e[1]:
             level=ee[0][0]
             lE=ee[0][1]
@@ -73,6 +83,7 @@ def pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2):
             tup=(level,lE, rest[0],rest[1],rest[2])
             print(stringFormat % tuple(tup))
         print("")
+
 
 def pXXTremeTest(iso1,iso2,Elab,angle):
     XXList=xXTremeTest(iso1,iso2,Elab,angle)
@@ -99,12 +110,29 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
                     print(stringFormat % tup)
                 print("")
 
-    
 def pXTremeTest(iso1,iso2,Elab,angle):
-    val=xTremeTest(iso1,iso2,Elab,angle)
+    # print("Inside pXTremeTest")
+    rawVal=xTremeTest(iso1,iso2,Elab,angle)
+    # print(rawVal)
+    # print(len(rawVal))
+    # print(rawVal[0])
+    # print("rawVal")
+    # print(rawVal)
+    # val=[[e[0], e[1][0]] for e in rawVal]
+
+    # dictSecSol={}
+    # for rV in rawVal:
+    #     stringEntry=rV[0][0]+"\t"+rV[0][1]
+    #     if stringEntry not in dictSecSol:
+    #         dictSecSol[stringEntry]=[]
+    #     dictSecSol[stringEntry].append(rV[1][1])
+
+    # valSecSol=[[e[0], e[1][1]] for e in rawVal]
     stringFormat="%.3f\t%.3f\t%.3f"
     stringFormat2="%s\t%s"
-    for v in val:
+    # print(valSecSol)
+    for v in rawVal:
+        # print("vS =", vS)
         isoE=v[0][0]
         isoR=v[0][1]
         ejectE=v[1][0][1]
@@ -122,6 +150,10 @@ def pXTremeTest(iso1,iso2,Elab,angle):
         print(stringFormat2 %(isoR,isoE))
         print(stringFormat % tuple(tup))
         print("")
+        # print("Second solution stuff")
+        # theString=isoE+'\t'+isoR
+        # if theString in dictSecSol:
+        #     print(dictSecSol[theString])
 
 
 #Printing it nicely for a spreadsheet.

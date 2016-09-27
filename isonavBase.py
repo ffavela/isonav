@@ -124,9 +124,6 @@ def getAllVs(iso1,iso2,isoE,isoR,E1L):
     print(ejectE,resE)
     vE=sqrt(2.0*ejectE/getEMass(isoE))*c
     vR=sqrt(2.0*resE/getEMass(isoR))*c
-    print(v1cm,v2cm)
-    print(Vcm)
-    print(vE,vR)
 
 ############################################
 
@@ -514,11 +511,11 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
         isoRes=e[1]
         react1,react2=sReaction(iso1,iso2,isoEject,isoRes,E,ang)
 
-        if react1==False:
+        if react1[0]==[False,False,False,False]:
             break
-        if react1[0]!=False and react1[1]!=[]:
-            # print("react1[0], react1[1] =", react1[0], react1[1])
-            l.append([e,react1])
+
+        # print("react1[0], react1[1] =", react1[0], react1[1])
+        l.append([e,[react1[0],react2[0]]])
     return l
 #returns the corresponding fused element, along with the max populated
 #level and the corresponding remaining energy
@@ -1282,8 +1279,6 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
 def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
     m1=getEMass(iso1)+redXL[0]
     m2=getEMass(iso2)+redXL[1]
-    # print "Ecm = ", Ecm
-    # print "m1,m2 =", m1,m2
     if Ecm<=0:
         return False,False
     v1cm=sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
@@ -1328,6 +1323,9 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         #Using the backward solution for this case
         vxa1=Vcm*(1-sqrt(discr))/(1+kAng**2)
         secSol=False
+    if Vcm<=vEcm:
+        #There can only be one solution in this case.
+        secSol=False
 
     #Ignoring the second solutions for now
     # vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
@@ -1370,7 +1368,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
-    firstSol=[angLA1,Ea1,angLB1,Eb1]
+    firstSolList=[angLA1,Ea1,angLB1,Eb1]
 
     secSolList=[]
     if secSol:
@@ -1404,10 +1402,10 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         Ea2=getEFromV(isoEject,va2)
         Eb2=getEFromV(isoRes,vb2)
 
-        secSol=[angLA2,Ea2,angLB2,Eb2]
+        secSolList=[angLA2,Ea2,angLB2,Eb2]
 
     #Angle is in radians
-    return [firstSol,secSol]
+    return [firstSolList,secSolList]
 
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
