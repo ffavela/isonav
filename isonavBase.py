@@ -771,7 +771,6 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
     reactions=nReaction(iso1,iso2)
     rStuff=[]
     for e in reactions:
-        # print e
         if 'None' in e:
             continue
 
@@ -785,11 +784,10 @@ def xXTremeTest(iso1,iso2,E=10,ang=30):
             exitReact=lr[0]
             for info in lr[1:]:
                 firstSolEs=[[val[0],val[1][0]] for val in info]
-                react.append([exitReact,firstSolEs])
+                secSol=[[val[0],val[1][1]] for val in info]
+                react.append([exitReact,firstSolEs,secSol])
 
-        # for lr in reactL:
-        #     reactVal=[[val[0],val[1][0]] for val in lr]
-        #     react.append(reactVal)
+        #Is this meaningful?
         if react==False:
             break
 
@@ -831,6 +829,7 @@ def fReact(E,bE,angle,rList,tol=140):
         print("######################")
         print(iR)
         print("######################")
+        #Need to be upgraded for second sol from xXtremeTest
         XXList=xXTremeTest(iR[0],iR[1],bE,angle)
         # pXXTremeTest(XXList)
         pFReact(E,tol,XXList)

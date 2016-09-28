@@ -121,6 +121,21 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
                     tup=(level,levE,ejectE,resAng,resE)
                     print(stringFormat % tup)
                 print("")
+                secStateBool=False
+                for secStates in ee[2]:
+                    if secStates[1] != []:
+                        secStateBool=True
+                        level=secStates[0][0]
+                        levE=secStates[0][1]
+                        ejectE=secStates[1][1]
+                        resAng=secStates[1][2]
+                        resE=secStates[1][3]
+                        tup=(level,levE,ejectE,resAng,resE)
+                        print(stringFormat % tup)
+                if secStateBool:
+                    print("")
+                        
+
 
 def pXTremeTest(iso1,iso2,Elab,angle):
     rawVal=xTremeTest(iso1,iso2,Elab,angle)
