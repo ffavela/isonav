@@ -514,8 +514,9 @@ def xTremeTest(iso1,iso2,E=10,ang=30):
         if react1[0]==[False,False,False,False]:
             break
 
-        # print("react1[0], react1[1] =", react1[0], react1[1])
-        l.append([e,[react1[0],react2[0]]])
+        firstSols=[react1[0],react2[0]]
+        secSols=[react1[1],react2[1]]
+        l.append([e,firstSols,secSols])
     return l
 #returns the corresponding fused element, along with the max populated
 #level and the corresponding remaining energy

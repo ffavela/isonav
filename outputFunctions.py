@@ -123,50 +123,53 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
                 print("")
 
 def pXTremeTest(iso1,iso2,Elab,angle):
-    # print("Inside pXTremeTest")
     rawVal=xTremeTest(iso1,iso2,Elab,angle)
-    # print(rawVal)
-    # print(len(rawVal))
-    # print(rawVal[0])
-    # print("rawVal")
-    # print(rawVal)
-    # val=[[e[0], e[1][0]] for e in rawVal]
 
-    # dictSecSol={}
-    # for rV in rawVal:
-    #     stringEntry=rV[0][0]+"\t"+rV[0][1]
-    #     if stringEntry not in dictSecSol:
-    #         dictSecSol[stringEntry]=[]
-    #     dictSecSol[stringEntry].append(rV[1][1])
+    dictSecSol={}
+    for rV in rawVal:
+        stringEntry=rV[0][0]+"\t"+rV[0][1]
+        if stringEntry not in dictSecSol:
+            dictSecSol[stringEntry]=rV[2]
 
-    # valSecSol=[[e[0], e[1][1]] for e in rawVal]
     stringFormat="%.3f\t%.3f\t%.3f"
     stringFormat2="%s\t%s"
-    # print(valSecSol)
     for v in rawVal:
-        # print("vS =", vS)
         isoE=v[0][0]
         isoR=v[0][1]
         ejectE=v[1][0][1]
         resAng=v[1][0][2]
         resE=v[1][0][3]
         tup=(ejectE,resAng,resE)
-        print(stringFormat2 %(isoE,isoR))
-        print(stringFormat % tuple(tup))
-        print("")
-        # print("v = ",v)
+        isosString1=isoE+'\t'+isoR
+        if tup != (False,False,False):
+            print(isosString1)
+            print(stringFormat % tuple(tup))
+            print("")
+            if dictSecSol[isosString1][0] != []:
+                vv=dictSecSol[isosString1][0]
+                ejectE=vv[1]
+                resAng=vv[2]
+                resE=vv[3]
+                tup=(ejectE,resAng,resE)
+                print(stringFormat % tuple(tup))
+                print("")
         ejectE=v[1][1][1]
         resAng=v[1][1][2]
         resE=v[1][1][3]
         tup=(ejectE,resAng,resE)
-        print(stringFormat2 %(isoR,isoE))
-        print(stringFormat % tuple(tup))
-        print("")
-        # print("Second solution stuff")
-        # theString=isoE+'\t'+isoR
-        # if theString in dictSecSol:
-        #     print(dictSecSol[theString])
-
+        isosString2=isoR+'\t'+isoE
+        if tup != (False,False,False):
+            print(isosString2)
+            print(stringFormat % tuple(tup))
+            print("")
+            if dictSecSol[isosString1][1] != []:
+                vv=dictSecSol[isosString1][1]
+                ejectE=vv[1]
+                resAng=vv[2]
+                resE=vv[3]
+                tup=(ejectE,resAng,resE)
+                print(stringFormat % tuple(tup))
+                print("")
 
 #Printing it nicely for a spreadsheet.
 def tNReaction(iso1,iso2):
