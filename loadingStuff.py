@@ -23,7 +23,7 @@ import sys
 from enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
-    DATA_PATH = "/usr/share/isonav/data1p4p3"
+    DATA_PATH = "/usr/share/isonav/data1p4p4"
 # elif os.path.dirname(__file__) == ".":
 else:
     # fileName=os.path.dirname(__file__)
