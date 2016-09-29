@@ -231,6 +231,7 @@ def getChemDict(chemTxtFile):
 
 #If the material database has to be modified then edit the txt file and
 #then run this command inside the repo's folder: saveChemDat()
+####################DON'T FORGET TO REINSTALL!!!!!#############
 def saveChemDat():
     chemDict=getChemDict(chemTxt)
     pickle.dump(chemDict,open(chemPkl,"wb"))
