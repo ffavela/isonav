@@ -23,11 +23,11 @@ import sys
 from enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
-    DATA_PATH = "/usr/share/isonav/data1p4p4"
+    DATA_PATH = "/usr/share/isonav/data1p4p5"
 # elif os.path.dirname(__file__) == ".":
 else:
     # fileName=os.path.dirname(__file__)
-    DATA_PATH ="./data1p4p3"
+    DATA_PATH ="./data1p4p5"
     print("#You do not have a working installation of isonav")
     print("#See the installation procedure in the README file")
     # sys.exit(1)
@@ -138,7 +138,7 @@ def populateDict():
         print("#Dictionary file does not exist, creating it")
         iDict=populateDict1()
         iDict=populateDict2(iDict)
-        pickle.dump(iDict,open(isoDictLoc,"wb"))
+        pickle.dump(iDict,open(isoDictLoc,"wb"),2)
     return iDict
 
 def fastPopulateDict():
@@ -148,7 +148,7 @@ def fastPopulateDict():
     else:
         print("#Dictionary file does not exist, creating it")
         iDict=populateDict1()
-        pickle.dump(iDict,open(isoDictMassLoc,"wb"))
+        pickle.dump(iDict,open(isoDictMassLoc,"wb"),2)
     return iDict
     
 def putIsoData():
@@ -233,8 +233,10 @@ def getChemDict(chemTxtFile):
 #then run this command inside the repo's folder: saveChemDat()
 ####################DON'T FORGET TO REINSTALL!!!!!#############
 def saveChemDat():
+    print("Creating the pickle file for chemDat")
     chemDict=getChemDict(chemTxt)
-    pickle.dump(chemDict,open(chemPkl,"wb"))
+    #Specifying protocol 2 since 3 is backwards incompatible
+    pickle.dump(chemDict,open(chemPkl,"wb"),2)
 
 def getChemDictFromFile():
     chemDict=pickle.load(open(chemPkl,"rb"))

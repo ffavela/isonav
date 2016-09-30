@@ -38,11 +38,11 @@ then
     exit 1
 fi
 
-if [ ! -d data1p4p4 ]
+if [ ! -d data1p4p5 ]
 then
     printf "${RED}Error; no data directory${NC}\n"
     echo "Download the new database from:"
-    echo "https://drive.google.com/open?id=0B2znJ2THUGDia19QTWtmQkZ1M0E"
+    echo "https://drive.google.com/open?id=0B2znJ2THUGDiWU5BYkFIVUdkdFk"
     echo "And uncompress it inside the repo's directory"
     exit 2
 fi
@@ -50,7 +50,7 @@ fi
 mkdir /usr/share/isonav
 [ $? -ne 0 ] && echo "Error; try running with sudo" && exit 3
 chmod +x isonav.py
-cp -r data1p4p4 /usr/share/isonav
+cp -r data1p4p5 /usr/share/isonav
 cp isonav.py /usr/share/isonav
 cp isoParser.py /usr/share/isonav
 cp isonavBase.py /usr/share/isonav
