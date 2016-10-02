@@ -1297,6 +1297,8 @@ def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     maxAng=getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)[0]
     if maxAng=="NaN":
         return "NaN"
+    if angle>=maxAng:
+        return [[False,False,False,False],[]]
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
     sol1,sol2=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
@@ -1410,6 +1412,8 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
 # def getMaxAngles(v1L,v2L,m1,m2):
 def getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
+    if Vcm == False:
+        return ["NaN","NaN"]
     k1=1.0*vEcm/Vcm
     k2=1.0*vRcm/Vcm
     # print "k1,k2 = ",k1,k2
