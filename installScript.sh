@@ -79,7 +79,22 @@ then
 fi
 
 mkdir /usr/share/isonav
-[ $? -ne 0 ] && echo "Error; try running with sudo" && exit 3
+exVal=$?
+if [ $exVal -ne 0 ]
+then
+    echo "Error; try running with sudo"
+
+    printf "If you have a ${RED}Mac computer${NC} and you get an\n"
+    echo "\"Operation not permitted\" (even with sudo) error there is a work
+around, you'll need to disable the System Integrity
+Protection. Simply reboot and press Cmd-R then open a
+terminal and type \"csrutil disable\" (without the
+quotes) reboot and run the install script again. It
+is encouraged to reenable it after the installation is done."
+
+    exit 3
+fi
+
 chmod +x isonav.py
 cp -r $databaseName /usr/share/isonav
 cp isonav.py /usr/share/isonav

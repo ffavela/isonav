@@ -54,6 +54,13 @@ If you don't have the latest database the install script will try to
 download it, if it fails then it will tell you what might be wrong and
 where to download it manually in case the failing continues.
 
+If you have an Mac computer and you get an "Operation not permitted"
+error there is a work around, you'll need to disable the System
+Integrity Protection. Simply reboot and press Cmd-R then open a
+terminal and type "csrutil disable" (without the quotes) reboot and
+run the install script again. It is encouraged to reenable it after
+the installation is done.
+
 In case you need uninstalling, simply do a:
 
 $ sudo ./installScript.sh --uninstall
