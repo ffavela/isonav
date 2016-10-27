@@ -31,7 +31,8 @@ $ git clone https://github.com/ffavela/isonav
 
 (Note: if you have already cloned in order to get the newer version do a
 $ git pull
-whithin the isonav directory)
+whithin the isonav directory). Please do this regularly to keep it updated,
+the program is in beta.
 
 And the repository will be cloned to your computer.
 
@@ -52,7 +53,10 @@ $ sudo ./installScript.sh
 
 If you don't have the latest database the install script will try to
 download it, if it fails then it will tell you what might be wrong and
-where to download it manually in case the failing continues.
+where to download it manually in case the failing continues. Make sure
+that "curl" is installed, for ubuntu users you can install it via:
+
+sudo apt-get install curl
 
 If you have an Mac computer and you get an "Operation not permitted"
 error there is a work around, you'll need to disable the System

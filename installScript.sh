@@ -67,6 +67,7 @@ then
     then
 	printf "${RED}Error downloading database from:${NC}\n"
 	echo "$dbURL"
+  printf "${GREEN}Check if curl is installed${NC}\n"
 	printf "${BLUE}Do you have internet connection?:${NC}\n"
 	printf "${GREEN}Perhaps google drive is blocked in${NC}\n"
 	printf "${GREEN}your area or it is down.${NC}\n"
