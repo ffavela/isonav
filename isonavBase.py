@@ -1,4 +1,4 @@
-#   Copyright (C) 2016 Francisco Favela
+#   Copyright (C) 2015, 2016 Francisco Favela
 
 #   This file is part of isonav
 
@@ -1487,6 +1487,14 @@ def getBeta(iso,E):
     #Using the relativistic version
     beta=sqrt(1-(1/(E/m+1))**2)
     return beta
+
+def getTOF(iso,E,L):
+    #Here L is in meters
+    beta=getBeta(iso,E)
+    v=c*beta
+    #t is in seconds
+    t=L/v
+    return t
 
 def getElectDensity(Z,A_r,rho):
     """Returns the electron density, in #e^-/cm^3"""

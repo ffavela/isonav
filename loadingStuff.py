@@ -1,4 +1,4 @@
-#   Copyright (C) 2016 Francisco Favela
+#   Copyright (C) 2015, 2016 Francisco Favela
 
 #   This file is part of isonav
 
