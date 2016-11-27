@@ -42,7 +42,7 @@ def testVal(stuff,strFlag="E"):
         stuff=None
     val=isinstance(stuff,float) or isinstance(stuff,int)
     if val:
-        if strFlag=="E" or strFlag=="T":
+        if strFlag=="E" or strFlag=="T" or strFlag=="L":
             if not 0<=stuff:
                 return False
         if strFlag=="angle":
@@ -82,6 +82,9 @@ def argHand(args):
     lsMat=args["--listMaterials"]
     xF1=args["--xF1"]
     xF2=args["--xF2"]
+    L=args["--L4TOF"]
+    redDeBroglie=args["--redDeBroglie"]
+    deBroglieFlag=args["--deBroglie"] or redDeBroglie
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -175,7 +178,7 @@ def argHand(args):
         pLevels(iso)
         return 0
 
-    if Elab != None and iso :
+    if Elab != None and iso and deBroglieFlag:
         if verbose==True:
             print("#Returns the deBroglie wavelength by default, in angstrom")
 
@@ -189,13 +192,33 @@ def argHand(args):
             return 1
 
         if testVal(Elab):
-            if args["--redDeBroglie"]:
+            if redDeBroglie:
                 print(reducedDeBroglie(iso,Elab))
             else:
                 print(deBroglie(iso,Elab))
             return 0
         print("Error; Elab needs a numerical value")
         return 2
+
+    if L != None and Elab != None and iso:
+        if verbose == True:
+            print("Given an isotope, an energy in MeV & a length in cm")
+            print("it returns the time of flight in ns.")
+        if not testVal(L,"L"):
+            print("Error; Length has to be a positive number")
+            return 1029
+        L=float(L)/100 #because input is in cm
+
+        if not testVal(Elab,"E"):
+            print("Error; energy has to be a positive number")
+            return 1028
+        Elab=float(Elab)
+
+        tof=getTOF(iso,Elab,L)
+        tof *= 10**9 #because output is in ns
+        print(tof)
+        return 0
+
 
     if args["-m"] or args["--mass"]:
         if verbose==True:
