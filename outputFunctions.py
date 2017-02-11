@@ -192,13 +192,16 @@ def tNReaction(iso1,iso2):
     for e in rList:
         if e[2]=='None':
             string1=str(e[0])+'\t'+str(e[1])+'\t'+str(e[2])+'\t'
-            print(string1+"{0:0.2f}".format(float(e[3])))
+            print(string1+"{0:0.2f}".format(float(e[3]))+"\tNone")
         else:
             string2=e[0]+'\t'+e[1]+'\t'+"{0:0.2f}".format(float(e[2]))
             string3='\t'+"{0:0.2f}".format(float(e[3]))
-            print(string2+string3)
+            coulE=coulombE(e[0],e[1])
+            string4='\t'+"{0:0.2f}".format(float(coulE))
+            print(string2+string3+string4)
 
 ##Printing latex fiendly nReaction
+#Add the coulomb E functionality also here
 def latexNReaction(iso1,iso2):
     reacList=nReaction(iso1,iso2)
     a1,key1=getIso(iso1)

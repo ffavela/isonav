@@ -289,7 +289,7 @@ def argHand(args):
             print("#Or the possible reactions.")
         if args["--reactions"]:
             if verbose==True:
-                print("#Eject\tResidue\tThres\tQValue")
+                print("#Eject\tResidue\tThres\tQValue\tcoulombE")
 
             if not checkIsoExistence(iso1,iso2):
                 return 665
