@@ -26,6 +26,13 @@ DONE!! (only for the masses)
 
 Make a man page: example;  $ man isonav
 
+Add coulomb energy for binary exit channels. DONE
+
+Include an Elab option for looking up to which channels get opened.
+
+Add additionally a sorting with respect of coulomb for the opened channels.
+
+Add capability of printing higher order reactions (ternary, quaternary ...)
 BUGS:
 
     isotopes with names 1950s and 1940s appear sometimes, for example:
