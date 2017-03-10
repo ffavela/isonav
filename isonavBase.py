@@ -55,7 +55,7 @@ def getPnum(iso):
     if k not in listStuff:
         return False
     return listStuff.index(k)
-        
+
 def getNnum(iso):
     A,k=getIso(iso)
     return A-getPnum(k)
@@ -162,7 +162,7 @@ def mirror(iso):
     mE=getKey(pNumber)
     isoM=str(ma)+str(mE)
     return isoM
-    
+
 def coulombE(iso1,iso2):
     z1=getPnum(iso1)
     z2=getPnum(iso2)
@@ -259,7 +259,7 @@ def reaction(iso1,iso2):
                     return reactionList
                 rKey=getKey(pRes)
                 eKey=getKey(pEject)
-            
+
                 aRes-=1
                 aEject+=1
                 if iterator>maxLoop:
@@ -276,7 +276,7 @@ def nReaction(iso1,iso2):
     if ls==False:
         print("An error ocurred")
         return False
-    #Sort the list elements in terms of their 
+    #Sort the list elements in terms of their
     #Q value
     ls.sort(key=lambda x: x[3],reverse=True)
     return ls
@@ -334,7 +334,7 @@ def emitDecayQVal(iso,emit="4He",num=1):
 
     QVal=getQVal(isoEMass,0,newIsoEMass,emitEMass*num)
     return QVal
-    
+
 def getNewIso(iso,emit="4He",num=1):
     isoN=getNnum(iso)
     isoP=getPnum(iso)
@@ -360,8 +360,8 @@ def getNewIso(iso,emit="4He",num=1):
         return False
 
     return newIso
-    
-    
+
+
 #Still working on this
 # #Given an isotope, the ejectile nucleus, the Daughter and the available
 # #energy (in CM, not Q), it returns all the possible combinations of
@@ -473,7 +473,7 @@ def solveNum(ang,vE,vR,Vcm,isoE,isoR,exList=[0,0,0,0]):
         vEz=vE*cos(thEject)
         vRy=vR*sin(pi-thEject)
         vRz=vR*cos(pi-thEject)
-         
+
         #They actually have to be zero
         ### deltaPy=(vEy*emE-vRy*emR)*1.0/c**2
         ### deltaPz=(vEz*emE+vRz*emR)*1.0/c**2
@@ -696,7 +696,7 @@ def exLevReact(ang,iso1,iso2,isoEject,isoRes,E1L,E2L,eVal=1):
             break
         levList.append([e,[numSol1,numSol2]])
     return levList
-    
+
 def getQVal(m1,m2,m3,m4):
     Q=(m1+m2-m3-m4)
     return Q
@@ -958,7 +958,7 @@ def getEsAndAngs(iso1,iso2,isoE,isoR,E1L,E2L=0,thetaL=0,\
     vEz=vE*cos(thEjectCM)
     vRy=vR*sin(theResCM)
     vRz=vR*cos(theResCM)
-    
+
     thEjectLab=atan(vEy/(vEz+Vcm))
     ELabEject=emE*(vEy**2+(vEz+Vcm)**2)/(2*c**2)
     theResLab=atan(vRy/(vRz+Vcm))
@@ -1008,7 +1008,7 @@ def getT(ps,ts,E,angle,Nr,dOmega):
     return 1.0*Nr/(rutherfordLab0(ps,ts,E,angle)*dOmega)
 
 def getdSigma(Nn,dOmega,T):
-   return 1.0*Nn/(dOmega*T) 
+   return 1.0*Nn/(dOmega*T)
 
 def getdSigma2(pIso,tIso,Nruth,Nnucl,ELab,angle):
     return 1.0*Nnucl/Nruth*rutherfordLab0(pIso,tIso,ELab,angle)
@@ -1022,7 +1022,7 @@ def getDensityIncmSquare(T,current):
     nPart=current2Part(current)
     mBarn2cm2=1E-27
     return T/(mBarn2cm2*nPart)
-    
+
 #Binding Energy
 def getBE(iso):
     # iso=str(A)+s
@@ -1138,7 +1138,7 @@ def yukawaDCS(isop,isot,E,theta,beta,mu):
     k=sqrt(2*eMass*E/hbc)
     kappa=2*k*sin(theta/2)
     return (-2*eMass*beta/(hbc**2*(mu**2+kappa**2)))**2
-    
+
 #Getting the total CS for the Yukawa potential, Griffiths 11.12 Note;
 #this is still in testing
 def yukawaTCS(isop,isot,E,theta,beta,mu):
@@ -1501,7 +1501,7 @@ def getElectDensity(Z,A_r,rho):
     #Properly is; n=(N_a*Z*rho)/(A*M_u), but M_u=1 g/mol
     n=(N_a*Z*rho)/A_r
     return n
-    
+
 def getBlochMeanExcE(Z):
     """Returns the Bloch approximation of the mean ionization potential in
     eV """
@@ -1547,6 +1547,18 @@ def getBetheLoss(iso,E,material):
     material, it includes soft and hard scattering.
 
     """
+    beta=getBeta(iso,E)
+    beta2=beta**2
+    coefs=getCBbetaCoef(iso,material)
+    if coefs == None:
+        return None
+    C_beta,B_beta = coefs
+    #remember dE/dx is negative, it is the relativistic formula
+    dEx=C_beta/beta2*(log((B_beta*beta2)/(1-beta2))-beta2)
+    dEx*=10**(9) #Converting the units into MeV/mu^3
+    return dEx
+
+def getCBbetaCoef(iso, material):
     Z,A_r,rho,I=getMaterialProperties(material)
     if rho == False:
         return None
@@ -1554,16 +1566,12 @@ def getBetheLoss(iso,E,material):
     #n has to be given in #e^-/fm^3
     n*=10**(-39)
     zNum=getPnum(iso)
-    #It doesn't use the relativistic expression yet.
-    beta=getBeta(iso,E)
-    beta2=beta**2
     #"I" was given in eV so it has to be converted in MeV
     I*=10**(-6)
-    #remember dE/dx is negative, it is the relativistic formula
-    dEx=4*pi/electEMass*n*zNum**2/beta2*(hbc*alpha)**2*\
-        (log((2*electEMass*beta2)/(I*(1-beta2)))-beta2)
-    dEx*=10**(9) #Converting the units into MeV/mu^3
-    return dEx
+    C_beta=4*pi/electEMass*n*zNum**2*(hbc*alpha)**2
+    B_beta=2*electEMass/I
+    return C_beta,B_beta
+
 
 def integrateELoss(iso,E,material,thick):
     """Gets the final energy of an ion going through a material with a
@@ -1572,14 +1580,27 @@ def integrateELoss(iso,E,material,thick):
     """
     partitionSize=10000
     dx=1.0*thick/partitionSize
+
+    ##For the criteria of considering the particle has stopped##
+    coefs=getCBbetaCoef(iso,material)
+    if coefs == None:
+        #No material was found
+        return -2
+    C_beta,B_beta = coefs
+    ionMass=getEMass(iso)
+    #e=2.71...
+    EM=e*ionMass/(2*B_beta)
+    dExMax=(C_beta*B_beta)/e
+    fracCrit=0.00010
+    ##############
     for i in range(partitionSize):
         dEx=getBetheLoss(iso,E,material)
         if dEx == None:
             #No material was found
             return -2
         E-=dEx*dx
-        if E<=0:
-            #This probably won't ever happen
+        if E<EM and dEx<fracCrit*dExMax:
+            #Particle has stopped
             return -1
     return E
 #Note that the DeltaEs for alphas of 5.15, 5.48, 5.80 are 2.55, 2.41,
