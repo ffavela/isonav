@@ -1608,6 +1608,33 @@ def integrateELoss(iso,E,material,thick):
             #Particle has stopped
             return -1
     return E
+
+#High energies might take a while
+def getParticleRange(iso,E,material):
+    """Gets the range (in microns) of a charged particle in a material.
+
+    """
+    dx=10**(-2)#TODO: make smarter selection 4 this
+
+    ##For the criteria of considering the particle has stopped##
+    coefs=getCBbetaCoef(iso,material)
+    if coefs == None:
+        #No material was found
+        return -2
+    C_beta,B_beta = coefs
+    ionMass=getEMass(iso)
+    #e=2.71...
+    EM=e*ionMass/(2*B_beta)
+    dExMax=(C_beta*B_beta)/e
+    fracCrit=0.01
+    ##############
+    thick=0
+    while not (E<EM and dEx<=fracCrit*dExMax):
+        dEx=getBetheLoss(iso,E,material)
+        E-=dEx*dx
+        thick+=dx
+
+    return thick
 #Note that the DeltaEs for alphas of 5.15, 5.48, 5.80 are 2.55, 2.41,
 #2.29 for an 11 micron silicon detector (and I think with a 1 micron
 #gold coating)

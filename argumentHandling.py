@@ -76,6 +76,7 @@ def argHand(args):
     ion=args["<ion>"]
     material=args["--material"]
     thick=args["--thickness"]
+    ionRange=args["--range"]
     deltaE=args["--depositedE"]
     bloch=args["--bloch"]
     density=args["--density"]
@@ -503,10 +504,11 @@ def argHand(args):
             print("Error; ion energy has to be a positive number")
             return 12345
         E=float(Elab)
-        if not testVal(thick,"E"):
-            print ("Error; thickness has to be a positive number")
-            return 12346
-        thick=float(thick)
+        if not ionRange:
+            if not testVal(thick,"E"):
+                print ("Error; thickness has to be a positive number")
+                return 12346
+            thick=float(thick)
         #Note checkMaterial loads the proper I (and rho) to a global
         #dictionary so no need to put it as argument in other functions
         #;-)
@@ -525,6 +527,8 @@ def argHand(args):
                 val2Print=E
             else:
                 val2Print=E-eLoss
+        elif ionRange:
+            val2Print=getParticleRange(ion,E,material)
         else:
             val2Print=integrateELoss(ion,E,material,thick)
         print("%.3f" % val2Print)
