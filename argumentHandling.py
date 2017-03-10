@@ -257,7 +257,7 @@ def argHand(args):
             return 999
         print(comptonW(args['<iso>']))
         return 0
-            
+
     if args["--BE"] or args["--BEperNucleon"]:
         if verbose:
             print("#Given an isotope it provides its binding energy")
@@ -414,7 +414,7 @@ def argHand(args):
                     print("#lev\tlevE\t\tEe\tang2L\tEr")
                 pXXTremeTest(iso1,iso2,Elab,angle)
                 return 0
-                    
+
             # print xTremeTest(iso1,iso2,Elab,angle)
             pXTremeTest(iso1,iso2,Elab,angle)
             return 0
@@ -520,7 +520,11 @@ def argHand(args):
             print("Error; material not yet implemented :(")
             return 12347
         if deltaE != False:
-            val2Print=E-integrateELoss(ion,E,material,thick)
+            eLoss=integrateELoss(ion,E,material,thick)
+            if eLoss == -1.0:
+                val2Print=E
+            else:
+                val2Print=E-eLoss
         else:
             val2Print=integrateELoss(ion,E,material,thick)
         print("%.3f" % val2Print)
@@ -555,7 +559,7 @@ def argHand(args):
             finalString+='\t\t'+stringStuff[-1]
             print(finalString)
         return 0
-    
+
     if args["-d"] or args["--donate"]:
         if verbose:
             print("#Make a donation through bitcoin ;)")
