@@ -1558,7 +1558,12 @@ def getBetheLoss(iso,E,material):
     dEx*=10**(9) #Converting the units into MeV/mu^3
     return dEx
 
+CBDictCache={}
+
 def getCBbetaCoef(iso, material):
+    myString="[" + iso + "," + material + "]"
+    if myString in CBDictCache:
+        return CBDictCache[myString]
     Z,A_r,rho,I=getMaterialProperties(material)
     if rho == False:
         return None
@@ -1570,8 +1575,8 @@ def getCBbetaCoef(iso, material):
     I*=10**(-6)
     C_beta=4*pi/electEMass*n*zNum**2*(hbc*alpha)**2
     B_beta=2*electEMass/I
-    return C_beta,B_beta
-
+    CBDictCache[myString]=[C_beta,B_beta]
+    return CBDictCache[myString]
 
 def integrateELoss(iso,E,material,thick):
     """Gets the final energy of an ion going through a material with a
