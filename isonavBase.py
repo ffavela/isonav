@@ -1555,7 +1555,6 @@ def getBetheLoss(iso,E,material):
     C_beta,B_beta = coefs
     #remember dE/dx is negative, it is the relativistic formula
     dEx=C_beta/beta2*(log((B_beta*beta2)/(1-beta2))-beta2)
-    dEx*=10**(9) #Converting the units into MeV/mu^3
     return dEx
 
 CBDictCache={}
@@ -1574,6 +1573,7 @@ def getCBbetaCoef(iso, material):
     #"I" was given in eV so it has to be converted in MeV
     I*=10**(-6)
     C_beta=4*pi/electEMass*n*zNum**2*(hbc*alpha)**2
+    C_beta*=10**(9) #Converting the units into MeV/mu^3
     B_beta=2*electEMass/I
     CBDictCache[myString]=[C_beta,B_beta]
     return CBDictCache[myString]
@@ -1596,7 +1596,7 @@ def integrateELoss(iso,E,material,thick):
     #e=2.71...
     EM=e*ionMass/(2*B_beta)
     dExMax=(C_beta*B_beta)/e
-    fracCrit=0.00010
+    fracCrit=0.01
     ##############
     for i in range(partitionSize):
         dEx=getBetheLoss(iso,E,material)
@@ -1604,7 +1604,7 @@ def integrateELoss(iso,E,material,thick):
             #No material was found
             return -2
         E-=dEx*dx
-        if E<EM and dEx<fracCrit*dExMax:
+        if E<EM and dEx<=fracCrit*dExMax:
             #Particle has stopped
             return -1
     return E
