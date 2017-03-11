@@ -1629,6 +1629,8 @@ def getParticleRange(iso,E,material):
     fracCrit=0.01
     ##############
     thick=0
+    #The following is for when E is less than EM initially
+    dEx=getBetheLoss(iso,E,material)
     while not (E<EM and dEx<=fracCrit*dExMax):
         dEx=getBetheLoss(iso,E,material)
         E-=dEx*dx
