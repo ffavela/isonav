@@ -111,6 +111,16 @@ def getEcmsFromECM(iso1,iso2,ECM):
     E2=0.5*(P*c)**2/m2
     return E1,E2
 
+def getEcmsFromECM2(m1,m2,ECM):
+    #For example, in a decay ECM=Q
+    # m1=getEMass(iso1)
+    # m2=getEMass(iso2)
+    mu=1.0*m1*m2/(m1+m2)
+    P=sqrt(2.0*mu*ECM)/c
+    E1=0.5*(P*c)**2/m1
+    E2=0.5*(P*c)**2/m2
+    return E1,E2
+
 def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L=0):
     E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
@@ -982,12 +992,12 @@ def getMaxAng(iso1,iso2,isoE,isoR,E1L,E2L=0,exList=[0,0,0,0]):
     if r1>=1:
         maxAng1=pi
     else:
-        maxAng1=atan(r1/sqrt(1.0-r1**2))
+        maxAng1=atan2(r1,sqrt(1.0-r1**2))
 
     if r2>=1:
         maxAng2=pi
     else:
-        maxAng2=atan(r2/sqrt(1.0-r2**2))
+        maxAng2=atan2(r2,sqrt(1.0-r2**2))
 
     return [degrees(maxAng1),degrees(maxAng2)]
 
@@ -1335,7 +1345,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # vya2=kAng*vxa2
     va1=sqrt(vxa1**2+vya1**2)
     # va2=sqrt(vxa2**2+vya2**2)
-    angLA1=atan(vya1/vxa1)
+    angLA1=atan2(vya1,vxa1)
     # angLA2=atan(vya2/vxa2)
 
     #To get the angle and velocity of the corresponding particle, we
@@ -1349,7 +1359,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     sa1=vya1CM/vxa1CM
     # sa2=vya2CM/vxa2CM
     #3.- The corresponding angles
-    angA1=atan(sa1)
+    angA1=atan2(vya1CM,vxa1CM)
     # angA2=atan(sa2)
     # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
     angB1=angA1-pi
@@ -1366,7 +1376,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # vxb2=vxb2CM+Vcm
     # vyb2=vyb2CM
     # vb2=sqrt(vxb2**2+vyb2**2)
-    angLB1=atan(vyb1/vxb1)
+    angLB1=atan2(vyb1,vxb1)
     # angLB2=atan(vyb2/vxb2)
     Ea1=getEFromV(isoEject,va1)
     Eb1=getEFromV(isoRes,vb1)
@@ -1378,7 +1388,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
         vya2=kAng*vxa2
         va2=sqrt(vxa2**2+vya2**2)
-        angLA2=atan(vya2/vxa2)
+        angLA2=atan2(vya2,vxa2)
 
         #To get the angle and velocity of the corresponding particle, we
         #do the following 1.- Get the center of mass velocity of
@@ -1389,7 +1399,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         #2.- Get the slopes
         sa2=vya2CM/vxa2CM
         #3.- The corresponding angles
-        angA2=atan(sa2)
+        angA2=atan2(vya2CM,vxa2CM)
         # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
         angB2=angA2-pi
         #4.- The corresponding center of mass velocity values
@@ -1400,7 +1410,7 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         vyb2=vyb2CM
         vb2=sqrt(vxb2**2+vyb2**2)
         # print(vb2)
-        angLB2=atan(vyb2/vxb2)
+        angLB2=atan2(vyb2,vxb2)
         Ea2=getEFromV(isoEject,va2)
         Eb2=getEFromV(isoRes,vb2)
 
