@@ -18,8 +18,9 @@
 from isonavBase import *
 import webbrowser
 
-def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
-    react1,react2=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang)
+def pSReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30,\
+               exList=[0,0,0,0]):
+    react1,react2=sReaction(iso1,iso2,isoEject,isoRes,ELab,ang,exList)
     if not react1:
         print("Reaction is invalid")
         return 0
@@ -136,7 +137,7 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
                         print(stringFormat % tup)
                 if secStateBool:
                     print("")
-                        
+
 def pXTremeTest(iso1,iso2,Elab,angle):
     rawVal=xTremeTest(iso1,iso2,Elab,angle)
 
@@ -209,7 +210,7 @@ def latexNReaction(iso1,iso2):
     sa1=str(a1)
     sa2=str(a2)
     print("""\\begin{eqnarray*} """)
-    
+
     print(' ^{'+sa1+'}\mathrm{'+key1+'}+'+' ^{'+sa2+'}\mathrm{'+key2+'}\longrightarrow ')
     maxVal=len(reacList)
     for r in reacList:
@@ -292,4 +293,3 @@ def pName(s):
     eName=getNameFromSymbol(s)
     if eName != False:
         print(eName)
-

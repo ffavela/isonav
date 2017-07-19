@@ -81,6 +81,8 @@ def argHand(args):
     bloch=args["--bloch"]
     density=args["--density"]
     lsMat=args["--listMaterials"]
+    xEje=args["--xEje"]
+    xRes=args["--xRes"]
     xF1=args["--xF1"]
     xF2=args["--xF2"]
     L=args["--L4TOF"]
@@ -485,7 +487,26 @@ def argHand(args):
             pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
             return 0
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
-        pSReaction(isop,isot,isoE,isoR,Elab,angle)
+
+        if xEje != None:
+            if not testVal(xEje,"E"):
+                print("Error; ejectile excitation energy has to be a positive number")
+                return 798
+            xEje=float(xEje)
+        else:
+            xEje=0.0
+
+        if xRes != None:
+            if not testVal(xRes,"E"):
+                print("Error; residual excitation energy has to be a positive number")
+                return 799
+            xRes=float(xRes)
+        else:
+            xRes=0.0
+
+        exList=[0,0,xEje,xRes]
+        print("Calling pSReaction xEje, xRes = ",xEje,xRes)
+        pSReaction(isop,isot,isoE,isoR,Elab,angle,exList)
         return 0
 
     if args["--material"] and Elab != None:

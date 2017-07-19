@@ -425,7 +425,7 @@ def checkReaction(iso1,iso2,isoEject,isoRes):
     print("Reaction is invalid")
     return False
 
-def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
+def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30,exList=[0,0,0,0]):
     a1,key1=getIso(iso1)
     a2,key2=getIso(iso2)
     aEject,eject=getIso(isoEject)
@@ -435,20 +435,8 @@ def sReaction(iso1,iso2,isoEject,isoRes,ELab=2.9,ang=30):
     if not checkArguments(ELab,react,eject,res):
         return False
 
-    # vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
-    # if vE==False:
-    #     return False
-
-    # s1=solveNum(ang,vE,vR,Vcm,isoEject,isoRes)
-    # s2=solveNum(ang,vR,vE,Vcm,isoRes,isoEject)
-
-    # s1=getEsAndAngs(ang,iso1,iso2,isoEject,isoRes,ELab)
-    # s2=getEsAndAngs(ang,iso1,iso2,isoRes,isoEject,ELab)
-
-    # potential BUG, the signs switch sometimes when comparing with the
-    # solutions above
-    s1=analyticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang)
-    s2=analyticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang)
+    s1=analyticSol(iso1,iso2,isoEject,isoRes,ELab,angle=ang,exList=exList)
+    s2=analyticSol(iso1,iso2,isoRes,isoEject,ELab,angle=ang,exList=exList)
 
     solution=[s1,s2]
     return solution
@@ -714,7 +702,7 @@ def getQVal(m1,m2,m3,m4):
 def getIsoQVal(iso1,iso2,iso3,iso4,exList=[0,0,0,0]):
     if not checkReaction(iso1,iso2,iso3,iso4):
         return False
-    m1=getEMass(iso1)+exList[0]#Adding mas excitations
+    m1=getEMass(iso1)+exList[0]#Adding mass excitations
     m2=getEMass(iso2)+exList[1]
     m3=getEMass(iso3)+exList[2]
     m4=getEMass(iso4)+exList[3]
