@@ -505,7 +505,6 @@ def argHand(args):
             xRes=0.0
 
         exList=[0,0,xEje,xRes]
-        print("Calling pSReaction xEje, xRes = ",xEje,xRes)
         pSReaction(isop,isot,isoE,isoR,Elab,angle,exList)
         return 0
 
