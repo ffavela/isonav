@@ -47,7 +47,7 @@ function myHelp(){
            Does simple binary kinematics on CHIMERA\n
            says which rings are incoincidence\n
            by default it shows this help\n
-           Only one option can be shown at the time.\n
+           Only one option can be used at the same time.\n
            \t-h:\t shows this help\n
            \t-E:\t prints the energies of the particles after the\n
            \t\treaction with target energy loss.\n
