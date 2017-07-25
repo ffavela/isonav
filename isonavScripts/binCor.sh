@@ -45,14 +45,14 @@ NC='\033[0m' # No Color
 function myHelp(){
     usage="${RED}usage:${NC} ./binCor [options]\n
            Does simple binary kinematics on CHIMERA\n
-           says which rings are incoincidence\n
+           says which rings are in coincidence\n
            by default it shows this help\n
            Only one option can be used at the same time.\n
            \t-h:\t shows this help\n
            \t-E:\t prints the energies of the particles after the\n
            \t\treaction with target energy loss.\n
            \t-A:\tprints the angles of the particles.\n
-           \t\tmore options comming eventually"
+           \t\tmore options coming eventually"
     echo -e $usage
 }
 
