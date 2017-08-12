@@ -141,10 +141,13 @@ function getTan(){
 }
 
 function printCoinRings(){
-  #### ### for thetaA in "${thetaVals[@]}"
-
-  baseHeadStr="ejeRing\tresMin\tresMax"
-  eHead=""
+ #### ### for thetaA in "${thetaVals[@]}"
+ echo "###Reaction conditions###"
+ echo "#$isoP $isoT => $isoE $isoR"
+ echo "#xRes=$xRes, eLab=$eLab, material=$material, thickness=$thickness"
+ echo "##########"
+ baseHeadStr="#ejeRng\tresMin\tresMax"
+ eHead=""
 
  [ "$1" == "-E" ] && eHead="\tejeE\tejeFE\tresE\tresFE"
  [ "$1" == "-A" ] && eHead="\tejeAng\tresMin\tresA\tresMax"
@@ -214,6 +217,4 @@ function printCoinRings(){
     done
 }
 
-
 argHandling $@
-
