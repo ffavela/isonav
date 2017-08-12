@@ -2,21 +2,21 @@
 
 #A script for checking coincidences on the rings of CHIMERA
 
-eLab=60.0 #in MeV
+eLab=780.0 #in MeV
 #Make sure reactions are valid!!!
-isoP=a
-isoT=12C
+isoP=78Kr
+isoT=40Ca
 
-isoE=a
-isoR=12C
+isoE=58Fe
+isoR=60Zn
 
-material=C #For energy loss in the target
+material=Ca #For energy loss in the target
 #Use isonav --listMaterials to see which ones are available.
 thickness=0.44 #in microns
 #Where in the target we think the reaction occurs, say halfway.
 halfThick=$(echo "$thickness/2.0" | bc -l )
 
-xRes=9.64 #Excitation of the residual particle.
+xRes=0.0 #Excitation of the residual particle.
 
 thetaVals=(1.4 2.2 3.1 4.1 5.2 6.4 7.8 9.3 10.8 12.3 13.8 15.3 17.00
 	  19.00 21.00 23.00 25.50 28.50 34 42 50 58 66 74 82 90 98 106
@@ -70,6 +70,11 @@ function argHandling() {
     else
 	printCoinRings
     fi
+}
+
+function checkIfAnyEmpty(){
+    expectedArgNum=3
+    [ $# -ne $expectedArgNum ] && echo "empty"
 }
 
 function getAbs(){
@@ -136,22 +141,21 @@ function getTan(){
 }
 
 function printCoinRings(){
-    #### ### for thetaA in "${thetaVals[@]}"
+  #### ### for thetaA in "${thetaVals[@]}"
 
-    baseHeadStr="ejeRing\tresMin\tresMax"
-    eHead=""
+  baseHeadStr="ejeRing\tresMin\tresMax"
+  eHead=""
 
-    [ "$1" == "-E" ] && eHead="\tejeE\tejeFE\tresE\tresFE"
-    [ "$1" == "-A" ] && eHead="\tejeAng\tresMin\tresA\tresMax"
-    headStr=$baseHeadStr$eHead
+ [ "$1" == "-E" ] && eHead="\tejeE\tejeFE\tresE\tresFE"
+ [ "$1" == "-A" ] && eHead="\tejeAng\tresMin\tresA\tresMax"
+ headStr=$baseHeadStr$eHead
 
-    echo -e "$headStr"
+ echo -e "$headStr"
 
-    let "maxIdx=${#thetaVals[*]}-1"
-
-    #i is the ring number index -1 of the ejectile
-    for i in $( seq 0 $maxIdx )
-    do
+ let "maxIdx=${#thetaVals[*]}-1"
+ #i is the ring number index -1 of the ejectile
+ for i in $( seq 0 $maxIdx )
+ do
 	thetaA=${thetaVals[i]}
 	thetaAMin=${theta_min[i]}
 	thetaAMax=${theta_max[i]}
@@ -161,6 +165,9 @@ function printCoinRings(){
 	thetaRes=$(echo $var | cut -d' ' -f 4)
 	thetaResMin=$(echo $varMin | cut -d' ' -f 4)
 	thetaResMax=$(echo $varMax | cut -d' ' -f 4)
+
+  emptyCheck=$(checkIfAnyEmpty $thetaRes $thetaResMin $thetaResMax)
+  [ "$emptyCheck" == "empty" ] && break
 
 	ejectE=$(echo $var | cut -d' ' -f 3)
 	resE=$(echo $var | cut -d' ' -f 5)
@@ -209,3 +216,4 @@ function printCoinRings(){
 
 
 argHandling $@
+
