@@ -18,7 +18,7 @@ for n in $(seq 0 118)
 do
     s1=$(isonav $n -s)
     isos1=$(getIsotopes $s1)
-    for m in $(seq 15 118)
+    for m in $(seq $initVal 118)
     do
         s2=$(isonav $m -s)
         isos2=$(getIsotopes $s2)
