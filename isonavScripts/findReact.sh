@@ -4,6 +4,8 @@
 
 iso2Find=26Al #The isotope 2 find
 achiE=10.0 #CM Energy achievable at our lab
+maxPro=14
+maxTar=30
 
 pNum=$(isonav $iso2Find -p)
 initVal=$(echo "$pNum-1"|bc)
@@ -14,15 +16,15 @@ function getIsotopes {
 }
 
 echo -e "#proj\ttarget\teje\tres\tthres\tQ\tcoulAft\tcoulb4"
-for n in $(seq 0 118)
+for n in $(seq 0 $maxPro)
 do
     s1=$(isonav $n -s)
     isos1=$(getIsotopes $s1)
-    for m in $(seq $initVal 118)
+    flagVar=0
+    for m in $(seq $initVal $maxTar)
     do
         s2=$(isonav $m -s)
         isos2=$(getIsotopes $s2)
-        flagVar=0
 
         for iso1 in $isos1
         do
@@ -35,16 +37,17 @@ do
                 if [ "$val" != "" ]
                 then
                     Q=$(echo $val | cut -f4 -d' ')
+                    exitCoul=$(echo $val | cut -f5 -d' ')
                     [ $(echo "$Q > 0" | bc) -eq 0 ] && continue
                     coulEF=$(printf "%0.2f\n" $(bc -q <<< scale=2\;$coulE))
                     echo -e "$iso1\t$iso2\t$val\t$coulEF"
                 fi
             done
         done
-        if [ $flagVar = 0 ]
-        then
-            echo "No more reactions under the barrier"
-            exit 0
-        fi
     done
+    if [ $flagVar = 0 ]
+    then
+        echo "No more reactions under the barrier"
+        exit 0
+    fi
 done
