@@ -5,6 +5,7 @@
 iso2Find=26Al #The isotope 2 find
 
 pNum=$(isonav $iso2Find -p)
+initVal=$(echo "$pNum-1"|bc)
 
 function getIsotopes {
     iso=$(isonav $1 -i)
@@ -17,7 +18,7 @@ do
     s1=$(isonav $n -s)
     isos1=$(getIsotopes $s1)
 
-    for m in $(seq $pNum 118)
+    for m in $(seq $initVal 118)
     do
         s2=$(isonav $m -s)
         isos2=$(getIsotopes $s2)
