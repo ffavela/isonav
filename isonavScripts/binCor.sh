@@ -212,7 +212,15 @@ function printCoinRings(){
  baseHeadStr="#ejeRng\tresMin\tresMax"
  eHead=""
 
- [ "$1" == "-E" ] && eHead="\tejeE\tejeFE\tresE\tresFE"
+ if [ "$1" == "-E" ]
+ then
+     if [ "$2" == "--tof" ]
+     then
+         eHead="\teTof\teFTof\trTof\trFTof"
+     else
+         eHead="\tejeE\tejeFE\tresE\tresFE"
+     fi
+ fi
 
  if [ "$1" == "--dE" ]
  then
@@ -264,6 +272,8 @@ function printCoinRings(){
 
 	minDIdx=$(getMinIxd $realMin)
 	maxDIdx=$(getMaxIxd $realMax)
+  let "aveRIdx=($minDIdx+$maxDIdx)/2"
+
 	minDRingV=${theta_min[$minDIdx]}
 	maxDRingV=${theta_max[$maxDIdx]}
 
@@ -274,6 +284,7 @@ function printCoinRings(){
 	baseStr="$mainRing\t$minRing\t$maxRing"
 	energyStr=""
 	angleStr=""
+  tofStr=""
 
 	if [ "$1" == "--dE" ] || [ "$1" == "-E" ]
 	then
@@ -282,6 +293,16 @@ function printCoinRings(){
 
 	    ejeHThick=$(echo "scale=10;$(getTan $thetaA)*$halfThick"|bc)
 	    ejeFE=$(getFinalEnergy $isoE $ejectE $material $resHThick)
+
+      if [ "$1" == "-E" ] && [ "$2" == "--tof" ]
+      then
+          eTof=$(getTof $isoE $ejectE ${det_dist[$i]})
+          rTof=$(getTof $isoR $resE ${det_dist[$aveRIdx]})
+
+          eFTof=$(getTof $isoE $ejeFE ${det_dist[$i]})
+          rFTof=$(getTof $isoE $resFE ${det_dist[$aveRIdx]})
+          tofStr="\t$eTof\t$eFTof\t$rTof\t$rFTof"
+      fi
 
       detThick="${thick_Si[$i]}"
       if [ "$1" == "--dE" ]
@@ -310,6 +331,7 @@ function printCoinRings(){
           fi
       fi
 	    energyStr="\t$ejectE\t$ejeFE\t$resE\t$resFE"
+      [ "$2" == "--tof" ] && energyStr=""
   fi
 
 	if [ "$1" == "-A" ]
@@ -318,7 +340,7 @@ function printCoinRings(){
 	fi
 
 
-	str2Print=$baseStr$energyStr$angleStr
+	str2Print=$baseStr$energyStr$tofStr$angleStr
 	echo -e "$str2Print"
  done
 }
@@ -431,6 +453,21 @@ function findFirstTelIdx() {
         oldTelIdx=$i
     done
     echo "$oldTelIdx"
+}
+
+function getTof() {
+    iso4Tof=$1
+    ene4Tof=$2
+    L4Tof=$3
+    if  [ $( echo "$ene4Tof>0" | bc) -eq 1 ]
+    then
+        myTof=$(isonav $iso4Tof\
+                       --Elab=$ene4Tof --L4TOF=$L4Tof)
+        printf "%.2f" $myTof
+        return
+    fi
+    myTof="None"
+    echo $myTof
 }
 
 argHandling $@
