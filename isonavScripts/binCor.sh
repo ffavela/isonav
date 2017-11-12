@@ -76,14 +76,20 @@ function myHelp(){
     usage="${RED}usage:${NC} ./binCor [options]\n
            Does simple binary kinematics on CHIMERA\n
            says which rings are in coincidence\n
-           by default it shows this help\n
-           Only one option can be used at the same time.\n
-           \t-h:\t shows this help\n
-           \t-p:\t prints Chimera's table\n
-           \t-E:\t prints the energies of the particles after the\n
-           \t\treaction with target energy loss.\n
-           \t-A:\tprints the angles of the particles.\n
-           \t\tmore options comming eventually"
+           Unless specified, only one option can be used\n
+           at the same time.\n\n
+           \t-h:\t\t shows this help\n
+           \t-p:\t\t prints Chimera's table\n
+           \t-E:\t\t prints the energies of the particles after the\n
+           \t\t\t reaction with target energy loss. If\n
+           \t\t\t a -1.000 is printed then the particle\n
+           \t\t\t did not exit the target.\n
+           \t--dE [--depo]:\t same as the -E option but also\n
+           \t\t\t includes the energy loss in the frontal\n
+           \t\t\t  dE (Si). If --depo is used it prints the deposited\n
+           \t\t\t energy on the Si.\n
+           \t-A:\t\t prints the angles of the particles.\n
+           \nmore options comming eventually"
     echo -e $usage
 }
 
@@ -94,10 +100,13 @@ function argHandling() {
     elif [ "$1" == "-E" ]
     then
 	      #Dumb 4 now but eventually might prove useful
-	      printCoinRings $1
+	      printCoinRings $@
+    elif [ "$1" == "--dE" ]
+    then
+	      printCoinRings $@
     elif [ "$1" == "-A" ]
     then
-	      printCoinRings $1
+	      printCoinRings $@
     elif [ "$1" == "-p" ]
     then
         #Printing the table of chimera
@@ -186,6 +195,19 @@ function printCoinRings(){
  eHead=""
 
  [ "$1" == "-E" ] && eHead="\tejeE\tejeFE\tresE\tresFE"
+
+ if [ "$1" == "--dE" ]
+ then
+     echo "1 and 2 are $1 and $2"
+    if [ "$2" == "--depo" ]
+    then
+        echo "Entered --depo condition"
+        eHead="\tejeE\tejeDE\tresE\tresDE"
+    else
+        eHead="\tejeE\tejeFE\tresE\tresFE"
+    fi
+ fi
+
  [ "$1" == "-A" ] && eHead="\tejeAng\tresMin\tresA\tresMax"
  headStr=$baseHeadStr$eHead
 
@@ -198,9 +220,12 @@ function printCoinRings(){
 	thetaA=${thetaVals[i]}
 	thetaAMin=${theta_min[i]}
 	thetaAMax=${theta_max[i]}
-	var=$(isonav  $isoP $isoT $isoE $isoR --Elab=$eLab --angle=$thetaA --xRes=$xRes)
-	varMin=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab --angle=$thetaAMin --xRes=$xRes)
-	varMax=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab --angle=$thetaAMax --xRes=$xRes)
+	var=$(isonav  $isoP $isoT $isoE $isoR --Elab=$eLab\
+                --angle=$thetaA --xRes=$xRes)
+	varMin=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
+                  --angle=$thetaAMin --xRes=$xRes)
+	varMax=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
+                  --angle=$thetaAMax --xRes=$xRes)
 	thetaRes=$(echo $var | cut -d' ' -f 4)
 	thetaResMin=$(echo $varMin | cut -d' ' -f 4)
 	thetaResMax=$(echo $varMax | cut -d' ' -f 4)
@@ -214,9 +239,11 @@ function printCoinRings(){
 	thetaResMin=$(getAbs $thetaResMin)
 	thetaResMax=$(getAbs $thetaResMax)
 
-	realMin=$(awk -v a="$thetaResMin" -v b="$thetaResMax" 'BEGIN{print (a>b)?b:a}')
+	realMin=$(awk -v a="$thetaResMin"\
+                -v b="$thetaResMax" 'BEGIN{print (a>b)?b:a}')
 
-	realMax=$(awk -v a="$thetaResMin" -v b="$thetaResMax" 'BEGIN{print (a<b)?b:a}')
+	realMax=$(awk -v a="$thetaResMin" -v\
+                b="$thetaResMax" 'BEGIN{print (a<b)?b:a}')
 
 	minDIdx=$(getMinIxd $realMin)
 	maxDIdx=$(getMaxIxd $realMax)
@@ -231,16 +258,42 @@ function printCoinRings(){
 	energyStr=""
 	angleStr=""
 
-	if [ "$1" == "-E" ]
+	if [ "$1" == "--dE" ] || [ "$1" == "-E" ]
 	then
-	    resHThick=$(echo "scale=10;$(getTan $thetaRes)*$halfThick" | bc )
+	    resHThick=$(echo "scale=10;$(getTan $thetaRes)*$halfThick"|bc)
 	    resFE=$(getFinalEnergy $isoR $resE  $material $resHThick)
 
-	    ejeHThick=$(echo "scale=10;$(getTan $thetaA)*$halfThick" | bc )
-	    ejeFE=$(getFinalEnergy $isoE $ejectE  $material $resHThick)
+	    ejeHThick=$(echo "scale=10;$(getTan $thetaA)*$halfThick"|bc)
+	    ejeFE=$(getFinalEnergy $isoE $ejectE $material $resHThick)
 
+      detThick="${thick_Si[$i]}"
+      if [ "$1" == "--dE" ]
+      then
+          if  [ $( echo "$resFE>0" | bc) -eq 1 ]
+          then
+              newResFE=$(getFinalEnergy $isoR $resFE Si $detThick)
+          else
+              newResFE=$resFE
+          fi
+
+          if  [ $( echo "$ejeFE>0" | bc) -eq 1 ]
+          then
+              newEjeFE=$(getFinalEnergy $isoE $ejeFE Si $detThick)
+          else
+              newEjeFE=$ejeFE
+          fi
+
+          if [ "$2" == "--depo" ]
+          then
+              resFE=$(depoE $resFE $newResFE )
+              ejeFE=$(depoE $ejeFE $newEjeFE )
+          else
+              resFE=$newResFE
+              ejeFE=$newEjeFE
+          fi
+      fi
 	    energyStr="\t$ejectE\t$ejeFE\t$resE\t$resFE"
-        fi
+  fi
 
 	if [ "$1" == "-A" ]
 	then
@@ -250,7 +303,7 @@ function printCoinRings(){
 
 	str2Print=$baseStr$energyStr$angleStr
 	echo -e "$str2Print"
-    done
+ done
 }
 
 function printChimTab() {
@@ -264,6 +317,20 @@ function printChimTab() {
         strVar=$strVar"\t${delta_phi[$i]}"
         echo -e $strVar
     done
+}
+
+function depoE() {
+    eB4=$1
+    eAft=$2
+    if [ $( echo "$eB4<0" | bc) -eq 1 ]
+    then
+        echo 0
+    elif [ $( echo "$eAft<0" | bc) -eq 1 ]
+    then
+        echo $eB4
+    else
+        echo "scale=10; $eB4-$eAft" | bc
+    fi
 }
 
 argHandling $@
