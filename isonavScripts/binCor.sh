@@ -78,17 +78,19 @@ function myHelp(){
            says which rings are in coincidence\n
            Unless specified, only one option can be used\n
            at the same time.\n\n
-           \t-h:\t\t shows this help\n
-           \t-p:\t\t prints Chimera's table\n
-           \t-E:\t\t prints the energies of the particles after the\n
-           \t\t\t reaction with target energy loss. If\n
-           \t\t\t a -1.000 is printed then the particle\n
-           \t\t\t did not exit the target.\n
-           \t--dE [--depo]:\t same as the -E option but also\n
-           \t\t\t includes the energy loss in the frontal\n
-           \t\t\t  dE (Si). If --depo is used it prints the deposited\n
-           \t\t\t energy on the Si.\n
-           \t-A:\t\t prints the angles of the particles.\n
+           \t-h:\t\t\t shows this help\n
+           \t-p:\t\t\t prints Chimera's table\n
+           \t-E:\t\t\t prints the energies of the particles after the\n
+           \t\t\t\t reaction with target energy loss. If\n
+           \t\t\t\t a -1.000 is printed then the particle\n
+           \t\t\t\t did not exit the target.\n
+           \t--dE [--depo]:\t\t same as the -E option but also\n
+           \t\t\t\t includes the energy loss in the frontal\n
+           \t\t\t\t  dE (Si). If --depo is used it prints the deposited\n
+           \t\t\t\t energy on the Si.\n
+           \t-A:\t\t\t prints the angles of the particles.\n
+           \t--getN <ringId tN>:\t gets the global telescope\n
+           \t\t\t\t number.
            \nmore options comming eventually"
     echo -e $usage
 }
@@ -112,6 +114,11 @@ function argHandling() {
         #Printing the table of chimera
         printChimTab
         exit 1
+    elif [ "$1" == "--getN" ]
+    then
+        shift
+        tNumParse $@
+        getTNum $@
     else
 	      printCoinRings
     fi
@@ -330,6 +337,49 @@ function depoE() {
         echo $eB4
     else
         echo "scale=10; $eB4-$eAft" | bc
+    fi
+}
+
+function tNumParse() {
+    if [ $# != 2 ]
+    then
+        echo "ringId and tN are mandatory"
+        exit 2
+    fi
+    ringIdx=$(getRingIdx $1)
+    if [ "$ringIdx" == "" ]
+    then
+        echo -e "${RED}Error${NC} ring $1 not found"
+        exit 3
+    fi
+
+    checkSubTel $ringIdx $2
+}
+
+function getTNum() {
+    ringIdx=$(getRingIdx $1)
+    initTNum=${firstTelL[$ringIdx]}
+    let "tNum=$initTNum+$2"
+    echo $tNum
+}
+
+function getRingIdx() {
+    for i in $( seq 0 34 )
+    do
+        if [ "$1" == ${ring_tags[$i]} ]
+        then
+            echo $i
+        fi
+    done
+}
+
+function checkSubTel() {
+    rIdx=$1
+    subTel=$2
+    if [ $subTel -ge ${teles_num[$rIdx]} ] || [ "$subTel" -lt 0 ]
+    then
+        echo "Not a valid telescope"
+        exit 4
     fi
 }
 
