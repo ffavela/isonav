@@ -78,19 +78,25 @@ function myHelp(){
            says which rings are in coincidence\n
            Unless specified, only one option can be used\n
            at the same time.\n\n
-           \t-h:\t\t\t shows this help\n
-           \t-p:\t\t\t prints Chimera's table\n
-           \t-E:\t\t\t prints the energies of the particles after the\n
+           \t-h:\t\t\t shows this help\n\n
+           \t-p:\t\t\t prints Chimera's table\n\n
+           \t-E [--tof]:
+           \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
            \t\t\t\t a -1.000 is printed then the particle\n
            \t\t\t\t did not exit the target.\n
+           \t\t\t\t If --tof is used then it will calculate\n
+           \t\t\t\t the time of flight using the distances\n
+           \t\t\t\t on the table.\n\n
            \t--dE [--depo]:\t\t same as the -E option but also\n
            \t\t\t\t includes the energy loss in the frontal\n
            \t\t\t\t  dE (Si). If --depo is used it prints the deposited\n
-           \t\t\t\t energy on the Si.\n
-           \t-A:\t\t\t prints the angles of the particles.\n
+           \t\t\t\t energy on the Si.\n\n
+           \t-A:\t\t\t prints the angles of the particles.\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
-           \t\t\t\t number.
+           \t\t\t\t number.\n\n
+           \t--getChimAddr <gTN>:\t  gets the ring and local detector\n
+           \t\t\t\t number within the ring\n\n
            \nmore options comming eventually"
     echo -e $usage
 }
@@ -119,6 +125,11 @@ function argHandling() {
         shift
         tNumParse $@
         getTNum $@
+    elif [ "$1" == "--getChimAddr" ]
+    then
+        shift
+        checkGTN $@
+        getChimAddr $@
     else
 	      printCoinRings
     fi
@@ -205,7 +216,6 @@ function printCoinRings(){
 
  if [ "$1" == "--dE" ]
  then
-     echo "1 and 2 are $1 and $2"
     if [ "$2" == "--depo" ]
     then
         echo "Entered --depo condition"
@@ -381,6 +391,46 @@ function checkSubTel() {
         echo "Not a valid telescope"
         exit 4
     fi
+}
+
+function checkGTN() {
+    if [ "$#" -ne 1 ]
+    then
+        echo -e "${RED}Error: ${NC} the gTN is mandatory"
+        exit 5
+    fi
+
+    gTN=$1
+    if [ "$gTN" -lt 0 ] || [ "$gTN" -ge 1192 ]
+    then
+        errorStr="${RED}Error: ${NC} gTN (global
+        telescope number)\n
+        \thas to be an integer
+        between 0 and 1191"
+        echo -e $errorStr
+        exit 6
+    fi
+}
+
+function getChimAddr() {
+    fTIdx=$(findFirstTelIdx $1)
+    let "relT=$1-${firstTelL[$fTIdx]}"
+    echo -e "${ring_tags[$fTIdx]}\t$relT"
+}
+
+function findFirstTelIdx() {
+    oldTelIdx=0
+    gTN=$1
+    for i in $( seq 0 34 )
+    do
+        newTel=${firstTelL[$i]}
+        if [ $gTN -lt "$newTel" ]
+        then
+            break
+        fi
+        oldTelIdx=$i
+    done
+    echo "$oldTelIdx"
 }
 
 argHandling $@
