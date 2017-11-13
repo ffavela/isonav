@@ -86,7 +86,7 @@ function myHelp(){
            \t\t\t\t a -1.000 is printed then the particle\n
            \t\t\t\t did not exit the target.\n
            \t\t\t\t If --tof is used then it will calculate\n
-           \t\t\t\t the time of flight using the distances\n
+           \t\t\t\t the time of flight (in ns) using the distances\n
            \t\t\t\t on the table.\n\n
            \t--dE [--depo]:\t\t same as the -E option but also\n
            \t\t\t\t includes the energy loss in the frontal\n
@@ -107,8 +107,8 @@ function argHandling() {
 	      myHelp
     elif [ "$1" == "-E" ]
     then
-	      #Dumb 4 now but eventually might prove useful
-	      printCoinRings $@
+	#Dumb 4 now but eventually might prove useful
+	printCoinRings $@
     elif [ "$1" == "--dE" ]
     then
 	      printCoinRings $@
@@ -131,7 +131,7 @@ function argHandling() {
         checkGTN $@
         getChimAddr $@
     else
-	      printCoinRings
+	printCoinRings
     fi
 }
 
@@ -154,14 +154,14 @@ function getMinIxd(){
     let "maxIdx=${#thetaVals[*]}-1"
     for i in $( seq 0 $maxIdx )
     do
-	      if [ $( echo "$myVar<$myMin" | bc) -eq 1 ]
-	      then
-	          let "lastVal=$lastVal-1"
-	          echo $lastVal
-	          return
-	      fi
-	      myMin=${theta_min[i]}
-	      lastVal=$i
+	if [ $( echo "$myVar<$myMin" | bc) -eq 1 ]
+	then
+	    let "lastVal=$lastVal-1"
+	    echo $lastVal
+	    return
+	fi
+	myMin=${theta_min[i]}
+	lastVal=$i
     done
 }
 
@@ -174,13 +174,13 @@ function getMaxIxd(){
     let "maxIdx=${#thetaVals[*]}-1"
     for i in $( seq 1 $maxIdx )
     do
-	      if [ $( echo "$myVar<$myMax" | bc) -eq 1 ]
-	      then
-	          echo $lastVal
-	          return
-	      fi
-	      myMax=${theta_max[i]}
-	      lastVal=$i
+	if [ $( echo "$myVar<$myMax" | bc) -eq 1 ]
+	then
+	    echo $lastVal
+	    return
+	fi
+	myMax=${theta_max[i]}
+	lastVal=$i
     done
 }
 
@@ -242,112 +242,119 @@ function printCoinRings(){
  #i is the ring number index -1 of the ejectile
  for i in $( seq 0 $maxIdx )
  do
-	thetaA=${thetaVals[i]}
-	thetaAMin=${theta_min[i]}
-	thetaAMax=${theta_max[i]}
-	var=$(isonav  $isoP $isoT $isoE $isoR --Elab=$eLab\
-                --angle=$thetaA --xRes=$xRes)
-	varMin=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
-                  --angle=$thetaAMin --xRes=$xRes)
-	varMax=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
-                  --angle=$thetaAMax --xRes=$xRes)
-	thetaRes=$(echo $var | cut -d' ' -f 4)
-	thetaResMin=$(echo $varMin | cut -d' ' -f 4)
-	thetaResMax=$(echo $varMax | cut -d' ' -f 4)
+     getStr2Print $i $@
+ done
+}
 
-  emptyCheck=$(checkIfAnyEmpty $thetaRes $thetaResMin $thetaResMax)
-  [ "$emptyCheck" == "empty" ] && break
+function getStr2Print() {
+    i=$1
+    shift #So we get the same arguments as b4
+    thetaA=${thetaVals[i]}
+    thetaAMin=${theta_min[i]}
+    thetaAMax=${theta_max[i]}
+    var=$(isonav  $isoP $isoT $isoE $isoR --Elab=$eLab\
+                  --angle=$thetaA --xRes=$xRes)
+    varMin=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
+                    --angle=$thetaAMin --xRes=$xRes)
+    varMax=$(isonav $isoP $isoT $isoE $isoR --Elab=$eLab\
+                    --angle=$thetaAMax --xRes=$xRes)
+    thetaRes=$(echo $var | cut -d' ' -f 4)
+    thetaResMin=$(echo $varMin | cut -d' ' -f 4)
+    thetaResMax=$(echo $varMax | cut -d' ' -f 4)
 
-	ejectE=$(echo $var | cut -d' ' -f 3)
-	resE=$(echo $var | cut -d' ' -f 5)
-	thetaRes=$(getAbs $thetaRes)
-	thetaResMin=$(getAbs $thetaResMin)
-	thetaResMax=$(getAbs $thetaResMax)
+    emptyCheck=$(checkIfAnyEmpty $thetaRes $thetaResMin $thetaResMax)
+    [ "$emptyCheck" == "empty" ] && break
 
-	realMin=$(awk -v a="$thetaResMin"\
-                -v b="$thetaResMax" 'BEGIN{print (a>b)?b:a}')
+    ejectE=$(echo $var | cut -d' ' -f 3)
+    resE=$(echo $var | cut -d' ' -f 5)
+    thetaRes=$(getAbs $thetaRes)
+    thetaResMin=$(getAbs $thetaResMin)
+    thetaResMax=$(getAbs $thetaResMax)
 
-	realMax=$(awk -v a="$thetaResMin" -v\
-                b="$thetaResMax" 'BEGIN{print (a<b)?b:a}')
+    realMin=$(awk -v a="$thetaResMin"\
+                  -v b="$thetaResMax" 'BEGIN{print (a>b)?b:a}')
 
-	minDIdx=$(getMinIxd $realMin)
-	maxDIdx=$(getMaxIxd $realMax)
-  let "aveRIdx=($minDIdx+$maxDIdx)/2"
+    realMax=$(awk -v a="$thetaResMin" -v\
+                  b="$thetaResMax" 'BEGIN{print (a<b)?b:a}')
 
-	minDRingV=${theta_min[$minDIdx]}
-	maxDRingV=${theta_max[$maxDIdx]}
+    minDIdx=$(getMinIxd $realMin)
+    maxDIdx=$(getMaxIxd $realMax)
+    let "aveRIdx=($minDIdx+$maxDIdx)/2"
 
-	mainRing=${ring_tags[$i]}
-	minRing=${ring_tags[$minDIdx]}
-	maxRing=${ring_tags[$maxDIdx]}
+    minDRingV=${theta_min[$minDIdx]}
+    maxDRingV=${theta_max[$maxDIdx]}
 
-	baseStr="$mainRing\t$minRing\t$maxRing"
-	energyStr=""
-	angleStr=""
-  tofStr=""
+    mainRing=${ring_tags[$i]}
+    minRing=${ring_tags[$minDIdx]}
+    maxRing=${ring_tags[$maxDIdx]}
 
-	if [ "$1" == "--dE" ] || [ "$1" == "-E" ]
+    baseStr="$mainRing\t$minRing\t$maxRing"
+    energyStr=""
+    angleStr=""
+    tofStr=""
+
+    if [ "$1" == "--dE" ] || [ "$1" == "-E" ]
+    then
+	resHThick=$(echo "scale=10;$(getTan $thetaRes)*$halfThick"|bc)
+	resFE=$(getFinalEnergy $isoR $resE  $material $resHThick)
+
+	ejeHThick=$(echo "scale=10;$(getTan $thetaA)*$halfThick"|bc)
+	ejeFE=$(getFinalEnergy $isoE $ejectE $material $resHThick)
+
+	if [ "$1" == "-E" ] && [ "$2" == "--tof" ]
 	then
-	    resHThick=$(echo "scale=10;$(getTan $thetaRes)*$halfThick"|bc)
-	    resFE=$(getFinalEnergy $isoR $resE  $material $resHThick)
+	    eTof=$(getTof $isoE $ejectE ${det_dist[$i]})
+	    rTof=$(getTof $isoR $resE ${det_dist[$aveRIdx]})
 
-	    ejeHThick=$(echo "scale=10;$(getTan $thetaA)*$halfThick"|bc)
-	    ejeFE=$(getFinalEnergy $isoE $ejectE $material $resHThick)
-
-      if [ "$1" == "-E" ] && [ "$2" == "--tof" ]
-      then
-          eTof=$(getTof $isoE $ejectE ${det_dist[$i]})
-          rTof=$(getTof $isoR $resE ${det_dist[$aveRIdx]})
-
-          eFTof=$(getTof $isoE $ejeFE ${det_dist[$i]})
-          rFTof=$(getTof $isoE $resFE ${det_dist[$aveRIdx]})
-          tofStr="\t$eTof\t$eFTof\t$rTof\t$rFTof"
-      fi
-
-      detThick="${thick_Si[$i]}"
-      if [ "$1" == "--dE" ]
-      then
-          if  [ $( echo "$resFE>0" | bc) -eq 1 ]
-          then
-              newResFE=$(getFinalEnergy $isoR $resFE Si $detThick)
-          else
-              newResFE=$resFE
-          fi
-
-          if  [ $( echo "$ejeFE>0" | bc) -eq 1 ]
-          then
-              newEjeFE=$(getFinalEnergy $isoE $ejeFE Si $detThick)
-          else
-              newEjeFE=$ejeFE
-          fi
-
-          if [ "$2" == "--depo" ]
-          then
-              resFE=$(depoE $resFE $newResFE )
-              ejeFE=$(depoE $ejeFE $newEjeFE )
-          else
-              resFE=$newResFE
-              ejeFE=$newEjeFE
-          fi
-      fi
-	    energyStr="\t$ejectE\t$ejeFE\t$resE\t$resFE"
-      [ "$2" == "--tof" ] && energyStr=""
-  fi
-
-	if [ "$1" == "-A" ]
-	then
-	    angleStr="\t$thetaA\t$realMin\t$thetaRes\t$realMax"
+	    eFTof=$(getTof $isoE $ejeFE ${det_dist[$i]})
+	    rFTof=$(getTof $isoE $resFE ${det_dist[$aveRIdx]})
+	    tofStr="\t$eTof\t$eFTof\t$rTof\t$rFTof"
 	fi
 
+	detThick="${thick_Si[$i]}"
+	if [ "$1" == "--dE" ]
+	then
+	    if  [ $( echo "$resFE>0" | bc) -eq 1 ]
+	    then
+		newResFE=$(getFinalEnergy $isoR $resFE Si $detThick)
+	    else
+		newResFE=$resFE
+	    fi
 
-	str2Print=$baseStr$energyStr$tofStr$angleStr
-	echo -e "$str2Print"
- done
+	    if  [ $( echo "$ejeFE>0" | bc) -eq 1 ]
+	    then
+		newEjeFE=$(getFinalEnergy $isoE $ejeFE Si $detThick)
+	    else
+		newEjeFE=$ejeFE
+	    fi
+
+	    if [ "$2" == "--depo" ]
+	    then
+		resFE=$(depoE $resFE $newResFE )
+		ejeFE=$(depoE $ejeFE $newEjeFE )
+	    else
+		resFE=$newResFE
+		ejeFE=$newEjeFE
+	    fi
+	fi
+	energyStr="\t$ejectE\t$ejeFE\t$resE\t$resFE"
+	[ "$2" == "--tof" ] && energyStr=""
+    fi
+
+    if [ "$1" == "-A" ]
+    then
+	angleStr="\t$thetaA\t$realMin\t$thetaRes\t$realMax"
+    fi
+
+    str2Print=$baseStr$energyStr$tofStr$angleStr
+    echo -e "$str2Print"
 }
 
 function printChimTab() {
     echo -en "#rings\tfTel\tlTel\tdistD\ttheta\t"
     echo -e "thickSi\tN_\tdeltaPhi"
+
+    echo -e "#name\t\t\t[ns]\t[deg]\t[um]\t\t[deg]"
     for i in $( seq 0 34 )
     do
         strVar="${ring_tags[$i]}\t${firstTelL[$i]}\t${lastTelL[$i]}"
