@@ -16,12 +16,11 @@ thickness=0.44 #in microns
 #Where in the target we think the reaction occurs, say halfway.
 halfThick=$(echo "$thickness/2.0" | bc -l )
 
-xRes=7.65 #Excitation of the residual particle.
+xRes=0.0 #Excitation of the residual particle.
 
 thetaVals=(1.4 2.2 3.1 4.1 5.2 6.4 7.8 9.3 10.8 12.3 13.8 15.3 17.00
 	  19.00 21.00 23.00 25.50 28.50 34 42 50 58 66 74 82 90 98 106
 	  114 122 130 138 146 156.5 169.5)
-
 
 theta_min=(1. 1.8 2.6 3.6 4.6 5.8 7.0 8.5 10. 11.5 13. 14.5
           16. 18. 20. 22. 24. 27.
@@ -35,12 +34,12 @@ theta_max=(1.8 2.6 3.6 4.6 5.8 7. 8.5 10. 11.5 13. 14.5
 
 ring_tags=(1i 1e 2i 2e 3i 3e 4i 4e 5i 5e 6i 6e 7i 7e 8i 8e 9i 9e
 	   S10 S11 S12 S13 S14 S15 S16 S17 S18 S19 S20 S21 S22 S23
-	  S24 S25 S26)
+	   S24 S25 S26)
 
 #The distance from the sphere center to the detectors (cm)
 det_dist=(350 350 300 300 250 250 210 210 180 180 160 160 140 140
           120 120 100 100 40 40 40 40 40 40 40 40 40 40 40 40
-         40 40 40 40 40)
+          40 40 40 40 40)
 
 thickVar=230
 thick_Si=(220 220 $thickVar $thickVar $thickVar
@@ -52,18 +51,17 @@ thick_Si=(220 220 $thickVar $thickVar $thickVar
 teles_num=(16 16 24 24 32 32 40 40 40 40 48 48 48 48 48 48 48 48
            32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 16 8)
 
-delta_phi=(22.5 22.5 15 15 11.25 11.25 9 9 9 9 7.5 7.5 7.5
-           7.5 7.5 7.5 7.5 7.5 11.25 11.25 11.25 11.25 11.25
-           11.25 11.25 11.25 11.25 11.25 11.25 11.25 11.25
-           11.25 11.25 22.5 45)
+delta_phi=(22.5 22.5 15 15 11.25 11.25 9 9 9 9 7.5 7.5 7.5 7.5 7.5 7.5
+           7.5 7.5 11.25 11.25 11.25 11.25 11.25 11.25 11.25 11.25
+           11.25 11.25 11.25 11.25 11.25 11.25 11.25 22.5 45)
 
-firstTelL=(0 16 32 56 80 112 144 184 224 264 304 352 400 448 496
-       544 592 640 688 720 752 784 816 848 880 912 944 976
-       1008 1040 1072 1104 1136 1168 1184)
+firstTelL=(0 16 32 56 80 112 144 184 224 264 304 352 400 448 496 544
+	   592 640 688 720 752 784 816 848 880 912 944 976 1008 1040
+	   1072 1104 1136 1168 1184)
 
-lastTelL=(15 31 55 79 111 143 183 223 263 303 351 399 447 495
-       543 591 639 687 719 751 783 815 847 879 911 943 975
-      1007 1039 1071 1103 1135 1167 1183 1191)
+lastTelL=(15 31 55 79 111 143 183 223 263 303 351 399 447 495 543 591
+	  639 687 719 751 783 815 847 879 911 943 975 1007 1039 1071 1103
+	  1135 1167 1183 1191)
 
 #in cm^2
 # S=(blach blah blah)
@@ -104,17 +102,17 @@ function myHelp(){
 function argHandling() {
     if [ "$1" == "-h" ]
     then
-	      myHelp
+	myHelp
     elif [ "$1" == "-E" ]
     then
 	#Dumb 4 now but eventually might prove useful
 	printCoinRings $@
     elif [ "$1" == "--dE" ]
     then
-	      printCoinRings $@
+	printCoinRings $@
     elif [ "$1" == "-A" ]
     then
-	      printCoinRings $@
+	printCoinRings $@
     elif [ "$1" == "-p" ]
     then
         #Printing the table of chimera
