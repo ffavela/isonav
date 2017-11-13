@@ -263,7 +263,7 @@ function getStr2Print() {
     thetaResMax=$(echo $varMax | cut -d' ' -f 4)
 
     emptyCheck=$(checkIfAnyEmpty $thetaRes $thetaResMin $thetaResMax)
-    [ "$emptyCheck" == "empty" ] && break
+    [ "$emptyCheck" == "empty" ] && return
 
     ejectE=$(echo $var | cut -d' ' -f 3)
     resE=$(echo $var | cut -d' ' -f 5)
@@ -478,3 +478,5 @@ function getTof() {
 }
 
 argHandling $@
+
+# getStr2Print 11
