@@ -16,7 +16,7 @@ thickness=0.44 #in microns
 #Where in the target we think the reaction occurs, say halfway.
 halfThick=$(echo "$thickness/2.0" | bc -l )
 
-xRes=0.0 #Excitation of the residual particle.
+xRes=7.65 #Excitation of the residual particle.
 
 thetaVals=(1.4 2.2 3.1 4.1 5.2 6.4 7.8 9.3 10.8 12.3 13.8 15.3 17.00
 	  19.00 21.00 23.00 25.50 28.50 34 42 50 58 66 74 82 90 98 106
@@ -41,12 +41,12 @@ det_dist=(350 350 300 300 250 250 210 210 180 180 160 160 140 140
           120 120 100 100 40 40 40 40 40 40 40 40 40 40 40 40
           40 40 40 40 40)
 
-thickVar=230
+thickVar=300
 thick_Si=(220 220 $thickVar $thickVar $thickVar
           $thickVar $thickVar $thickVar 275 275 275 275
-          275 275 275 275 $thickVar $thickVar 305 305 305
-          305 305 305 305 305 305 305 305 305 305 305 305
-          305 305)
+          275 275 275 275 $thickVar $thickVar 270 270 270
+          270 270 270 270 270 270 270 270 270 270 270 270
+          270 270)
 
 teles_num=(16 16 24 24 32 32 40 40 40 40 48 48 48 48 48 48 48 48
            32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 16 8)
@@ -352,7 +352,7 @@ function printChimTab() {
     echo -en "#rings\tfTel\tlTel\tdistD\ttheta\t"
     echo -e "thickSi\tN_\tdeltaPhi"
 
-    echo -e "#name\t\t\t[ns]\t[deg]\t[um]\t\t[deg]"
+    echo -e "#name\t\t\t[cm]\t[deg]\t[um]\t\t[deg]"
     for i in $( seq 0 34 )
     do
         strVar="${ring_tags[$i]}\t${firstTelL[$i]}\t${lastTelL[$i]}"
@@ -406,8 +406,11 @@ function getRingIdx() {
         if [ "$1" == ${ring_tags[$i]} ]
         then
             echo $i
+	    return
         fi
     done
+    echo "No idx found"
+    exit 10
 }
 
 function checkSubTel() {
@@ -418,6 +421,13 @@ function checkSubTel() {
         echo "Not a valid telescope"
         exit 4
     fi
+}
+
+function checkSubTelFromTag() {
+    myTag=$1
+    subTel=$2
+    rIdx=$(getRingIdx $myTag)
+    checkSubTel $rIdx $subTel
 }
 
 function checkGTN() {
@@ -475,6 +485,113 @@ function getTof() {
     echo $myTof
 }
 
+function convertTel2Less() {
+    side1NumInit=$1
+    initNumOfSides=$2
+    finalNumOfSides=$3
+    let "side1NumFinal=$side1NumInit/($initNumOfSides/$finalNumOfSides)"
+    echo $side1NumFinal
+}
+
+function convert2More() {
+    side1NumInit=$1
+    initNumOfSides=$2
+    finalNumOfSides=$3
+
+    let "ratio=$finalNumOfSides/$initNumOfSides"
+    let "lastVal=$ratio-1"
+    side2FinalList=()
+    for i in $(seq 0 $lastVal)
+    do
+	let "side2Final=$side1NumInit*$ratio+i"
+	side2FinalList+=($side2Final)
+    done
+    echo "${side2FinalList[@]}"
+}
+
+function getOpoInSameBase() {
+    side1Num=$1
+    totSideNum=$2
+    let "side2Num=($side1Num+$totSideNum/2)%$totSideNum"
+    echo $side2Num
+}
+
+function getIdxs4Reaction() {
+    ringTag=$1
+    myRingIdx=$(getRingIdx $ringTag)
+    myStr2Print=$(getStr2Print $myRingIdx)
+    initTag=$(echo -e "$myStr2Print" | cut -f2)
+    finalTag=$(echo -e "$myStr2Print" | cut -f3)
+    myInitRingIdx=$(getRingIdx $initTag)
+    myFinalRingIdx=$(getRingIdx $finalTag)
+    # echo -e "$initTag\t$finalTag"
+    echo -e "$myInitRingIdx\t$myFinalRingIdx"
+}
+
+function getFromIdxNumOfTelescopes() {
+    rIdx=$1
+    numOfTeles=${teles_num[$rIdx]}
+    echo $numOfTeles
+}
+
+function getFromTagNumOfTelescopes() {
+    tagName=$1
+    rIdx=$(getRingIdx $tagName)
+    getFromIdxNumOfTelescopes $rIdx
+}
+
+function myTestFunction() {
+    rTag=$1
+    rIdx=$(getRingIdx $rTag)
+    subTel=$2
+    checkSubTel $rIdx $subTel
+    minMaxIdx=$(getIdxs4Reaction $rTag)
+    minIdx=$(echo -e "$minMaxIdx" | cut -f1)
+    maxIdx=$(echo -e "$minMaxIdx" | cut -f2)
+    initNumOfSides=$(getFromIdxNumOfTelescopes $rIdx)
+    echo $initNumOfSides
+    for i in $( seq $minIdx $maxIdx )
+    do
+	numOfTeles=$(getFromIdxNumOfTelescopes $i)
+	echo -e "i=$i\t$numOfTeles"
+	if [ $numOfTeles -eq $initNumOfSides ]
+	then
+	    echo "equal"
+	    echo "calling some function"
+	    echo $subtel
+	elif [  $numOfTeles -lt $initNumOfSides ]
+	then
+	    echo "less"
+	    echo "Doing the other function stuff"
+	    echo "numOfTeles=$numOfTeles"
+	    convertTel2Less $subTel $initNumOfSides $numOfTeles
+	elif [ $numOfTeles -gt $initNumOfSides ]
+	then
+	    echo "greater"
+	    echo "Doing the greater function case"
+	    echo "echoing my more var"
+	    echo "numOfTeles = $numOfTeles and initNumOfSides $initNumOfSides"
+	    convert2More $subTel $initNumOfSides $numOfTeles
+	fi
+    done
+}
+
 argHandling $@
 
-# getStr2Print 11
+# getStr2Print 2
+
+# getRingIdx 8e
+
+# getIdxs4Reaction 1i
+
+# getFromTagNumOfTelescopes S10
+
+# echo "Doing myTestFunction"
+# myTestFunction 7e 37
+
+# convertTel2Less 5 16 8
+# convertTel2Less 15 16 8
+# convertTel2Less 37 48 32
+
+# getOpoInSameBase 3 8
+# convert2More 3 4 16
