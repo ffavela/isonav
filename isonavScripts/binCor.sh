@@ -576,7 +576,48 @@ function myTestFunction() {
     done
 }
 
+function getSidesInNewBase() {
+    l=$1
+    iBase=$2
+    fBase=$3
+
+    DPhiI=$(echo "scale=3;360/$iBase" | bc)
+    DPhiF=$(echo "scale=3;360/$fBase" | bc)
+    echo $DPhiI $DPhiF
+
+    iBase1=$(echo "scale=3;$l*$DPhiI" | bc)
+    iBase2=$(echo "scale=3;($l+1)*$DPhiI" | bc)
+
+    echo -e "The initial base angular values\n"
+    echo $iBase1 $iBase2
+    echo "######################"
+    let "maxIdx=$fBase-1"
+
+    echo $maxIdx
+
+    mySideArr=()
+    for i in $(seq 0 $maxIdx)
+    do
+	fBase1=$(echo "scale=3;$i*$DPhiF" | bc)
+	fBase2=$(echo "scale=3;($i+1)*$DPhiF" | bc)
+	echo $fBase1 $fBase2
+	# echo "Checking cond either $fBase1<=$iBase1<$fBase2 or $fBase1<=$iBase2<$fBase2"
+	if [ $(echo "$fBase1<=$iBase1 && $iBase1<=$fBase2" | bc) -eq 1 ] ||\
+	       [ $(echo "$fBase1<=$iBase2 && $iBase2<=$fBase2" | bc) -eq 1 ]
+	then
+	    echo "Inside cond either $fBase1<=$iBase1<=$fBase2 or $fBase1<=$iBase2<=$fBase2"
+	    echo "Is true"
+	    mySideArr+=($i)
+	fi
+    done
+    echo "The corresponding sides in base $fBase are:"
+    echo "${mySideArr[@]}"
+}
+
+
 argHandling $@
+
+# getSidesInNewBase 23 24 10
 
 # getStr2Print 2
 
