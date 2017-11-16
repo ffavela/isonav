@@ -581,43 +581,84 @@ function getSidesInNewBase() {
     iBase=$2
     fBase=$3
 
-    DPhiI=$(echo "scale=3;360/$iBase" | bc)
-    DPhiF=$(echo "scale=3;360/$fBase" | bc)
-    echo $DPhiI $DPhiF
+    moreSidesBase=$iBase
+    lessSidesBase=$fBase
 
-    iBase1=$(echo "scale=3;$l*$DPhiI" | bc)
-    iBase2=$(echo "scale=3;($l+1)*$DPhiI" | bc)
+    if [ $fBase -gt $iBase ]
+    then
+	echo "This is the ugly case"
+	# moreSidesBase=$fBase
+	# lessSidesBase=$iBase
+    fi
+
+    DPhiA=$(echo "scale=3;360/$moreSidesBase" | bc)
+    DPhiB=$(echo "scale=3;360/$lessSidesBase" | bc)
+
+    echo $DPhiA $DPhiB
+
+    #4 the more side ranges
+    fixedRange1=$(echo "scale=3;$l*$DPhiA" | bc)
+    fixedRange2=$(echo "scale=3;($l+1)*$DPhiA" | bc)
 
     echo -e "The initial base angular values\n"
-    echo $iBase1 $iBase2
+    echo $fixedRange1 $fixedRange2
     echo "######################"
-    let "maxIdx=$fBase-1"
+
+    let "maxIdx=$lessSidesBase-1"
 
     echo $maxIdx
 
     mySideArr=()
     for i in $(seq 0 $maxIdx)
     do
-	fBase1=$(echo "scale=3;$i*$DPhiF" | bc)
-	fBase2=$(echo "scale=3;($i+1)*$DPhiF" | bc)
-	echo $fBase1 $fBase2
-	# echo "Checking cond either $fBase1<=$iBase1<$fBase2 or $fBase1<=$iBase2<$fBase2"
-	if [ $(echo "$fBase1<=$iBase1 && $iBase1<=$fBase2" | bc) -eq 1 ] ||\
-	       [ $(echo "$fBase1<=$iBase2 && $iBase2<=$fBase2" | bc) -eq 1 ]
+	#4 the less side ranges
+	dIterBase1=$(echo "scale=3;$i*$DPhiB" | bc)
+	dIterBase2=$(echo "scale=3;($i+1)*$DPhiB" | bc)
+	echo $dIterBase1 $dIterBase2
+	# echo "Checking cond either $dIterBase1<=$fixedRange1<$dIterBase2 or $dIterBase1<=$fixedRange2<$dIterBase2"
+	if [ $(echo "$dIterBase1<=$fixedRange1 && $fixedRange1<=$dIterBase2" | bc) -eq 1 ] ||\
+	       [ $(echo "$dIterBase1<=$fixedRange2 && $fixedRange2<=$dIterBase2" | bc) -eq 1 ]
 	then
-	    echo "Inside cond either $fBase1<=$iBase1<=$fBase2 or $fBase1<=$iBase2<=$fBase2"
+	    echo "Either
+ $dIterBase1<=$fixedRange1<=$dIterBase2 or $dIterBase1<=$fixedRange2<=$dIterBase2"
 	    echo "Is true"
 	    mySideArr+=($i)
 	fi
     done
-    echo "The corresponding sides in base $fBase are:"
+    echo "The corresponding sides in base $dIterBase are:"
     echo "${mySideArr[@]}"
 }
 
+function isAngleInRange() {
+    b=$1
+    angle1=$2
+    angle2=$3
 
-argHandling $@
+    diff=$(echo "scale=3;$angle1-($angle2)" | bc)
 
-# getSidesInNewBase 23 24 10
+    myVal=$(echo "$diff % 360" | bc)
+    #cheap way of doing absolute value
+    myVal=${myVal#-}
+
+    firstCond=$(echo "$myVal <= $b" | bc)
+    mySecVal=$(echo "scale=3;360-$myVal" | bc)
+    secCond=$(echo "$mySecVal <= $b" | bc)
+
+    if [ $firstCond -eq 1 ] || [ $secCond -eq 1 ]
+    then
+	echo "yes"
+    else
+	echo "no"
+    fi
+}
+
+# argHandling $@
+
+# getSidesInNewBase 8 10 24
+
+isAngleInRange 3 179.5 -178.2
+
+# getSidesInNewBase 8 24 10
 
 # getStr2Print 2
 
