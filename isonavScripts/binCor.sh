@@ -652,11 +652,11 @@ function isAngleInRange() {
     fi
 }
 
-# argHandling $@
+argHandling $@
 
 # getSidesInNewBase 8 10 24
 
-isAngleInRange 3 179.5 -178.2
+# isAngleInRange 3 179.5 -178.2
 
 # getSidesInNewBase 8 24 10
 
