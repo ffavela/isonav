@@ -516,6 +516,20 @@ function getOpoInSameBase() {
     echo $side2Num
 }
 
+function getOpoListInSameBase() {
+    myListStr="$1"
+    myList=($myListStr)
+    baseNum="$2"
+    myOpoList=()
+    for i in ${myList[@]}
+    do
+	opo2i=$(getOpoInSameBase $i $baseNum)
+	echo $i $opo2i
+	myOpoList+=($opo2i)
+    done
+    echo "${myOpoList[@]}"
+}
+
 function getIdxs4Reaction() {
     ringTag=$1
     myRingIdx=$(getRingIdx $ringTag)
@@ -577,6 +591,7 @@ function myTestFunction() {
 }
 
 function getSidesInNewBase() {
+    #Still needs the shift implementation!!!
     l=$1
     iBase=$2
     fBase=$3
@@ -584,53 +599,41 @@ function getSidesInNewBase() {
     moreSidesBase=$iBase
     lessSidesBase=$fBase
 
-    if [ $fBase -gt $iBase ]
-    then
-	echo "This is the ugly case"
-	# moreSidesBase=$fBase
-	# lessSidesBase=$iBase
-    fi
+    let "maxIdx=$fBase-1"
 
-    DPhiA=$(echo "scale=3;360/$moreSidesBase" | bc)
-    DPhiB=$(echo "scale=3;360/$lessSidesBase" | bc)
+    DPhiA=$(echo "scale=3;360/$iBase" | bc)
+    DPhiB=$(echo "scale=3;360/$fBase" | bc)
 
-    echo $DPhiA $DPhiB
-
-    #4 the more side ranges
-    fixedRange1=$(echo "scale=3;$l*$DPhiA" | bc)
-    fixedRange2=$(echo "scale=3;($l+1)*$DPhiA" | bc)
-
-    echo -e "The initial base angular values\n"
-    echo $fixedRange1 $fixedRange2
-    echo "######################"
-
-    let "maxIdx=$lessSidesBase-1"
-
-    echo $maxIdx
+    initBaseAng1=$(echo "scale=3;$l*$DPhiA" | bc)
+    initBaseAng2=$(echo "scale=3;($l+1)*$DPhiA" | bc)
 
     mySideArr=()
     for i in $(seq 0 $maxIdx)
     do
-	#4 the less side ranges
-	dIterBase1=$(echo "scale=3;$i*$DPhiB" | bc)
-	dIterBase2=$(echo "scale=3;($i+1)*$DPhiB" | bc)
-	echo $dIterBase1 $dIterBase2
-	# echo "Checking cond either $dIterBase1<=$fixedRange1<$dIterBase2 or $dIterBase1<=$fixedRange2<$dIterBase2"
-	if [ $(echo "$dIterBase1<=$fixedRange1 && $fixedRange1<=$dIterBase2" | bc) -eq 1 ] ||\
-	       [ $(echo "$dIterBase1<=$fixedRange2 && $fixedRange2<=$dIterBase2" | bc) -eq 1 ]
+	finalBaseAng1=$(echo "scale=3;$i*$DPhiB" | bc)
+	finalBaseAng2=$(echo "scale=3;($i+1)*$DPhiB" | bc)
+
+	if [ $fBase -gt $iBase ]
 	then
-	    echo "Either
- $dIterBase1<=$fixedRange1<=$dIterBase2 or $dIterBase1<=$fixedRange2<=$dIterBase2"
-	    echo "Is true"
+	    myCond1=$(isAngleInside  $finalBaseAng1 $initBaseAng1 $initBaseAng2)
+	    myCond2=$(isAngleInside $finalBaseAng2 $initBaseAng1 $initBaseAng2)
+
+	else
+	    myCond1=$(isAngleInside $initBaseAng1 $finalBaseAng1 $finalBaseAng2)
+	    myCond2=$(isAngleInside $initBaseAng2 $finalBaseAng1 $finalBaseAng2)
+	fi
+
+	if [ $myCond1 == "yes" ] || [ $myCond2 == "yes" ]
+	then
 	    mySideArr+=($i)
 	fi
     done
-    echo "The corresponding sides in base $dIterBase are:"
+
     echo "${mySideArr[@]}"
 }
 
 function isAngleInRange() {
-    b=$1
+    range=$1
     angle1=$2
     angle2=$3
 
@@ -640,9 +643,9 @@ function isAngleInRange() {
     #cheap way of doing absolute value
     myVal=${myVal#-}
 
-    firstCond=$(echo "$myVal <= $b" | bc)
+    firstCond=$(echo "$myVal <= $range" | bc)
     mySecVal=$(echo "scale=3;360-$myVal" | bc)
-    secCond=$(echo "$mySecVal <= $b" | bc)
+    secCond=$(echo "$mySecVal <= $range" | bc)
 
     if [ $firstCond -eq 1 ] || [ $secCond -eq 1 ]
     then
@@ -652,13 +655,42 @@ function isAngleInRange() {
     fi
 }
 
+function isAngleInside() {
+    angle=$1
+    initAng=$2
+    finalAng=$3
+
+    range=$(echo "$initAng-($finalAng)" | bc)
+    #The absolute val trick
+    range=${range#-}
+
+    cond1=$(isAngleInRange $range $angle $initAng)
+    cond2=$(isAngleInRange $range $angle $finalAng)
+
+    if [ $cond1 == "yes" ] && [ $cond2 == "yes" ]
+    then
+	echo "yes"
+    else
+	echo "no"
+    fi
+}
+
 argHandling $@
 
-# getSidesInNewBase 8 10 24
+# isAngleInside 300.1 285 300.2
+
+# echo "Testing the angular range"
+# isAngleInRange 300.00 300.0 315.00
+# initBase=24
+# finalBase=29
+# sideNum=9
+# myList=$(getSidesInNewBase $sideNum $initBase $finalBase)
+
+# getOpoListInSameBase "$myList" "$finalBase"
+
+# getSidesInNewBase 0 3 4
 
 # isAngleInRange 3 179.5 -178.2
-
-# getSidesInNewBase 8 24 10
 
 # getStr2Print 2
 
