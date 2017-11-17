@@ -77,7 +77,6 @@ function myHelp(){
            Unless specified, only one option can be used\n
            at the same time.\n\n
            \t-h:\t\t\t shows this help\n\n
-           \t-p:\t\t\t prints Chimera's table\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
@@ -89,11 +88,16 @@ function myHelp(){
            \t--dE [--depo]:\t\t same as the -E option but also\n
            \t\t\t\t includes the energy loss in the frontal\n
            \t\t\t\t  dE (Si). If --depo is used it prints the deposited\n
-           \t\t\t\t energy on the Si.\n\n
+           \t\t\t\t energy on the Si.\n\n\n
+           \t--getOpTR <ringId tN>\t gets the detectors of the\n
+           \t\t\t\t residual particle in kinematic\n
+           \t\t\t\t coincidence.\n\n
            \t-A:\t\t\t prints the angles of the particles.\n\n
+           \n\tMiscellaneous\n\n
+           \t-p:\t\t\t prints Chimera's table\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
            \t\t\t\t number.\n\n
-           \t--getChimAddr <gTN>:\t  gets the ring and local detector\n
+           \t--getChimAddr <gTN>:\t gets the ring and local detector\n
            \t\t\t\t number within the ring\n\n
            \nmore options comming eventually"
     echo -e $usage
@@ -106,13 +110,16 @@ function argHandling() {
     elif [ "$1" == "-E" ]
     then
 	#Dumb 4 now but eventually might prove useful
-	printCoinRings $@
+	      printCoinRings $@
     elif [ "$1" == "--dE" ]
     then
-	printCoinRings $@
+	      printCoinRings $@
+    elif [ "$1" == "--getOpTR" ]
+    then
+        getOpDet $@
     elif [ "$1" == "-A" ]
     then
-	printCoinRings $@
+	      printCoinRings $@
     elif [ "$1" == "-p" ]
     then
         #Printing the table of chimera
@@ -163,7 +170,7 @@ function getMinIxd(){
     done
 }
 
-function getMaxIxd(){
+function getMaxIdx(){
     myMaxIdx=1
     myMax=${theta_min[$myMaxIdx]}
     myVar=$1
@@ -276,7 +283,7 @@ function getStr2Print() {
                   b="$thetaResMax" 'BEGIN{print (a<b)?b:a}')
 
     minDIdx=$(getMinIxd $realMin)
-    maxDIdx=$(getMaxIxd $realMax)
+    maxDIdx=$(getMaxIdx $realMax)
     let "aveRIdx=($minDIdx+$maxDIdx)/2"
 
     minDRingV=${theta_min[$minDIdx]}
@@ -409,7 +416,7 @@ function getRingIdx() {
 	    return
         fi
     done
-    echo "No idx found"
+    echo "No idx named $$1 found"
     exit 10
 }
 
@@ -485,30 +492,6 @@ function getTof() {
     echo $myTof
 }
 
-function convertTel2Less() {
-    side1NumInit=$1
-    initNumOfSides=$2
-    finalNumOfSides=$3
-    let "side1NumFinal=$side1NumInit/($initNumOfSides/$finalNumOfSides)"
-    echo $side1NumFinal
-}
-
-function convert2More() {
-    side1NumInit=$1
-    initNumOfSides=$2
-    finalNumOfSides=$3
-
-    let "ratio=$finalNumOfSides/$initNumOfSides"
-    let "lastVal=$ratio-1"
-    side2FinalList=()
-    for i in $(seq 0 $lastVal)
-    do
-	let "side2Final=$side1NumInit*$ratio+i"
-	side2FinalList+=($side2Final)
-    done
-    echo "${side2FinalList[@]}"
-}
-
 function getOpoInSameBase() {
     side1Num=$1
     totSideNum=$2
@@ -552,42 +535,6 @@ function getFromTagNumOfTelescopes() {
     tagName=$1
     rIdx=$(getRingIdx $tagName)
     getFromIdxNumOfTelescopes $rIdx
-}
-
-function myTestFunction() {
-    rTag=$1
-    rIdx=$(getRingIdx $rTag)
-    subTel=$2
-    checkSubTel $rIdx $subTel
-    minMaxIdx=$(getIdxs4Reaction $rTag)
-    minIdx=$(echo -e "$minMaxIdx" | cut -f1)
-    maxIdx=$(echo -e "$minMaxIdx" | cut -f2)
-    initNumOfSides=$(getFromIdxNumOfTelescopes $rIdx)
-    echo $initNumOfSides
-    for i in $( seq $minIdx $maxIdx )
-    do
-	numOfTeles=$(getFromIdxNumOfTelescopes $i)
-	echo -e "i=$i\t$numOfTeles"
-	if [ $numOfTeles -eq $initNumOfSides ]
-	then
-	    echo "equal"
-	    echo "calling some function"
-	    echo $subtel
-	elif [  $numOfTeles -lt $initNumOfSides ]
-	then
-	    echo "less"
-	    echo "Doing the other function stuff"
-	    echo "numOfTeles=$numOfTeles"
-	    convertTel2Less $subTel $initNumOfSides $numOfTeles
-	elif [ $numOfTeles -gt $initNumOfSides ]
-	then
-	    echo "greater"
-	    echo "Doing the greater function case"
-	    echo "echoing my more var"
-	    echo "numOfTeles = $numOfTeles and initNumOfSides $initNumOfSides"
-	    convert2More $subTel $initNumOfSides $numOfTeles
-	fi
-    done
 }
 
 function getSidesInNewBase() {
@@ -675,6 +622,37 @@ function isAngleInside() {
     fi
 }
 
+function getOpDet (){
+    shift
+    ringIdx=$(getRingIdx $1)
+    locTN=$2
+    myIBase=${teles_num[$ringIdx]}
+    myStr2Parse=$(getStr2Print $ringIdx)
+    echo "$myStr2Parse"
+    initTag=$(echo -e "$myStr2Parse" | cut -f2)
+    finTag=$(echo -e "$myStr2Parse" | cut -f3)
+
+    initIdx=$(getRingIdx $initTag)
+    finIdx=$(getRingIdx $finTag)
+
+    for i in $(seq $initIdx $finIdx)
+    do
+        currentTag=${ring_tags[$i]}
+        myFBase=${teles_num[$i]}
+        newBLStr=$(getSidesInNewBase $locTN $myIBase $myFBase)
+        newBL=("$newBLStr")
+        opValL=()
+        for j in ${newBL[@]}
+        do
+            opVal=$(getOpoInSameBase $j $myFBase)
+            opValL+=($opVal)
+        done
+        echo -e "$currentTag\t${opValL[@]}"
+    done
+
+
+}
+
 argHandling $@
 
 # isAngleInside 300.1 285 300.2
@@ -692,20 +670,11 @@ argHandling $@
 
 # isAngleInRange 3 179.5 -178.2
 
-# getStr2Print 2
-
 # getRingIdx 8e
 
 # getIdxs4Reaction 1i
 
 # getFromTagNumOfTelescopes S10
 
-# echo "Doing myTestFunction"
-# myTestFunction 7e 37
-
-# convertTel2Less 5 16 8
-# convertTel2Less 15 16 8
-# convertTel2Less 37 48 32
 
 # getOpoInSameBase 3 8
-# convert2More 3 4 16
