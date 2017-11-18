@@ -1596,7 +1596,11 @@ def integrateELoss(iso,E,material,thick):
     dExMax=(C_beta*B_beta)/e
     fracCrit=0.01
     ##############
-    for i in range(partitionSize):
+    dEx=getBetheLoss(iso,E,material)
+    #Next is for avoiding energy increment
+    if dEx<=0:
+        return -1
+    for i in range(partitionSize-1):
         dEx=getBetheLoss(iso,E,material)
         if dEx == None:
             #No material was found
