@@ -7,7 +7,7 @@ But
 $ isonav 197Au --Elab=0.001 --material=Si --thick=300
 5884582.250
 
-This makes no sense!!!
+This makes no sense!!! BUG solved
 
 Improve the documentation. Make a latex doc for the theory.
 
