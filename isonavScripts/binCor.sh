@@ -1,7 +1,10 @@
 #!/bin/bash
-
 #A script for checking coincidences on the rings of CHIMERA
 
+#################### This part is for eventually
+trap "exit 1" TERM # exiting the whole script through
+export TOP_PID=$$  # the function calls
+####################
 eLab=64.0 #in MeV
 #Make sure reactions are valid!!!
 isoP=4He
@@ -389,11 +392,13 @@ function tNumParse() {
     then
         echo "ringId and tN are mandatory"
         exit 2
+        kill -s TERM $TOP_PID
     fi
     ringIdx=$(getRingIdx $1)
     if [ "$ringIdx" == "" ]
     then
         echo -e "${RED}Error${NC} ring $1 not found"
+        kill -s TERM $TOP_PID
         exit 3
     fi
 
@@ -413,10 +418,11 @@ function getRingIdx() {
         if [ "$1" == ${ring_tags[$i]} ]
         then
             echo $i
-	    return
+	          return
         fi
     done
-    echo "No idx named $$1 found"
+    echo "No ring_tag named $1 found" >&2
+    kill -s TERM $TOP_PID
     exit 10
 }
 
@@ -425,7 +431,8 @@ function checkSubTel() {
     subTel=$2
     if [ $subTel -ge ${teles_num[$rIdx]} ] || [ "$subTel" -lt 0 ]
     then
-        echo "Not a valid telescope"
+        echo "Not a valid telescope" >&2
+        kill -s TERM $TOP_PID
         exit 4
     fi
 }
@@ -441,6 +448,7 @@ function checkGTN() {
     if [ "$#" -ne 1 ]
     then
         echo -e "${RED}Error: ${NC} the gTN is mandatory"
+        kill -s TERM $TOP_PID
         exit 5
     fi
 
@@ -452,6 +460,7 @@ function checkGTN() {
         \thas to be an integer
         between 0 and 1191"
         echo -e $errorStr
+        kill -s TERM $TOP_PID
         exit 6
     fi
 }
@@ -537,28 +546,40 @@ function getFromTagNumOfTelescopes() {
     getFromIdxNumOfTelescopes $rIdx
 }
 
+function getShift() {
+    rTag=$1
+    if [ $rTag == "S25" ]
+    then
+        echo "-5.625" # -11.25/2
+    elif [ $rTag == "S26" ]
+    then
+        echo "-16.875" # -3/2*11.25
+    else
+        echo "0"
+    fi
+}
+
 function getSidesInNewBase() {
     #Still needs the shift implementation!!!
     l=$1
     iBase=$2
     fBase=$3
-
-    moreSidesBase=$iBase
-    lessSidesBase=$fBase
+    iShift=$4
+    fShift=$5
 
     let "maxIdx=$fBase-1"
 
     DPhiA=$(echo "scale=3;360/$iBase" | bc)
     DPhiB=$(echo "scale=3;360/$fBase" | bc)
 
-    initBaseAng1=$(echo "scale=3;$l*$DPhiA" | bc)
-    initBaseAng2=$(echo "scale=3;($l+1)*$DPhiA" | bc)
+    initBaseAng1=$(echo "scale=3;$l*$DPhiA+($iShift)" | bc)
+    initBaseAng2=$(echo "scale=3;($l+1)*$DPhiA+($iShift)" | bc)
 
     mySideArr=()
     for i in $(seq 0 $maxIdx)
     do
-	finalBaseAng1=$(echo "scale=3;$i*$DPhiB" | bc)
-	finalBaseAng2=$(echo "scale=3;($i+1)*$DPhiB" | bc)
+	finalBaseAng1=$(echo "scale=3;$i*$DPhiB+($fShift)" | bc)
+	finalBaseAng2=$(echo "scale=3;($i+1)*$DPhiB+($fShift)" | bc)
 
 	if [ $fBase -gt $iBase ]
 	then
@@ -624,13 +645,18 @@ function isAngleInside() {
 
 function getOpDet (){
     shift
+    rTag=$1
     ringIdx=$(getRingIdx $1)
     locTN=$2
+    checkSubTelFromTag $rTag $locTN
     myIBase=${teles_num[$ringIdx]}
     myStr2Parse=$(getStr2Print $ringIdx)
-    echo "$myStr2Parse"
+    [ "$myStr2Parse" == "" ] &&\
+        echo "No solution at ring $rTag" && exit 15
     initTag=$(echo -e "$myStr2Parse" | cut -f2)
     finTag=$(echo -e "$myStr2Parse" | cut -f3)
+
+    iShift=$(getShift $rTag)
 
     initIdx=$(getRingIdx $initTag)
     finIdx=$(getRingIdx $finTag)
@@ -639,7 +665,10 @@ function getOpDet (){
     do
         currentTag=${ring_tags[$i]}
         myFBase=${teles_num[$i]}
-        newBLStr=$(getSidesInNewBase $locTN $myIBase $myFBase)
+        fShift=$(getShift $currentTag)
+        newBLStr=$(getSidesInNewBase\
+                       $locTN $myIBase $myFBase\
+                       $iShift $fShift)
         newBL=("$newBLStr")
         opValL=()
         for j in ${newBL[@]}
@@ -649,8 +678,6 @@ function getOpDet (){
         done
         echo -e "$currentTag\t${opValL[@]}"
     done
-
-
 }
 
 argHandling $@
