@@ -429,7 +429,14 @@ function getRingIdx() {
 function checkSubTel() {
     rIdx=$1
     subTel=$2
-    if [ $subTel -ge ${teles_num[$rIdx]} ] || [ "$subTel" -lt 0 ]
+    if [ "$subTel" == "" ]
+    then
+	echo -e "${RED}Error: ${NC} the tN is mandatory"
+        kill -s TERM $TOP_PID
+    fi
+
+    if [ $subTel -ge ${teles_num[$rIdx]} ]\
+	   || [ "$subTel" -lt 0 ]
     then
         echo "Not a valid telescope" >&2
         kill -s TERM $TOP_PID
