@@ -5,21 +5,13 @@
 trap "exit 1" TERM # exiting the whole script through
 export TOP_PID=$$  # the function calls
 ####################
-eLab=64.0 #in MeV
-#Make sure reactions are valid!!!
-isoP=4He
-isoT=12C
 
-isoE=4He
-isoR=12C
-
-material=C #For energy loss in the target
-#Use isonav --listMaterials to see which ones are available.
-thickness=0.44 #in microns
-#Where in the target we think the reaction occurs, say halfway.
-halfThick=$(echo "$thickness/2.0" | bc -l )
-
-xRes=7.65 #Excitation of the residual particle.
+########################################################################
+########################################################################
+## The configuration is now stored on an configuration file, use the ###
+## --exampleConf option to create one and use it as an argument      ###
+########################################################################
+########################################################################
 
 thetaVals=(1.4 2.2 3.1 4.1 5.2 6.4 7.8 9.3 10.8 12.3 13.8 15.3 17.00
 	  19.00 21.00 23.00 25.50 28.50 34 42 50 58 66 74 82 90 98 106
@@ -74,12 +66,18 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function myHelp(){
-    usage="${RED}usage:${NC} ./binCor [options]\n
-           Does simple binary kinematics on CHIMERA\n
-           says which rings are in coincidence\n
-           Unless specified, only one option can be used\n
-           at the same time.\n\n
+    usage="${RED}usage:\n\t${NC} ./binCor [miscOptions]\n
+           or\n\t ./binCor <confFile> [options]\n\n
+           \nMiscellaneous (./binCor [miscOptions])\n\n
            \t-h:\t\t\t shows this help\n\n
+           \t-p:\t\t\t prints Chimera's table\n\n
+           \t--getN <ringId tN>:\t gets the global telescope\n
+           \t\t\t\t number.\n\n
+           \t--getChimAddr <gTN>:\t gets the ring and local detector\n
+           \t\t\t\t number within the ring\n\n
+           \t${RED}--exampleConf:\t\t creates an example configuration\n
+           \t\t\t\t file named \"exampleConf.cor\"${NC}\n\n
+           \nUsing the confFile (./binCor <confFile> [options])\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
@@ -96,33 +94,15 @@ function myHelp(){
            \t\t\t\t residual particle in kinematic\n
            \t\t\t\t coincidence.\n\n
            \t-A:\t\t\t prints the angles of the particles.\n\n
-           \n\tMiscellaneous\n\n
-           \t-p:\t\t\t prints Chimera's table\n\n
-           \t--getN <ringId tN>:\t gets the global telescope\n
-           \t\t\t\t number.\n\n
-           \t--getChimAddr <gTN>:\t gets the ring and local detector\n
-           \t\t\t\t number within the ring\n\n
            \nmore options comming eventually"
     echo -e $usage
 }
 
 function argHandling() {
-    if [ "$1" == "-h" ]
+    if [ $# -eq 0 ] || [ "$1" == "-h" ]
     then
 	myHelp
-    elif [ "$1" == "-E" ]
-    then
-	#Dumb 4 now but eventually might prove useful
-	      printCoinRings $@
-    elif [ "$1" == "--dE" ]
-    then
-	      printCoinRings $@
-    elif [ "$1" == "--getOpTR" ]
-    then
-        getOpDet $@
-    elif [ "$1" == "-A" ]
-    then
-	      printCoinRings $@
+	exit 0
     elif [ "$1" == "-p" ]
     then
         #Printing the table of chimera
@@ -133,13 +113,72 @@ function argHandling() {
         shift
         tNumParse $@
         getTNum $@
+	exit 0
     elif [ "$1" == "--getChimAddr" ]
     then
         shift
         checkGTN $@
         getChimAddr $@
+	exit 0
+    elif [ "$1" == "--exampleConf" ]
+    then
+	createExample
+	exit 0
+    fi
+    #If it made if all the way here then the first argument was a
+    #fileName
+    if [ ! -e "$1" ]
+    then
+	echo -e "${RED}error:\t${NC}filename $1 does not exist"
+	exit 0
+    fi
+    fileName="$1"
+    source $fileName
+    #Doing some basic parsing for the defined variables in the
+    #configuration file, if anyone doesn't pass the test, then the
+    #program does an error print and terminates inmediately
+    checkIfPosFloat eLab $eLab
+    checkIfPosFloat thickness $thickness
+    checkIfPosFloat xRes $xRes
+
+    #Add control for other variables here
+    #Where in the target we think the reaction occurs, say halfway.
+    halfThick=$(echo "$thickness/2.0" | bc -l )
+
+    shift #shifting the arguments
+    if [ "$1" == "-E" ]
+    then
+	printCoinRings $@
+	exit 0
+    elif [ "$1" == "--dE" ]
+    then
+	printCoinRings $@
+	exit 0
+    elif [ "$1" == "--getOpTR" ]
+    then
+        getOpDet $@
+	exit 0
+    elif [ "$1" == "-A" ]
+    then
+	printCoinRings $@
+	exit 0
     else
 	printCoinRings
+	exit 0
+    fi
+}
+
+function checkIfPosFloat() {
+    varName=$1
+    myNumber=$2
+
+    #regular expression for positive floats
+    re='^[0-9]+([.][0-9]+)?$'
+
+    if [ "$myNumber" == "" ] || ! [[ $myNumber =~ $re ]]
+    then
+	echo -e  "${RED}error:\t${NC}$varName=$myNumber is not a positive float" >&2
+	kill -s TERM $TOP_PID
     fi
 }
 
@@ -234,7 +273,6 @@ function printCoinRings(){
  then
     if [ "$2" == "--depo" ]
     then
-        echo "Entered --depo condition"
         eHead="\tejeE\tejeDE\tresE\tresDE"
     else
         eHead="\tejeE\tejeFE\tresE\tresFE"
@@ -687,28 +725,29 @@ function getOpDet (){
     done
 }
 
+function createExample() {
+    fileName="exampleConf.cor"
+    echo "Creating example configuration in $fileName"
+    # exampleConf="
+    echo "#Remember not to leave spaces near the equal sign, IT IS BaSH!!">$fileName
+    echo "" >>$fileName
+    echo "eLab=64.0 #in MeV" >>$fileName
+    echo "# Make sure reactions are valid!!!" >>$fileName
+    echo "isoP=4He #The projectile" >>$fileName
+    echo "isoT=12C #The target" >> $fileName
+    echo "" >>$fileName
+    echo "isoE=4He #The ejectile" >> $fileName
+    echo "isoR=12C #The residual" >> $fileName
+    echo "" >>$fileName
+    echo "material=C #For energy loss in the target" >> $fileName
+    echo "#Use isonav --listMaterials to see which ones are available." >>$fileName
+    echo "" >>$fileName
+    echo "thickness=0.44 #in microns, for the calculations we use half of this" >>$fileName
+    echo "" >>$fileName
+    echo "xRes=9.64 #Excitation of the residual particle." >>$fileName
+
+    # echo -n -e $exampleConf > $fileName
+    echo -e "\nNow run\n $ ./binCor.sh $fileName\nto see the output"
+}
+
 argHandling $@
-
-# isAngleInside 300.1 285 300.2
-
-# echo "Testing the angular range"
-# isAngleInRange 300.00 300.0 315.00
-# initBase=24
-# finalBase=29
-# sideNum=9
-# myList=$(getSidesInNewBase $sideNum $initBase $finalBase)
-
-# getOpoListInSameBase "$myList" "$finalBase"
-
-# getSidesInNewBase 0 3 4
-
-# isAngleInRange 3 179.5 -178.2
-
-# getRingIdx 8e
-
-# getIdxs4Reaction 1i
-
-# getFromTagNumOfTelescopes S10
-
-
-# getOpoInSameBase 3 8
