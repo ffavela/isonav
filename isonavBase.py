@@ -1343,8 +1343,8 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     vya1CM=vya1
     # vxa2CM=vxa2-Vcm
     # vya2CM=vya2
-    #2.- Get the slopes
-    sa1=vya1CM/vxa1CM
+    #2.- Get the slopes #No need
+    # sa1=vya1CM/vxa1CM
     # sa2=vya2CM/vxa2CM
     #3.- The corresponding angles
     angA1=atan2(vya1CM,vxa1CM)
@@ -1384,8 +1384,8 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         vxa2CM=vxa2-Vcm
         vya2CM=vya2
 
-        #2.- Get the slopes
-        sa2=vya2CM/vxa2CM
+        #2.- Get the slopes #No need
+        # sa2=vya2CM/vxa2CM
         #3.- The corresponding angles
         angA2=atan2(vya2CM,vxa2CM)
         # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
