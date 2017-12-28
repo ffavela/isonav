@@ -77,6 +77,8 @@ function myHelp(){
            \t\t\t\t number within the ring\n\n
            \t${RED}--exampleConf:\t\t creates an example configuration\n
            \t\t\t\t file named \"exampleConf.cor\"${NC}\n\n
+           \t--getRTh <r1 t1 r2 t2>:\t Gets the theta relative angle\n
+           \t\t\t\t between the detectors\n\n
            \nUsing the confFile (./binCor <confFile> [options])\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
@@ -124,7 +126,13 @@ function argHandling() {
     then
 	createExample
 	exit 0
+    elif [ "$1" == "--getRTh" ]
+    then
+	      shift
+        python binCorComplementMain.py "--getRelTheta" $@
+	      exit 0
     fi
+
     #If it made if all the way here then the first argument was a
     #fileName
     if [ ! -e "$1" ]
