@@ -25,7 +25,7 @@
   isonav <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
   isonav <iso> [-v] --Elab=val (--deBroglie | --redDeBroglie)
   isonav <iso> [-v] --Elab=val --L4TOF=L
-  isonav <iso> [-v] --decay
+  isonav <iso> [-v] --decay [--Ex=val]
   isonav <iso> [-v] (--alpha | --nEmission | --pEmission ) [--num=val]
   isonav <iso> [-v] --Emission=val [--num=val]
   isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]

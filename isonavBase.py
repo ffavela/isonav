@@ -192,11 +192,12 @@ def thresholdE(iso1,iso2,iso3,iso4):
         Ethres=0
     return Ethres
 
-def reaction(iso1,iso2):
+def reaction(iso1,iso2, Ex=0.0):
     #Think about meoizing
     a1,key1=getIso(iso1)
     a2,key2=getIso(iso2)
     isoExist=checkIsoExistence(iso1,iso2)
+    amuEx=Ex/eCoef
     if not isoExist or isoExist=="Decay":
         return False
 
@@ -212,7 +213,7 @@ def reaction(iso1,iso2):
 
     aVal=aTot
     pVal=pTot
-    initialMass=getMass(iso1)+getMass(iso2)
+    initialMass=getMass(iso1)+getMass(iso2)+amuEx
 
     reactionList=[]
     rKey=getKey(pRes)
@@ -279,8 +280,8 @@ def reaction(iso1,iso2):
         rKey=getKey(pRes)
         eKey=getKey(pEject)
 
-def nReaction(iso1,iso2):
-    ls=reaction(iso1,iso2)
+def nReaction(iso1,iso2,Ex=0.0):
+    ls=reaction(iso1,iso2,Ex=Ex)
     if ls==[]:
         print("Nuclei might be too big")
     if ls==False:
@@ -294,13 +295,15 @@ def nReaction(iso1,iso2):
 
 #Not yet perfect
 #Not any beta decays
-def QDecay(iso1):
-    decayCand=nReaction(iso1,'0None')
+def QDecay(iso1,Ex=0.0):
+    decayCand=nReaction(iso1,'0None',Ex=Ex)
     if decayCand==False:
         return False
     decays=[val[0:2]+[val[3]] for val in decayCand if val[3]>0]
     ndec=[]
     for d in decays:
+        if d[0] == '0None' or d[1] == '0None':
+            continue
         E1cm,E2cm=getEcmsFromECM(d[0],d[1],d[2])
         d=[d[0],d[1],E1cm,E2cm,d[2]]
         ndec.append(d)

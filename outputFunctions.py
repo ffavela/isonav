@@ -247,9 +247,9 @@ def pIsotopes(iso,mFlag=False,flag=True):
         print(i[0])
     return 0
 
-def pDecay(iso,emit="",num=1):
+def pDecay(iso,emit="",num=1,Ex=0.0):
     if emit == "":
-        dec=QDecay(iso)
+        dec=QDecay(iso, Ex)
         for d in dec:
             print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
     else:

@@ -88,6 +88,7 @@ def argHand(args):
     L=args["--L4TOF"]
     redDeBroglie=args["--redDeBroglie"]
     deBroglieFlag=args["--deBroglie"] or redDeBroglie
+    Ex=args["--Ex"]
 
     if iso:
         vals=[i[0] for i in getIsotopes(iso)]
@@ -330,8 +331,14 @@ def argHand(args):
         if not makeSureIso(iso):
             print("Not a valid isotope")
             return 1
-
-        pDecay(iso)
+        if Ex:
+            if not testVal(Ex,"E"):
+                print("Error; Ex has to be a positive number")
+                return 1119
+            Ex=float(Ex)
+        if Ex == None:
+            Ex = 0.0
+        pDecay(iso,Ex=Ex)
         return 0
 
     if alpha or nEmit or pEmit:
