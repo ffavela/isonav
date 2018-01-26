@@ -1271,7 +1271,7 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     if Ecm<=0:
         return False,False,False
     # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
-    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[0:2])
+    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[2:])
     # print "v1cm,v2cm",v1cm,v2cm
     # print "vEcm,vRcm",vEcm,vRcm
 
