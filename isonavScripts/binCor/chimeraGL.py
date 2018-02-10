@@ -127,17 +127,32 @@ def drawSurfaces(verticies,t=0.999):
             glColor3fv((1,1,1))
     glEnd()
 
-def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
+
+def getVert4TelesSimple(detIdx,subIdx):
     theta_min_val,theta_max_val,delta_phi_val,dDist,shift=getDetValues(detIdx,subIdx)
     verticies=getVerticies4Telescope(dDist,theta_min_val,theta_max_val,delta_phi_val,shift)
+    return verticies
+
+def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
+    verticies=getVert4TelesSimple(detIdx,subIdx)
     if surfStat:
         drawSurfaces(verticies,t)
+        pass
 
+    # glBegin(GL_LINES)
+    # for edge in edges:
+    #     for vertex in edge:
+    #         glVertex3fv(verticies[vertex])
+    # glEnd()
+
+
+def drawFromGLists(gVerts,gEdges):
     glBegin(GL_LINES)
-    for edge in edges:
+    for edge in gEdges:
         for vertex in edge:
-            glVertex3fv(verticies[vertex])
+            glVertex3fv(gVerts[vertex])
     glEnd()
+
 
 def drawChimTelesGL2(detIdx,subIdx,surfStat=False):
     theta_min_val,theta_max_val,delta_phi_val,dDist,shift=getDetValues(detIdx,subIdx)
@@ -151,7 +166,6 @@ def drawChimTelesGL2(detIdx,subIdx,surfStat=False):
             glVertex3fv(verticies[vertex])
     glEnd()
 
-
 def drawRing(detIdx,subTDict):
     telesN=teles_num[detIdx]
     for subIdx in range(telesN):
@@ -159,8 +173,8 @@ def drawRing(detIdx,subTDict):
         drawChimTelesGL(detIdx,subIdx,True,tVal)
 
 def drawAllChimera(tDict):
-    for i in range(34):
-    # for i in range(24):
+    # for i in range(34):
+    for i in range(11):
         ringT=ring_tags[i]
         subTDict=tDict[ringT]
         drawRing(i,subTDict)
@@ -175,6 +189,55 @@ def getTDict(rStr,sTel):
             tDict[ringStr].append(tVal)
     return tDict
 
+def myRelAdd(i,myIntList):
+    return tuple([e+i for e in myIntList])
+
+def getGRelList(telesCoordLists,boolSurf=False):
+    gTelVertList=[]
+    gEdgeList=[]
+    tCoordLen=8 #Number of verticies on a single telescope
+    myShift=0
+    for tCoordPL in telesCoordLists:
+        gTelVertList+=tCoordPL
+
+        subRel=[myRelAdd(myShift,myEdgeRel) for myEdgeRel in edges]
+        gEdgeList+=subRel
+        myShift+=tCoordLen
+
+    return gTelVertList,gEdgeList
+
+def getOptimizedRelList(telesCoordLists):
+    gTelVertList,gEdgeList=getGRelList(telesCoordLists)
+
+    #Converting the edge relationship to point relationship and
+    #avoiding repeated edges (including reciprocal ones).
+    gVertEdgeL=[]
+
+    for edge in gEdgeList:
+        pA=gTelVertList[edge[0]]
+        pB=gTelVertList[edge[1]]
+        edgeVert=(pA,pB)
+        edgeVertInv=(pB,pA)
+
+        if edgeVert not in gVertEdgeL and edgeVertInv not in gVertEdgeL:
+            gVertEdgeL.append(edgeVert)
+
+    #Now reducing the points that are on gTelVertList since there are
+    #many repeated.
+    gReduVertL = list(set(gTelVertList))
+
+    #Converting back the points into index relationships using the
+    #gReduVertL list.
+    gReduEdgeList=[]
+    for gVEdge in gVertEdgeL:
+        gReduEdgeList.append((gReduVertL.index(gVEdge[0]),\
+                              gReduVertL.index(gVEdge[1])))
+
+
+    #Do somethign similar here for the surface points.
+
+    return gReduVertL,gReduEdgeList
+
 def main():
     tDict=getTDict("S19",18)
     # print(tDict)
@@ -185,7 +248,20 @@ def main():
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
     glTranslatef(0.0,0.0, -5)
-    glRotatef(120, 0, 1, 0)
+    # glRotatef(120, 0, 1, 0)
+    glRotatef(80, 0, 1, 0)
+
+    myVerts0=getVert4TelesSimple(5,6)
+    myVerts1=getVert4TelesSimple(5,7)
+    myVerts2=getVert4TelesSimple(5,8)
+    myVerts3=getVert4TelesSimple(5,9)
+    myVerts4=getVert4TelesSimple(5,10)
+
+    myVertsL=[myVerts0,myVerts1,myVerts2,myVerts3,myVerts4]
+
+    # gVerts,gEdges=getGRelList(myVertsL)
+    gVerts,gEdges=getOptimizedRelList(myVertsL)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -195,6 +271,7 @@ def main():
         glRotatef(1, 0, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
         drawAllChimera(tDict)
+        drawFromGLists(gVerts,gEdges)
         # drawChimTelesGL(25,5,True)
         # drawChimTelesGL2(32,20,True)
         # drawRing(15)
