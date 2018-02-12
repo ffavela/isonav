@@ -135,14 +135,14 @@ def getVert4TelesSimple(detIdx,subIdx):
 
 def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
     verticies=getVert4TelesSimple(detIdx,subIdx)
-    if surfStat:
-        drawSurfaces(verticies,t)
-        pass
+    # if surfStat:
+    #     drawSurfaces(verticies,t)
+    #     pass
 
     # glBegin(GL_LINES)
-    # for edge in edges:
-    #     for vertex in edge:
-    #         glVertex3fv(verticies[vertex])
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(verticies[vertex])
     # glEnd()
 
 
@@ -172,12 +172,44 @@ def drawRing(detIdx,subTDict):
         tVal=subTDict[subIdx]
         drawChimTelesGL(detIdx,subIdx,True,tVal)
 
+def getOptVertStuff4Ring(rNum):
+    telesN=teles_num[rNum]
+    gVertL=[]
+    for j in range(telesN):
+        #Get the vertices for all the telescopes in the ring
+        telesV=getVert4TelesSimple(rNum,j)
+        gVertL.append(telesV)
+    gOptVerts,gOptEdges=getOptimizedRelList(gVertL)
+    return gOptVerts,gOptEdges
+
+def getVertStuff4Ring(rNum):
+    telesN=teles_num[rNum]
+    gVertL=[]
+    for j in range(telesN):
+        #Get the vertices for all the telescopes in the ring
+        telesV=getVert4TelesSimple(rNum,j)
+        gVertL.append(telesV)
+    return gVertL
+
+def getOptVertStuff4Rings(rNumL=[]):
+    gVertL=[]
+    if rNumL==[]: #All of Chimera
+        rNumL=range(34)
+
+    for i in rNumL:
+        rVertL=getVertStuff4Ring(i)
+        gVertL+=rVertL
+    gOptVerts,gOptEdges=getOptimizedRelList(gVertL)
+    return gOptVerts,gOptEdges
+
 def drawAllChimera(tDict):
     # for i in range(34):
-    for i in range(11):
+    glBegin(GL_LINES)
+    for i in range(34):
         ringT=ring_tags[i]
         subTDict=tDict[ringT]
         drawRing(i,subTDict)
+    glEnd()
 
 def getTDict(rStr,sTel):
     aDict=getRelAngleDict(rStr,sTel)
@@ -240,27 +272,18 @@ def getOptimizedRelList(telesCoordLists):
 
 def main():
     tDict=getTDict("S19",18)
-    # print(tDict)
     pygame.init()
     display = (1900,600)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-    glTranslatef(0.0,0.0, -5)
+    glTranslatef(0.0,0.0, -7)
     # glRotatef(120, 0, 1, 0)
     glRotatef(80, 0, 1, 0)
 
-    myVerts0=getVert4TelesSimple(5,6)
-    myVerts1=getVert4TelesSimple(5,7)
-    myVerts2=getVert4TelesSimple(5,8)
-    myVerts3=getVert4TelesSimple(5,9)
-    myVerts4=getVert4TelesSimple(5,10)
-
-    myVertsL=[myVerts0,myVerts1,myVerts2,myVerts3,myVerts4]
-
-    # gVerts,gEdges=getGRelList(myVertsL)
-    gVerts,gEdges=getOptimizedRelList(myVertsL)
+    # gVerts,gEdges=getOptVertStuff4Rings(range(30))
+    gVerts,gEdges=getOptVertStuff4Rings()
 
     while True:
         for event in pygame.event.get():
@@ -270,7 +293,7 @@ def main():
 
         glRotatef(1, 0, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        drawAllChimera(tDict)
+        # drawAllChimera(tDict)
         drawFromGLists(gVerts,gEdges)
         # drawChimTelesGL(25,5,True)
         # drawChimTelesGL2(32,20,True)
