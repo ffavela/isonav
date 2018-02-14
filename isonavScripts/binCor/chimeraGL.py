@@ -42,13 +42,13 @@ edges = (
     )
 
 surfaces = (
-    # (0,1,2,3),
-    # (0,3,7,4),
-    # (0,1,5,4),
+    (0,1,2,3),
+    (0,3,7,4),
+    (0,1,5,4),
 
-    # (6,2,3,7),
+    (6,2,3,7),
     (6,7,4,5),
-    # (6,5,1,2),
+    (6,5,1,2),
     )
 
 # theta_min_val=radians(163)
@@ -179,7 +179,7 @@ def getOptVertStuff4Ring(rNum):
         #Get the vertices for all the telescopes in the ring
         telesV=getVert4TelesSimple(rNum,j)
         gVertL.append(telesV)
-    gOptVerts,gOptEdges=getOptimizedRelList(gVertL)
+    gOptVerts,gOptEdges,gOptSurfaces=getOptimizedRelList(gVertL)
     return gOptVerts,gOptEdges
 
 def getVertStuff4Ring(rNum):
@@ -199,8 +199,8 @@ def getOptVertStuff4Rings(rNumL=[]):
     for i in rNumL:
         rVertL=getVertStuff4Ring(i)
         gVertL+=rVertL
-    gOptVerts,gOptEdges=getOptimizedRelList(gVertL)
-    return gOptVerts,gOptEdges
+    gOptVerts,gOptEdges,gOptSurfaces=getOptimizedRelList(gVertL)
+    return gOptVerts,gOptEdges,gOptSurfaces
 
 def drawAllChimera(tDict):
     # for i in range(34):
@@ -224,9 +224,38 @@ def getTDict(rStr,sTel):
 def myRelAdd(i,myIntList):
     return tuple([e+i for e in myIntList])
 
+def getRotation(thing, x):
+    return thing[-x:] + thing[:-x]
+
+def getAllRotList(thing):
+    allRotL=[]
+    for i in range(len(thing)):
+        rThing=getRotation(thing,i)
+        allRotL.append(rThing)
+    return allRotL
+
+def checkThingOnList(thing,list2Check):
+    rotThingL=getAllRotList(thing)
+
+    for rThing in rotThingL:
+        if rThing in list2Check:
+            return False
+
+    #Now inverting the thing
+    invThing=thing[::-1]
+    rotIThingL=getAllRotList(invThing)
+    for rIThing in rotIThingL:
+        if rIThing in list2Check:
+            return False
+
+    #If it made it all the way, then it made it to the list.
+    return True
+
 def getGRelList(telesCoordLists,boolSurf=False):
     gTelVertList=[]
     gEdgeList=[]
+    gSurfList=[]
+
     tCoordLen=8 #Number of verticies on a single telescope
     myShift=0
     for tCoordPL in telesCoordLists:
@@ -234,25 +263,39 @@ def getGRelList(telesCoordLists,boolSurf=False):
 
         subRel=[myRelAdd(myShift,myEdgeRel) for myEdgeRel in edges]
         gEdgeList+=subRel
+
+        subSurfRel=[myRelAdd(myShift,mySurf) for mySurf in surfaces]
+        gSurfList+=subSurfRel
+
         myShift+=tCoordLen
 
-    return gTelVertList,gEdgeList
+    return gTelVertList,gEdgeList,gSurfList
 
 def getOptimizedRelList(telesCoordLists):
-    gTelVertList,gEdgeList=getGRelList(telesCoordLists)
+    gTelVertList,gEdgeList,gSurfList=getGRelList(telesCoordLists)
 
     #Converting the edge relationship to point relationship and
     #avoiding repeated edges (including reciprocal ones).
     gVertEdgeL=[]
 
+    edgeR=range(2)
     for edge in gEdgeList:
-        pA=gTelVertList[edge[0]]
-        pB=gTelVertList[edge[1]]
-        edgeVert=(pA,pB)
-        edgeVertInv=(pB,pA)
+        edgeVert=tuple([gTelVertList[edge[i]] for i in edgeR])
 
-        if edgeVert not in gVertEdgeL and edgeVertInv not in gVertEdgeL:
+        if checkThingOnList(edgeVert,gVertEdgeL):
             gVertEdgeL.append(edgeVert)
+
+
+    #Doing the same with the surfaces
+    gVertSurfL=[]
+
+    surfR=range(4)
+    #This might be trickier than it looks
+    for surf in gSurfList:
+        surfVert=tuple([gTelVertList[surf[i]] for i in surfR])
+
+        if checkThingOnList(edgeVert,gVertSurfL):
+            gVertSurfL.append(surfVert)
 
     #Now reducing the points that are on gTelVertList since there are
     #many repeated.
@@ -265,10 +308,13 @@ def getOptimizedRelList(telesCoordLists):
         gReduEdgeList.append((gReduVertL.index(gVEdge[0]),\
                               gReduVertL.index(gVEdge[1])))
 
+    #Now for the surface points.
+    gReduSurfList=[]
+    for gVSurf in gVertSurfL:
+        gReduSurfList.append((gReduVertL.index(gVSurf[0]),\
+                              gReduVertL.index(gVSurf[1])))
 
-    #Do somethign similar here for the surface points.
-
-    return gReduVertL,gReduEdgeList
+    return gReduVertL,gReduEdgeList,gReduSurfList
 
 def main():
     tDict=getTDict("S19",18)
@@ -278,12 +324,13 @@ def main():
 
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-    glTranslatef(0.0,0.0, -7)
+    glTranslatef(0.0,0.0, -4)
     # glRotatef(120, 0, 1, 0)
     glRotatef(80, 0, 1, 0)
 
-    # gVerts,gEdges=getOptVertStuff4Rings(range(30))
-    gVerts,gEdges=getOptVertStuff4Rings()
+    # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
+    gVerts,gEdges,gSurf=getOptVertStuff4Rings()
+    print(len(gSurf))
 
     while True:
         for event in pygame.event.get():
@@ -293,8 +340,10 @@ def main():
 
         glRotatef(1, 0, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        # drawAllChimera(tDict)
-        drawFromGLists(gVerts,gEdges)
+        drawAllChimera(tDict)
+
+        # drawFromGLists(gVerts,gEdges)
+
         # drawChimTelesGL(25,5,True)
         # drawChimTelesGL2(32,20,True)
         # drawRing(15)
