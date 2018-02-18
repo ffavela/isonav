@@ -4,6 +4,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+from PIL import Image
+
 from binCorComplement import *
 
 from random import random
@@ -117,11 +119,23 @@ def drawSurfaces(verticies,t=0.999):
             # glColor3fv((1,0,0))
             # myColor=(cos(t*pi/2)**2,0,sin(t*pi/2)**2)
             # myColor=(random(),random(),random())
-            myColor=convert_to_rgb(0,1,t)
+            if t=="white":
+                myColor=(1,1,0)
+            else:
+                myColor=convert_to_rgb(0,1,t)
             # myColor=getRgb(0,1,t)
             # print("t = ", t )
             # cmap = cm.autumn
             # myColor=cmap(t)[:3]
+            glColor3fv(myColor)
+            glVertex3fv(verticies[vertex])
+            glColor3fv((1,1,1))
+    glEnd()
+
+def drawSurfacesWColor(verticies,myColor=()):
+    glBegin(GL_QUADS)
+    for surface in surfaces:
+        for vertex in surface:
             glColor3fv(myColor)
             glVertex3fv(verticies[vertex])
             glColor3fv((1,1,1))
@@ -135,18 +149,36 @@ def getVert4TelesSimple(detIdx,subIdx):
 
 def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
     verticies=getVert4TelesSimple(detIdx,subIdx)
-    # if surfStat:
-    #     drawSurfaces(verticies,t)
+    if surfStat:
+        drawSurfaces(verticies,t)
     #     pass
 
-    # glBegin(GL_LINES)
+    glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
             glVertex3fv(verticies[vertex])
-    # glEnd()
+    glEnd()
+
+def specialDrawChimTelesGL(detIdx,subIdx,myColor=(1,1,0)):
+    verticies=getVert4TelesSimple(detIdx,subIdx)
+    drawSurfacesWColor(verticies,myColor)
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(verticies[vertex])
+    glEnd()
 
 
-def drawFromGLists(gVerts,gEdges):
+def drawFromGLists(gVerts,gEdges,gSurf=[]):
+    myColor=convert_to_rgb(0,1,1)
+    glBegin(GL_QUADS)
+    for surface in gSurf:
+        for vertex in surface:
+            glColor3fv(myColor)
+            glVertex3fv(gVerts[vertex])
+            glColor3fv((1,1,1))
+    glEnd()
+
     glBegin(GL_LINES)
     for edge in gEdges:
         for vertex in edge:
@@ -171,6 +203,12 @@ def drawRing(detIdx,subTDict):
     for subIdx in range(telesN):
         tVal=subTDict[subIdx]
         drawChimTelesGL(detIdx,subIdx,True,tVal)
+
+def specialDrawRing(detIdx,myColor=(0,0,1)):
+    telesN=teles_num[detIdx]
+    for subIdx in range(telesN):
+        specialDrawChimTelesGL(detIdx,subIdx,myColor)
+
 
 def getOptVertStuff4Ring(rNum):
     telesN=teles_num[rNum]
@@ -204,12 +242,21 @@ def getOptVertStuff4Rings(rNumL=[]):
 
 def drawAllChimera(tDict):
     # for i in range(34):
-    glBegin(GL_LINES)
+    # glBegin(GL_LINES)
     for i in range(34):
         ringT=ring_tags[i]
         subTDict=tDict[ringT]
         drawRing(i,subTDict)
-    glEnd()
+    # glEnd()
+
+
+def specialDrawAllChimera(colorL):
+    # glBegin(GL_LINES)
+    for i in range(34):
+        ringT=ring_tags[i]
+        myColor=colorL[i]
+        specialDrawRing(i,myColor)
+    # glEnd()
 
 def getTDict(rStr,sTel):
     aDict=getRelAngleDict(rStr,sTel)
@@ -317,37 +364,60 @@ def getOptimizedRelList(telesCoordLists):
     return gReduVertL,gReduEdgeList,gReduSurfList
 
 def main():
-    tDict=getTDict("S19",18)
+    rStr="8i"
+    sTel=3
+    tDict=getTDict(rStr,sTel)
+    colorL=[(0,0,1) for i in range(34)]
+    colorL[ring_tags.index(rStr)]=(1,0,0.5)
+    colorL[ring_tags.index("S16")]=(0,1,0.5)
+
     pygame.init()
-    display = (1900,600)
+    # width, height=(1900,600)
+    width, height=(705,303)
+    display = (width,height)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-    glTranslatef(0.0,0.0, -4)
+    glTranslatef(0.0,0.0, -5)
     # glRotatef(120, 0, 1, 0)
-    glRotatef(80, 0, 1, 0)
+    glRotatef(120, 0, 1, 0)
+    # glClearColor(190, 190, 190, 1.0) #4 changing the background
 
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
-    gVerts,gEdges,gSurf=getOptVertStuff4Rings()
-    print(len(gSurf))
+    # gVerts,gEdges,gSurf=getOptVertStuff4Rings()
+    # print(len(gSurf))
 
+    myCount=0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        glRotatef(1, 0, 1, 0)
+        # glRotatef(1, 0, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-        drawAllChimera(tDict)
 
-        # drawFromGLists(gVerts,gEdges)
+        drawAllChimera(tDict)
+        specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
+
+        # specialDrawAllChimera(colorL)
+        # specialDrawRing(ring_tags.index(rStr))
+        # drawFromGLists(gVerts,gEdges,gSurf)
 
         # drawChimTelesGL(25,5,True)
         # drawChimTelesGL2(32,20,True)
         # drawRing(15)
         pygame.display.flip()
         pygame.time.wait(10)
+
+        if myCount==1:
+            print("Inside the if")
+            glPixelStorei(GL_PACK_ALIGNMENT, 1)
+            data = glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE)
+            image = Image.frombytes("RGBA", (width, height), data)
+            image.save('output.png', 'PNG')
+
+        myCount+=1
 
 main()
