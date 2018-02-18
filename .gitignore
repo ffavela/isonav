@@ -5,6 +5,9 @@
 *.pyc
 *.zip
 *.tsv
+*.png
+*.gif
+
 .#*#
 *.db
 printDensity.py
