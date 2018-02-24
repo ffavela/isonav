@@ -150,7 +150,7 @@ def fastPopulateDict():
         iDict=populateDict1()
         pickle.dump(iDict,open(isoDictMassLoc,"wb"),2)
     return iDict
-    
+
 def putIsoData():
     isoVal=getIsoVal()
     filterList=[]
@@ -172,7 +172,7 @@ def index(string,char):
 
 def getIsoVal():
     return [[f[3:index(f,'.')],int(f[0:3]),f] for f in listdir('excitedData')\
-            if isfile(join('excitedData',f))] 
+            if isfile(join('excitedData',f))]
 
 def generateIsoMfromWebM():
     FILE = open(isoMassesLoc,"w")
@@ -241,3 +241,21 @@ def saveChemDat():
 def getChemDictFromFile():
     chemDict=pickle.load(open(chemPkl,"rb"))
     return chemDict
+
+
+# The nist file for abundances and masses etc. is located at:
+# https://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&all=all&ascii=ascii2
+# And the URL that generated it is:
+#https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses
+#Where the all elements, linearized output and all isotopes options were marked.
+def parseNistFile(nistFile):
+    #return NISTDict
+    pass
+
+def pickleNistDict(nistDict):
+    #Do a saving ...
+    pass
+
+def getNistDict():
+    #Do unpickling here, probably will replace other parts (like the masses)
+    pass
