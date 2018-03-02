@@ -1259,7 +1259,8 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
 
     Vcm=1.0*(v1L*m1+v2L*m2)/(1.0*m1+m2)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
-    Q-=sum(exList)
+    Q-=sum(exList)#Maybe problems if target of projectile are excited
+
     # print "Vcm,Q = ", Vcm,Q
     #abs is impotant, they are magnitudes!!
     v1cm=abs(v1L-Vcm)
@@ -1267,7 +1268,7 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
 
     E1cm=0.5*m1*(v1cm/c)**2
     E2cm=0.5*m2*(v2cm/c)**2
-    Ecm=E1cm+E2cm+Q
+    Ecm=E1cm+E2cm+Q #Excitation E inside the Q
     if Ecm<=0:
         return False,False,False
     # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
@@ -1282,6 +1283,7 @@ def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
     m2=getEMass(iso2)+redXL[1]
     if Ecm<=0:
         return False,False
+    #conservation of momentun
     v1cm=sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
     v2cm=(1.0*m1)/m2*v1cm
     return v1cm,v2cm
@@ -1302,7 +1304,8 @@ def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
         return [[False,False,False,False],[]]
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
-    sol1,sol2=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
+    redExL=exList[2:]
+    sol1,sol2=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes,redExL)
     angLA1,Ea1,angLB1,Eb1=sol1
     retVal2=[]
     if sol2 != []:
@@ -1311,7 +1314,7 @@ def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
     retVal1=[degrees(angLA1),Ea1,degrees(angLB1),Eb1]
     return [retVal1,retVal2]
 
-def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
+def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes,redExL=[0,0]):
     angle=radians(angle)
     kAng=tan(angle)
     k1=1.0*vEcm/Vcm
@@ -1369,8 +1372,9 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
     # vb2=sqrt(vxb2**2+vyb2**2)
     angLB1=atan2(vyb1,vxb1)
     # angLB2=atan(vyb2/vxb2)
-    Ea1=getEFromV(isoEject,va1)
-    Eb1=getEFromV(isoRes,vb1)
+
+    Ea1=getEFromV(isoEject,va1,redExL[0])
+    Eb1=getEFromV(isoRes,vb1,redExL[1])
     firstSolList=[angLA1,Ea1,angLB1,Eb1]
 
     secSolList=[]
@@ -1402,8 +1406,8 @@ def analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes):
         vb2=sqrt(vxb2**2+vyb2**2)
         # print(vb2)
         angLB2=atan2(vyb2,vxb2)
-        Ea2=getEFromV(isoEject,va2)
-        Eb2=getEFromV(isoRes,vb2)
+        Ea2=getEFromV(isoEject,va2,redExL[0])
+        Eb2=getEFromV(isoRes,vb2,redExL[1])
 
         secSolList=[angLA2,Ea2,angLB2,Eb2]
 

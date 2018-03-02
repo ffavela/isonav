@@ -153,6 +153,7 @@ def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
         drawSurfaces(verticies,t)
     #     pass
 
+    glColor((0,0,0))
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
@@ -202,7 +203,7 @@ def drawRing(detIdx,subTDict):
     telesN=teles_num[detIdx]
     for subIdx in range(telesN):
         tVal=subTDict[subIdx]
-        drawChimTelesGL(detIdx,subIdx,True,tVal)
+        drawChimTelesGL(detIdx,subIdx,False,tVal)
 
 def specialDrawRing(detIdx,myColor=(0,0,1)):
     telesN=teles_num[detIdx]
@@ -365,24 +366,28 @@ def getOptimizedRelList(telesCoordLists):
 
 def main():
     rStr="8i"
-    sTel=3
+    sTel=20
     tDict=getTDict(rStr,sTel)
-    colorL=[(0,0,1) for i in range(34)]
+    colorL=[(0,0,0.2) for i in range(34)]
     colorL[ring_tags.index(rStr)]=(1,0,0.5)
-    colorL[ring_tags.index("S16")]=(0,1,0.5)
+    colorL[ring_tags.index("S14")]=(0,1,0.5)
 
     pygame.init()
     # width, height=(1900,600)
-    width, height=(705,303)
+    width, height=(655,303)
     display = (width,height)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
 
-    glTranslatef(0.0,0.0, -5)
-    # glRotatef(120, 0, 1, 0)
+    glTranslatef(0.0,0.0, -4.0)
+    # glRotatef(130, 0, 1, 0)
     glRotatef(120, 0, 1, 0)
+
+    glTranslatef(0.0,0.0, -1.1)
+    # glRotatef(120, 0, 1, 0)
     # glClearColor(190, 190, 190, 1.0) #4 changing the background
+    glClearColor(1, 1, 1, 1.0) #4 changing the background
 
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings()
@@ -399,10 +404,16 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
         drawAllChimera(tDict)
-        specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
+        # specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
 
         # specialDrawAllChimera(colorL)
-        # specialDrawRing(ring_tags.index(rStr))
+        specialDrawRing(ring_tags.index(rStr)),
+        specialDrawRing(ring_tags.index("S14"),(1,0,0))
+
+        specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
+        specialDrawChimTelesGL(ring_tags.index("S14"),29)
+        specialDrawChimTelesGL(ring_tags.index("S14"),30)
+
         # drawFromGLists(gVerts,gEdges,gSurf)
 
         # drawChimTelesGL(25,5,True)
