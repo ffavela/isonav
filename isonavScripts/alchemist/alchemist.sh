@@ -70,9 +70,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function myHelp(){
-    usage="${RED}usage:\n\t${NC} ./binCor [miscOptions]\n
-           or\n\t ./binCor <confFile> [options]\n\n
-           \nMiscellaneous (./binCor [miscOptions])\n\n
+    usage="${RED}usage:\n\t${NC} ./alchemist [miscOptions]\n
+           or\n\t ./alchemist <confFile> [options]\n\n
+           \nMiscellaneous (./alchemist [miscOptions])\n\n
            \t-h:\t\t\t shows this help\n\n
            \t-p:\t\t\t prints Chimera's table\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
@@ -83,7 +83,7 @@ function myHelp(){
            \t\t\t\t file named \"exampleConf.cor\"${NC}\n\n
            \t--getRTh <r1 t1 r2 t2>:\t Gets the theta relative angle\n
            \t\t\t\t between the detectors\n\n
-           \nUsing the confFile (./binCor <confFile> [options])\n\n
+           \nUsing the confFile (./alchemist <confFile> [options])\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
@@ -760,7 +760,7 @@ function createExample() {
     echo "xRes=9.64 #Excitation of the residual particle." >>$fileName
 
     # echo -n -e $exampleConf > $fileName
-    echo -e "\nNow run\n $ ./binCor.sh $fileName\nto see the output"
+    echo -e "\nNow run\n $ ./alchemist.sh $fileName\nto see the output"
 }
 
 argHandling $@
