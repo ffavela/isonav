@@ -8,6 +8,8 @@
 *.png
 *.gif
 
+*.cor
+
 .#*#
 *.db
 printDensity.py

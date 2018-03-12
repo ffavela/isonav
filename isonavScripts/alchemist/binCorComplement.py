@@ -37,8 +37,8 @@ det_dist=[350, 350, 300, 300, 250, 250, 210, 210, 180, 180, 160, 160,
 thickVar=300
 thick_Si=[220, 220, thickVar, thickVar, thickVar, thickVar, thickVar,
           thickVar, 275, 275, 275, 275, 275, 275, 275, 275, thickVar,
-          thickVar, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270,
-          270, 270, 270, 270, 270, 270, 270]
+          thickVar, 275, 275, 275, 275, 275, 275, 275, 275, 275, 275,
+          275, 275, 275, 275, 275, 275, 275]
 
 teles_num=[16, 16, 24, 24, 32, 32, 40, 40, 40, 40, 48, 48, 48, 48, 48,
            48, 48, 48, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
@@ -83,9 +83,9 @@ vector
     zNorm=cos(theta)
 
     rNorm=np.array([xNorm,yNorm,zNorm])
-    
+
     return rNorm
-    
+
 def getRelativeAngleList(dAddress):
     """Returns a list of the angles for all the detectors"""
     pass
@@ -161,8 +161,8 @@ def getMasterThetaDict(rStr, dNum, partition):
         theta+=2*dTheta
         masterThetaDict[theta]=getThetaDictWithRanges(rStr,dNum,theta,dTheta)
     return masterThetaDict
-        
-    
+
+
 def getThetaDictWithRanges(rStr, dNum, angVal, dTheta=3.0):
     myAwesomeDict=getRelAngleDict(rStr,dNum)
     myNewDict={}
@@ -170,7 +170,7 @@ def getThetaDictWithRanges(rStr, dNum, angVal, dTheta=3.0):
     minAng=angVal-dTheta
     if minAng<=0:
         minAng=0
-        
+
     maxAng=angVal+dTheta
     if maxAng >= 180:
         maxAng=180
@@ -189,7 +189,7 @@ def printNewTRDict(myNewDict):
         for val in myNewDict[tagStr]:
             print("%s\t%d\t%2.2f" % (tagStr,val[0],val[1]))
     return
-                  
+
 # def getThetaRangesDict(rStr, dNum, partition):
 #     if  partition <= 5 or partition > 2*180:
 #         print("Bad partition angle ranges become... ugly ;-)")
@@ -199,4 +199,3 @@ def getTagIndex(tagStr):
         if tagStr == ring_tags[i]:
             return i
     return None
-
