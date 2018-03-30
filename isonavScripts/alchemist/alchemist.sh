@@ -70,20 +70,21 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function myHelp(){
-    usage="${RED}usage:\n\t${NC} ./alchemist [miscOptions]\n
-           or\n\t ./alchemist <confFile> [options]\n\n
-           \nMiscellaneous (./alchemist [miscOptions])\n\n
+    usage="${RED}usage:\n\t${NC} ./alchemist [miscOptions] [eRing | gTN]\n
+           or\n\t ./alchemist <confFile> [options] [eRing | gTN]\n\n
+           \nMiscellaneous (./alchemist [miscOptions] [eRing | gTN])\n\n
            \t-h:\t\t\t shows this help\n\n
            \t-p:\t\t\t prints Chimera's table\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
            \t\t\t\t number.\n\n
            \t--getChimAddr <gTN>:\t gets the ring and local detector\n
            \t\t\t\t number within the ring\n\n
+           \t--getRing <gTN>:\t gets the ring from that telescope\n\n
            \t${RED}--exampleConf:\t\t creates an example configuration\n
            \t\t\t\t file named \"exampleConf.cor\"${NC}\n\n
            \t--getRTh <r1 t1 r2 t2>:\t Gets the theta relative angle\n
            \t\t\t\t between the detectors\n\n
-           \nUsing the confFile (./alchemist <confFile> [options])\n\n
+           \nUsing the confFile (./alchemist <confFile> [options] [eRing | gTN])\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
@@ -119,17 +120,23 @@ function argHandling() {
         shift
         tNumParse $@
         getTNum $@
-	exit 0
+	      exit 0
     elif [ "$1" == "--getChimAddr" ]
     then
         shift
         checkGTN $@
         getChimAddr $@
-	exit 0
+	      exit 0
     elif [ "$1" == "--exampleConf" ]
     then
-	createExample
-	exit 0
+	      createExample
+	      exit 0
+    elif [ "$1" == "--getRing" ]
+    then
+        shift
+        checkGTN $@
+        getChimAddr $@ | cut -f1
+	      exit 0
     elif [ "$1" == "--getRTh" ]
     then
 	      shift
@@ -170,12 +177,26 @@ function argHandling() {
     then
         getOpDet $@
 	      exit 0
+    elif [ "$1" == "--getOpR" ]
+    then
+        getOpRings $@
+	      exit 0
     elif [ "$1" == "-A" ]
     then
 	      printCoinRings $@
 	      exit 0
     elif [ ! "$1" = "" ]
     then
+        #Checking if it was a ring_tag or a telescope number, the
+        #other cases will be catched by printCoinRings
+        myBoolTag=$(isTag $1)
+        myBoolTel=$(isValidTel $1)
+        if [ $myBoolTag = "true" ] || [ $myBoolTel = "true" ]
+        then
+            printCoinRings $@
+            exit 0
+        fi
+
 	      echo "error: option $1 not implemented. Maybe you mispelled."
 	      exit 666
     else
@@ -195,6 +216,46 @@ function checkIfPosFloat() {
     then
 	echo -e  "${RED}error:\t${NC}$varName=$myNumber is not a positive float" >&2
 	kill -s TERM $TOP_PID
+    fi
+}
+
+function isTag() {
+    thing=$1
+    for rT in ${ring_tags[*]}
+    do
+        if [ "$rT"  = "$thing" ]
+        then
+            echo "true"
+            return
+        fi
+    done
+    echo "false"
+}
+
+function isInteger() {
+    myNumber=$1
+    re='^[0-9]+$'
+    if ! [[ $myNumber =~ $re ]]
+    then
+        echo "false"
+        return
+    fi
+    echo "true"
+}
+
+function isValidTel() {
+    gTN=$1
+    myBool=$(isInteger $gTN)
+    if [ $myBool = "false" ]
+    then
+       echo false
+       return
+    fi
+    if [ "$gTN" -lt 0 ] || [ "$gTN" -ge 1192 ]
+    then
+        echo "false"
+    else
+        echo "true"
     fi
 }
 
@@ -268,17 +329,16 @@ function getTan(){
 
 function printCoinRings(){
  #### ### for thetaA in "${thetaVals[@]}"
- echo "###Reaction conditions###"
- echo "#$isoP $isoT => $isoE $isoR"
- echo "#xRes=$xRes, eLab=$eLab, material=$material, thickness=$thickness"
- echo "##########"
  baseHeadStr="#ejeRng\tresMin\tresMax"
  eHead=""
 
+ myArgPos=1
  if [ "$1" == "-E" ]
  then
+     let myArgPos=$myArgPos+1
      if [ "$2" == "--tof" ]
      then
+         let myArgPos=$myArgPos+1
          eHead="\teTof\teFTof\trTof\trFTof"
      else
          eHead="\tejeE\tejeFE\tresE\tresFE"
@@ -287,25 +347,60 @@ function printCoinRings(){
 
  if [ "$1" == "--dE" ]
  then
-    if [ "$2" == "--depo" ]
-    then
-        eHead="\tejeE\tejeDE\tresE\tresDE"
-    else
-        eHead="\tejeE\tejeFE\tresE\tresFE"
-    fi
+     let myArgPos=$myArgPos+1
+     if [ "$2" == "--depo" ]
+     then
+         let myArgPos=$myArgPos+1
+         eHead="\tejeE\tejeDE\tresE\tresDE"
+     else
+         eHead="\tejeE\tejeFE\tresE\tresFE"
+     fi
  fi
 
- [ "$1" == "-A" ] && eHead="\tejeAng\tresMin\tresA\tresMax"
+ [ "$1" == "-A" ] && let myArgPos=$myArgPos+1 && eHead="\tejeAng\tresMin\tresA\tresMax"
  headStr=$baseHeadStr$eHead
 
- echo -e "$headStr"
-
  let "maxIdx=${#thetaVals[*]}-1"
+
+ eval "testArg=\${$myArgPos}"
+
+
+ if [ ! $testArg = "" ]
+ then
+     myBoolTag=$(isTag $testArg)
+     myBoolTel=$(isValidTel $testArg)
+     if [ $myBoolTag = "true" ] || [ $myBoolTel = "true" ]
+     then
+         if [ $myBoolTel = "true" ]
+         then
+             myTag=$(getChimAddr $testArg | cut -f1)
+         else
+             myTag=$testArg
+         fi
+         myRingIdx=$(getRingIdx $myTag)
+         printHeader
+         echo -e "$headStr"
+         getStr2Print $myRingIdx $@
+         #Work more on this!!!!
+         exit 0
+     fi
+     echo -e "${RED}Error: ${NC} $testArg is not a valid telescope or ring" >&2
+     exit 333
+ fi
  #i is the ring number index -1 of the ejectile
+ printHeader
+ echo -e "$headStr"
  for i in $( seq 0 $maxIdx )
  do
      getStr2Print $i $@
  done
+}
+
+function printHeader() {
+    echo "###Reaction conditions###"
+    echo "#$isoP $isoT => $isoE $isoR"
+    echo "#xRes=$xRes, eLab=$eLab, material=$material, thickness=$thickness"
+    echo "##########"
 }
 
 function getStr2Print() {
@@ -506,14 +601,16 @@ function checkSubTelFromTag() {
     checkSubTel $rIdx $subTel
 }
 
-function checkGTN() {
+function someError() {
     if [ "$#" -ne 1 ]
     then
-        echo -e "${RED}Error: ${NC} the gTN is mandatory"
+        echo -e "${RED}Error: ${NC} the gTN is mandatory">&2
         kill -s TERM $TOP_PID
         exit 5
     fi
+}
 
+function checkIfInRange() {
     gTN=$1
     if [ "$gTN" -lt 0 ] || [ "$gTN" -ge 1192 ]
     then
@@ -521,10 +618,16 @@ function checkGTN() {
         telescope number)\n
         \thas to be an integer
         between 0 and 1191"
-        echo -e $errorStr
+        echo -e $errorStr >&2
         kill -s TERM $TOP_PID
         exit 6
     fi
+
+}
+function checkGTN() {
+    someError $@
+    gTN=$1
+    checkIfInRange $gTN
 }
 
 function getChimAddr() {
@@ -703,6 +806,28 @@ function isAngleInside() {
     else
 	echo "no"
     fi
+}
+
+function getOpRings (){
+    shift
+    rTag=$1
+    ringIdx=$(getRingIdx $1)
+    myIBase=${teles_num[$ringIdx]}
+    myStr2Parse=$(getStr2Print $ringIdx)
+    [ "$myStr2Parse" == "" ] &&\
+        echo "No solution at ring $rTag" && exit 15
+    initTag=$(echo -e "$myStr2Parse" | cut -f2)
+    finTag=$(echo -e "$myStr2Parse" | cut -f3)
+
+    iShift=$(getShift $rTag)
+
+    initIdx=$(getRingIdx $initTag)
+    finIdx=$(getRingIdx $finTag)
+    for i in $(seq $initIdx $finIdx)
+    do
+        currentTag=${ring_tags[$i]}
+        echo "$currentTag"
+    done
 }
 
 function getOpDet (){
