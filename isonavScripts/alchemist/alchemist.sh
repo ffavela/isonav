@@ -160,23 +160,27 @@ function argHandling() {
     shift #shifting the arguments
     if [ "$1" == "-E" ]
     then
-	printCoinRings $@
-	exit 0
+	      printCoinRings $@
+	      exit 0
     elif [ "$1" == "--dE" ]
     then
-	printCoinRings $@
-	exit 0
+	      printCoinRings $@
+	      exit 0
     elif [ "$1" == "--getOpTR" ]
     then
         getOpDet $@
-	exit 0
+	      exit 0
     elif [ "$1" == "-A" ]
     then
-	printCoinRings $@
-	exit 0
+	      printCoinRings $@
+	      exit 0
+    elif [ ! "$1" = "" ]
+    then
+	      echo "error: option $1 not implemented. Maybe you mispelled."
+	      exit 666
     else
-	printCoinRings
-	exit 0
+	      printCoinRings
+	      exit 0
     fi
 }
 
