@@ -70,9 +70,10 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function myHelp(){
-    usage="${RED}usage:\n\t${NC} $(basename $0) [miscOptions] [eRing | gTN]\n
-           or\n\t $(basename $0) <confFile> [options] [eRing | gTN]\n\n
-           \nMiscellaneous ($(basename $0) [miscOptions] [eRing | gTN])\n\n
+    usage="${RED}usage:\n\t${NC}  $(basename $0) [eRing | gTN]\n
+           \t $(basename $0) [miscOptions]\n
+           \t $(basename $0) <confFile> [options] [eRing | gTN]\n\n
+           \nMiscellaneous ($(basename $0) [miscOptions])\n\n
            \t-h:\t\t\t shows this help\n\n
            \t-p:\t\t\t prints Chimera's table\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
@@ -105,11 +106,23 @@ function myHelp(){
     echo -e $usage
 }
 
+function checkRingTagOrTel() {
+    #Checking if it was a ring_tag or a telescope number, the
+        myBoolTag=$(isTag $1)
+        myBoolTel=$(isValidTel $1)
+        if [ $myBoolTag = "true" ] || [ $myBoolTel = "true" ]
+        then
+            echo "true"
+        else
+            echo "false"
+        fi
+}
+
 function argHandling() {
     if [ $# -eq 0 ] || [ "$1" == "-h" ]
     then
-	myHelp
-	exit 0
+	      myHelp
+	      exit 0
     elif [ "$1" == "-p" ]
     then
         #Printing the table of chimera
@@ -142,14 +155,29 @@ function argHandling() {
 	      shift
         python binCorComplementMain.py "--getRelTheta" $@
 	      exit 0
+    elif [ ! "$1" = "" ]
+    then
+        myBool=$(checkRingTagOrTel $@)
+        if [ $myBool = "true" ]
+        then
+            myBoolTel=$(isValidTel $1)
+            if [ $myBoolTel = "true" ]
+            then
+                getChimAddr $@
+            else
+                myRingIdx=$(getRingIdx $@)
+                echo $myRingIdx
+            fi
+            exit 0
+        fi
     fi
 
     #If it made if all the way here then the first argument was a
     #fileName
     if [ ! -e "$1" ]
     then
-	echo -e "${RED}error:\t${NC}filename $1 does not exist"
-	exit 0
+	      echo -e "${RED}error:\t${NC}filename $1 does not exist"
+	      exit 0
     fi
     fileName="$1"
     source $fileName
@@ -189,14 +217,12 @@ function argHandling() {
     then
         #Checking if it was a ring_tag or a telescope number, the
         #other cases will be catched by printCoinRings
-        myBoolTag=$(isTag $1)
-        myBoolTel=$(isValidTel $1)
-        if [ $myBoolTag = "true" ] || [ $myBoolTel = "true" ]
+        myBool=$(checkRingTagOrTel $@)
+        if [ $myBool = "true" ]
         then
             printCoinRings $@
             exit 0
         fi
-
 	      echo "error: option $1 not implemented. Maybe you mispelled."
 	      exit 666
     else
