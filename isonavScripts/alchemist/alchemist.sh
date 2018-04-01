@@ -70,9 +70,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function myHelp(){
-    usage="${RED}usage:\n\t${NC} ./alchemist [miscOptions] [eRing | gTN]\n
-           or\n\t ./alchemist <confFile> [options] [eRing | gTN]\n\n
-           \nMiscellaneous (./alchemist [miscOptions] [eRing | gTN])\n\n
+    usage="${RED}usage:\n\t${NC} $(basename $0) [miscOptions] [eRing | gTN]\n
+           or\n\t $(basename $0) <confFile> [options] [eRing | gTN]\n\n
+           \nMiscellaneous ($(basename $0) [miscOptions] [eRing | gTN])\n\n
            \t-h:\t\t\t shows this help\n\n
            \t-p:\t\t\t prints Chimera's table\n\n
            \t--getN <ringId tN>:\t gets the global telescope\n
@@ -84,7 +84,7 @@ function myHelp(){
            \t\t\t\t file named \"exampleConf.cor\"${NC}\n\n
            \t--getRTh <r1 t1 r2 t2>:\t Gets the theta relative angle\n
            \t\t\t\t between the detectors\n\n
-           \nUsing the confFile (./alchemist <confFile> [options] [eRing | gTN])\n\n
+           \nUsing the confFile ($(basename $0) <confFile> [options] [eRing | gTN])\n\n
            \t-E [--tof]:
            \t\t prints the energies of the particles after the\n
            \t\t\t\t reaction with target energy loss. If\n
@@ -464,7 +464,7 @@ function getStr2Print() {
 	    rTof=$(getTof $isoR $resE ${det_dist[$aveRIdx]})
 
 	    eFTof=$(getTof $isoE $ejeFE ${det_dist[$i]})
-	    rFTof=$(getTof $isoE $resFE ${det_dist[$aveRIdx]})
+	    rFTof=$(getTof $isoR $resFE ${det_dist[$aveRIdx]})
 	    tofStr="\t$eTof\t$eFTof\t$rTof\t$rFTof"
 	fi
 
