@@ -98,9 +98,9 @@ function myHelp(){
            \t\t\t\t includes the energy loss in the frontal\n
            \t\t\t\t  dE (Si). If --depo is used it prints the deposited\n
            \t\t\t\t energy on the Si.\n\n\n
-           \t--getOpTR <ringId tN>\t gets the detectors of the\n
+           \t--opp (gTN | ringId tN)\t gets the detectors of the\n
            \t\t\t\t residual particle in kinematic\n
-           \t\t\t\t coincidence.\n\n
+           \t\t\t\t coincidence with the residual.\n\n
            \t-A:\t\t\t prints the angles of the particles.\n\n
            \nmore options comming eventually"
     echo -e $usage
@@ -201,7 +201,7 @@ function argHandling() {
     then
 	      printCoinRings $@
 	      exit 0
-    elif [ "$1" == "--getOpTR" ]
+    elif [ "$1" == "--opp" ]
     then
         getOpDet $@
 	      exit 0
@@ -648,8 +648,8 @@ function checkIfInRange() {
         kill -s TERM $TOP_PID
         exit 6
     fi
-
 }
+
 function checkGTN() {
     someError $@
     gTN=$1
@@ -858,9 +858,18 @@ function getOpRings (){
 
 function getOpDet (){
     shift
-    rTag=$1
-    ringIdx=$(getRingIdx $1)
-    locTN=$2
+    isIntBool=$(isInteger $1)
+    if [ $isIntBool = "true" ]
+    then
+	checkGTN $@
+        chimAddr=$(getChimAddr $@)
+	rTag=$(echo $chimAddr | cut -f1 -d" ")
+	locTN=$(echo $chimAddr | cut -f2 -d" ")
+    else
+	rTag=$1
+	locTN=$2
+    fi
+    ringIdx=$(getRingIdx $rTag)
     checkSubTelFromTag $rTag $locTN
     myIBase=${teles_num[$ringIdx]}
     myStr2Parse=$(getStr2Print $ringIdx)
@@ -889,9 +898,19 @@ function getOpDet (){
             opVal=$(getOpoInSameBase $j $myFBase)
             opValL+=($opVal)
         done
-        echo -e "$currentTag\t${opValL[@]}"
+
+	if [ $isIntBool = "true" ]
+	then
+	    for e in ${opValL[@]}
+	    do
+		getTNum $currentTag $e
+	    done
+	else
+            echo -e "$currentTag\t${opValL[@]}"
+	fi
     done
 }
+
 
 function createExample() {
     fileName="exampleConf.cor"
