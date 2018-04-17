@@ -1,0 +1,19 @@
+Correct the ordering bug with of the --opp option
+for example, for the command:
+
+$ alchemist hoyle.cor --opp S12 0
+S12	16 17 15
+S13	16 17 15
+
+This can't be solved with simple ordering because
+sometimes the values go through zero like in:
+
+$ alchemist hoyle.cor --opp S12 15
+S12	30 31 0
+S13	30 31 0
+
+Solve it by sorting with respect to the modulus
+of the number of telescopes in the respective ring.
+
+See if the function gives negative values, this might
+help with the sorting.
