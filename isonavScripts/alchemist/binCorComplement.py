@@ -8,6 +8,8 @@ import sys
 ##################################################################
 ####### Chimera's info ###########################################
 ##################################################################
+minRing=0
+maxRing=35 #len(of_any_of_the_lists)
 
 thetaVals=[1.4, 2.2, 3.1, 4.1, 5.2, 6.4, 7.8, 9.3, 10.8, 12.3, 13.8,
 	   15.3, 17.00, 19.00, 21.00, 23.00, 25.50, 28.50, 34, 42, 50,
@@ -199,3 +201,19 @@ def getTagIndex(tagStr):
         if tagStr == ring_tags[i]:
             return i
     return None
+
+def getChimAddrFromTelesNum(telesNum):
+    myStr=""
+    mySubTel=0
+    if not 0 <= telesNum <1192:
+        return myStr,mySubTel
+    firstVal,nextVal=0,0
+    myVal=0
+    for i in range(len(teles_num)):
+        nextVal=firstVal+teles_num[i]
+        if firstVal <= telesNum < nextVal:
+            myStr=ring_tags[i]
+            mySubTel=i
+            break
+        firstVal=nextVal
+    return myStr,mySubTel

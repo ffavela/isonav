@@ -13,6 +13,8 @@ from math import *
 
 from miscellaneous import *
 
+import argparse
+
 colors = (
     (1,0,0),
     (0,1,0),
@@ -159,9 +161,10 @@ def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
             glVertex3fv(verticies[vertex])
     glEnd()
 
-def specialDrawChimTelesGL(detIdx,subIdx,myColor=(1,1,0)):
+def specialDrawChimTelesGL(detIdx,subIdx,myColor=(1,1,0),colBool=True):
     verticies=getVert4TelesSimple(detIdx,subIdx)
-    drawSurfacesWColor(verticies,myColor)
+    if colBool:
+        drawSurfacesWColor(verticies,myColor)
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
@@ -204,10 +207,10 @@ def drawRing(detIdx,subTDict):
         tVal=subTDict[subIdx]
         drawChimTelesGL(detIdx,subIdx,True,tVal)
 
-def specialDrawRing(detIdx,myColor=(0,0,1)):
+def specialDrawRing(detIdx,myColor=(0,0,1),colorBool=False):
     telesN=teles_num[detIdx]
     for subIdx in range(telesN):
-        specialDrawChimTelesGL(detIdx,subIdx,myColor)
+        specialDrawChimTelesGL(detIdx,subIdx,myColor,colorBool)
 
 
 def getOptVertStuff4Ring(rNum):
@@ -232,7 +235,7 @@ def getVertStuff4Ring(rNum):
 def getOptVertStuff4Rings(rNumL=[]):
     gVertL=[]
     if rNumL==[]: #All of Chimera
-        rNumL=range(34)
+        rNumL=range(maxRing) # 35=len(ring_tags)
 
     for i in rNumL:
         rVertL=getVertStuff4Ring(i)
@@ -241,21 +244,21 @@ def getOptVertStuff4Rings(rNumL=[]):
     return gOptVerts,gOptEdges,gOptSurfaces
 
 def drawAllChimera(tDict):
-    # for i in range(34):
+    # for i in range(maxRing) # 35=len(ring_tags):
     # glBegin(GL_LINES)
-    for i in range(34):
+    for i in range(maxRing):
         ringT=ring_tags[i]
         subTDict=tDict[ringT]
         drawRing(i,subTDict)
     # glEnd()
 
 
-def specialDrawAllChimera(colorL):
+def specialDrawAllChimera(colorL,colorBool=True):
     # glBegin(GL_LINES)
-    for i in range(34):
+    for i in range(maxRing):
         ringT=ring_tags[i]
         myColor=colorL[i]
-        specialDrawRing(i,myColor)
+        specialDrawRing(i,myColor,colorBool)
     # glEnd()
 
 def getTDict(rStr,sTel):
@@ -364,24 +367,89 @@ def getOptimizedRelList(telesCoordLists):
     return gReduVertL,gReduEdgeList,gReduSurfList
 
 def main():
-    rStr="8i"
-    sTel=3
-    tDict=getTDict(rStr,sTel)
-    colorL=[(0,0,1) for i in range(34)]
-    colorL[ring_tags.index(rStr)]=(1,0,0.5)
-    colorL[ring_tags.index("S16")]=(0,1,0.5)
+    thAng=120.0
+    print("Hangling the arguments here")
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+    # group.add_argument("-g", "--grid", help="draws chimera as a grid")
+    group.add_argument("-c", "--colorMap", help="creates a heatmap around a telescope",nargs=2)
+
+    group.add_argument("-g", "--grid", help="draws chimera as a grid",action='store_true')
+
+    parser.add_argument("--thRot", help="The theta angle to rotate chimera.", nargs=1, type=float)
+
+    parser.add_argument("--eRing", help="Colors the ejectile ring.", nargs=1)
+
+    parser.add_argument("--rRing", help="Colors the recoil rings.", nargs='+')
+
+    parser.add_argument("-t", "--teles", help="Colors the recoil rings.", nargs='+', type=int)
+
+    args = parser.parse_args()
+
+    colorL=[(0,0,1) for i in range(maxRing)]
+    if args.teles:
+        myTelStrAndSubTelL=[]
+        for aTel in args.teles:
+            print("aTel = %d " % (aTel))
+            myStr,mySubTel=getChimAddrFromTelesNum(aTel)
+            print(myStr,mySubTel)
+            if myStr == "":
+                print("Error: "+str(aTel)+" is not a valid telescope")
+                return
+            myTelStrAndSubTelL.append([ring_tags.index(myStr),mySubTel])
+
+    if args.thRot:
+        thAng=args.thRot[0]
+        # print("thAng = "+str(thAng))
+
+    if (args.colorMap):
+        print("The arguments where %s and %s" % (args.colorMap[0],args.colorMap[1]))
+        rStr=args.colorMap[0]
+        sTel=int(args.colorMap[1])
+        if  rStr not in ring_tags:
+            print("error ring tag not found")
+            return
+        myIdx=ring_tags.index(rStr)
+        colorL[ring_tags.index(rStr)]=(1,0,0.5)
+        if  sTel not in range(teles_num[myIdx]):
+            maxNumOfTel=teles_num[myIdx]
+            print("error telescope out of range max number is %d" % maxNumOfTel)
+            return
+        tDict=getTDict(rStr,sTel)
+    elif (args.grid):
+        print("Using the grid option")
+    else:
+        parser.print_help()
+        return
+
+    if args.eRing:
+        eRingStr=args.eRing
+        if eRingStr[0] not in ring_tags:
+            print("Error "+eRingStr[0]+" is not a valid ring")
+            return
+    if args.rRing:
+        rRingL=args.rRing
+        for recRing in rRingL:
+            if recRing not in ring_tags:
+                print("Error "+recRing+" is not a valid ring")
+                return
+    # rStr="S26"
+    # sTel=4
+
+
+    # colorL[ring_tags.index("S16")]=(0,1,0.5)
 
     pygame.init()
-    # width, height=(1900,600)
-    width, height=(705,303)
+    width, height=(1900,600)
+    # width, height=(705,303)
     display = (width,height)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
-    gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+    gluPerspective(45.0, (display[0]/display[1]), 0.1, 50.0)
 
     glTranslatef(0.0,0.0, -5)
     # glRotatef(120, 0, 1, 0)
-    glRotatef(120, 0, 1, 0)
+    glRotatef(thAng, 0, 1, 0)
     # glClearColor(190, 190, 190, 1.0) #4 changing the background
 
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
@@ -398,11 +466,24 @@ def main():
         # glRotatef(1, 0, 1, 0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-        drawAllChimera(tDict)
-        specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
+        ##THIS IS FUNCTIONAL ###
+        if (args.colorMap):
+            drawAllChimera(tDict)
+            specialDrawChimTelesGL(ring_tags.index(rStr),sTel)
+        elif (args.grid):
+            specialDrawAllChimera(colorL,False)
+        ##THIS IS FUNCTIONAL END ###
 
         # specialDrawAllChimera(colorL)
-        # specialDrawRing(ring_tags.index(rStr))
+        if args.eRing:
+            specialDrawRing(ring_tags.index(args.eRing[0]),colorBool=True)
+        if args.rRing:
+            for recRing in args.rRing:
+                specialDrawRing(ring_tags.index(recRing),myColor=(1,0,0),colorBool=True)
+
+        if args.teles:
+            for rIndex,subTel in myTelStrAndSubTelL:
+                specialDrawChimTelesGL(rIndex,subTel)
         # drawFromGLists(gVerts,gEdges,gSurf)
 
         # drawChimTelesGL(25,5,True)
@@ -420,4 +501,6 @@ def main():
 
         myCount+=1
 
-main()
+
+if __name__ == '__main__':
+    main()
