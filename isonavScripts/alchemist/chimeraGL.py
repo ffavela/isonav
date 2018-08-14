@@ -378,7 +378,7 @@ def main():
 
     parser.add_argument("--thRot", help="The theta angle to rotate chimera.", nargs=1, type=float)
 
-    parser.add_argument("--eRing", help="Colors the ejectile ring.", nargs=1)
+    parser.add_argument("--eRing", help="Colors the ejectile ring.", nargs='+')
 
     parser.add_argument("--rRing", help="Colors the recoil rings.", nargs='+')
 
@@ -423,10 +423,11 @@ def main():
         return
 
     if args.eRing:
-        eRingStr=args.eRing
-        if eRingStr[0] not in ring_tags:
-            print("Error "+eRingStr[0]+" is not a valid ring")
-            return
+        eRingL=args.eRing
+        for ejectRing in eRingL:
+            if ejectRing not in ring_tags:
+                print("Error "+ejectRing+" is not a valid ring")
+                return
     if args.rRing:
         rRingL=args.rRing
         for recRing in rRingL:
@@ -445,12 +446,12 @@ def main():
     display = (width,height)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
-    gluPerspective(45.0, (display[0]/display[1]), 0.1, 50.0)
+    gluPerspective(23.0, (display[0]/display[1]), 0.1, 80.0)
 
-    glTranslatef(0.0,0.0, -5)
+    glTranslatef(-1.3,0.0, -5)
     # glRotatef(120, 0, 1, 0)
     glRotatef(thAng, 0, 1, 0)
-    # glClearColor(190, 190, 190, 1.0) #4 changing the background
+    # glclearcolor(190, 190, 190, 1.0) #4 changing the background
 
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings()
@@ -476,7 +477,8 @@ def main():
 
         # specialDrawAllChimera(colorL)
         if args.eRing:
-            specialDrawRing(ring_tags.index(args.eRing[0]),colorBool=True)
+            for eRing in args.eRing:
+                specialDrawRing(ring_tags.index(eRing),colorBool=True)
         if args.rRing:
             for recRing in args.rRing:
                 specialDrawRing(ring_tags.index(recRing),myColor=(1,0,0),colorBool=True)

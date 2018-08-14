@@ -209,11 +209,13 @@ def getChimAddrFromTelesNum(telesNum):
         return myStr,mySubTel
     firstVal,nextVal=0,0
     myVal=0
+
     for i in range(len(teles_num)):
         nextVal=firstVal+teles_num[i]
         if firstVal <= telesNum < nextVal:
             myStr=ring_tags[i]
-            mySubTel=i
+            mySubTel=telesNum-firstVal
             break
+        myVal+=1
         firstVal=nextVal
     return myStr,mySubTel
