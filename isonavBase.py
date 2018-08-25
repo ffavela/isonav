@@ -119,8 +119,6 @@ def getOutEcms(iso1,iso2,isoE,isoR,E1L,exE):
     EEcm,ERcm=getEcmsFromECM2(mEE,mER,outEcmAvail)
     return EEcm,ERcm,outEcmAvail,outEcmSys
 
-
-
 def getEcmsFromECM(iso1,iso2,ECM):
     #For example, in a decay ECM=Q
     m1=getEMass(iso1)

@@ -449,6 +449,10 @@ function getStr2Print() {
     [ "$emptyCheck" == "empty" ] && return
 
     ejectE=$(echo $var | cut -d' ' -f 3)
+    if (( $(echo $ejectE == 0 | bc -l) ))
+    then
+        exit 96
+    fi
     resE=$(echo $var | cut -d' ' -f 5)
     thetaRes=$(getAbs $thetaRes)
     thetaResMin=$(getAbs $thetaResMin)
