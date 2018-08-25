@@ -88,7 +88,7 @@ def getVelcm(iso1,iso2,E1):
     v2p=v2-Vcm
     return v1p,v2p,Vcm
 
-def getEcm(iso1,iso2,E1L):
+def getInEcms(iso1,iso2,E1L):
     vels=getVelcm(iso1,iso2,E1L)
     mE1=getEMass(iso1)
     mE2=getEMass(iso2)
@@ -98,8 +98,28 @@ def getEcm(iso1,iso2,E1L):
     # print 1.0/2.0*mu*rVel**2
     E1cm=0.5*(vels[0]/c)**2*mE1
     E2cm=0.5*(vels[1]/c)**2*mE2
-    Ecm=E1cm+E2cm
-    return E1cm,E2cm,Ecm
+    inEcmAvail=E1cm+E2cm
+    inEcmSys=0.5*(vels[2]/c)**2*(mE1+mE2)
+    return E1cm,E2cm,inEcmAvail,inEcmSys
+
+def getOutEcms(iso1,iso2,isoE,isoR,E1L,exE):
+    E1cm,E2cm,inEcmAvail,inEcmSys=getInEcms(iso1,iso2,E1L)
+    mE1=getEMass(iso1)
+    mE2=getEMass(iso2)
+    mEE=getEMass(isoE)
+    mER=getEMass(isoR)
+    inMass=mE1+mE2
+    outMass=mEE+mER
+
+    outEcmSys=inEcmSys*(inMass/outMass)
+    Q=getQVal(mE1,mE2,mEE,mER)
+    outEcmAvail=inEcmSys*(1.0-1.0*(inMass/outMass))+inEcmAvail+Q-exE
+    if outEcmAvail < 0:
+        return -1,-1,-1,-1
+    EEcm,ERcm=getEcmsFromECM2(mEE,mER,outEcmAvail)
+    return EEcm,ERcm,outEcmAvail,outEcmSys
+
+
 
 def getEcmsFromECM(iso1,iso2,ECM):
     #For example, in a decay ECM=Q
@@ -122,9 +142,9 @@ def getEcmsFromECM2(m1,m2,ECM):
     return E1,E2
 
 def getAvailEnergy(iso1,iso2,isoEject,isoRes,E1L,E2L=0):
-    E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
+    E1cm,E2cm,inEcmAvail,EcmSys=getInEcms(iso1,iso2,E1L)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
-    return Ecm+Q
+    return inEcmAvail+Q
 
 #Just for testing
 def getAllVs(iso1,iso2,isoE,isoR,E1L):
@@ -526,7 +546,7 @@ def fussionCase(iso1,iso2,E1L,E2L=0):
     if isof==False:
         return False
     Q=getIsoQVal(iso1,iso2,"0None",isof)
-    E1cm,E2cm,Ecm=getEcm(iso1,iso2,E1L)
+    E1cm,E2cm,Ecm,EcmSys=getInEcms(iso1,iso2,E1L)
     ETotcm=Q+Ecm
     maxLev,maxLE=getCorrespLevE(isof,ETotcm)
     rKEcm=ETotcm-maxLE #residual KE
@@ -874,7 +894,7 @@ def rutherford0(iso1,iso2,Ecm,theta):
 
 def rutherfordLab0(iso1,iso2,ELab,thetaL):
     """ Returns the rutherford value in the lab frame"""
-    Ecm=getEcm(iso1,iso2,ELab)[2] #Taking the 3rd argument
+    Ecm=getInEcms(iso1,iso2,ELab)[2] #Taking the 3rd argument
     K=getMass(iso1)/getMass(iso2)
     #see m. cottereau and f. lefebvres recuel de problemes...
     thetaCM=solveAng(thetaL,K)
@@ -1249,37 +1269,26 @@ def stoppingPowerI(iso1,iso2,E,I,L):
 
 #def getVcms(v1L,v2L,m1,m2):
 def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
-    #In case the isos are excited b4 reaction
-    m1=getEMass(iso1)+exList[0]
-    m2=getEMass(iso2)+exList[1]
-    # print "m1,m2 = ", m1,m2
-    # print "E1L,E2L = ",E1L,E2L
-    v1L=sqrt(2.0*E1L/m1)*c
-    v2L=sqrt(2.0*E2L/m2)*c
+    mE=getEMass(isoEject)
+    mR=getEMass(isoRes)
+    exE=exList[2]+exList[3]
+    EEcm,ERcm,outEcmAvail,outEcmSys=getOutEcms(iso1,iso2,isoEject,isoRes,E1L,exE)
+    if outEcmAvail<=0:
+        return False,False,False
 
-    Vcm=1.0*(v1L*m1+v2L*m2)/(1.0*m1+m2)
-    Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
-    Q-=sum(exList)
-    # print "Vcm,Q = ", Vcm,Q
-    #abs is impotant, they are magnitudes!!
-    v1cm=abs(v1L-Vcm)
-    v2cm=abs(v2L-Vcm)
-
-    E1cm=0.5*m1*(v1cm/c)**2
-    E2cm=0.5*m2*(v2cm/c)**2
-    Ecm=E1cm+E2cm+Q
-    if Ecm<=0:
+    outVcmSys=sqrt(2.0*outEcmSys/(mE+mR))*c
+    if outEcmAvail<=0:
         return False,False,False
     # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
-    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[2:])
+    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,outEcmAvail)
     # print "v1cm,v2cm",v1cm,v2cm
     # print "vEcm,vRcm",vEcm,vRcm
 
-    return vEcm,vRcm,Vcm
+    return vEcm,vRcm,outVcmSys
 
-def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
-    m1=getEMass(iso1)+redXL[0]
-    m2=getEMass(iso2)+redXL[1]
+def getVcmsFromEcm(iso1,iso2,Ecm):
+    m1=getEMass(iso1)
+    m2=getEMass(iso2)
     if Ecm<=0:
         return False,False
     v1cm=sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
@@ -1292,9 +1301,10 @@ def getEFromV(iso,v,xMass=0):
 
 #Testing the non numeric solution
 def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
-    vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)
+    vEcm,vRcm,Vcm=getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)#the inEmcs
     if vEcm == False:
         return [[False,False,False,False],[]]
+    #This part should be updated to out vals etc
     maxAng=getMaxAngles(iso1,iso2,isoEject,isoRes,E1L,E2L,exList)[0]
     if maxAng=="NaN":
         return "NaN"
@@ -1302,6 +1312,7 @@ def analyticSol(iso1,iso2,isoEject,isoRes,E1L,E2L=0,angle=0,exList=[0,0,0,0]):
         return [[False,False,False,False],[]]
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
+
     sol1,sol2=analyticDetails(vEcm,vRcm,Vcm,angle,isoEject,isoRes)
     angLA1,Ea1,angLB1,Eb1=sol1
     retVal2=[]
