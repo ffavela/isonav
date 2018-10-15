@@ -342,7 +342,7 @@ function getFinalEnergy(){
 
     denOp=""
     #overriding the Si density
-    [ "$material" = "Si" ] && denOp="--density=2.368" #denOp="--density=2.265"
+    [ "$material" = "Si" ] && denOp="--density=2.321" #denOp="--density=2.265"
     finalE=$(isonav $ion --Elab=$ionE --material=$material --thickness=$thickness $denOp)
     echo $finalE
 }
