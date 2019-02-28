@@ -394,6 +394,7 @@ def argHand(args):
         if verbose:
             print("#Prints the fused element, if isotope exists.")
             print("#Max populated level, and energy, and remaining KE in lab")
+        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
         pFussion(iso1,iso2,Elab)
 
     if iso1 and Elab:
@@ -406,6 +407,7 @@ def argHand(args):
         if not checkIsoExistence(iso1,iso2):
             return 665
 
+        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
         if angle!=None:
             if verbose==True:
                 print("#Energy at given angle for the ejectile and the residue")
@@ -436,6 +438,7 @@ def argHand(args):
         if not checkIsoExistence(iso1,iso2):
             return 665
 
+        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
         if not testVal(scatE):
             print("Error; scattered energy has to be a number")
             return 10 #Making this up as I go
@@ -490,6 +493,8 @@ def argHand(args):
         if not checkReaction(isop,isot,isoE,isoR):
             return 666
 
+        isop,isot=getRealIso(isop),getRealIso(isot)
+        isoE,isoR=getRealIso(isoE),getRealIso(isoR)
         if args["-x"] or args["--xTreme"]:
             pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
             return 0

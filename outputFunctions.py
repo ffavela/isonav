@@ -269,7 +269,14 @@ def pFussion(iso1,iso2,Elab):
     stringFormat="%s\t%d\t%.3f\t%.3f"
     print(stringFormat % tuple(l))
 
+simpleDict={"n":"1n","p":"1H","d":"2H","t":"3H","a":"4He"}
+def getRealIso(myIso):
+    if myIso in simpleDict:
+        myIso=simpleDict[myIso]
+    return myIso
+
 def pLevels(iso,limit="NaN"):
+    iso=getRealIso(iso)
     levs=getAllLevels(iso)
     if limit=="NaN":
         for l in levs:
