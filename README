@@ -18,7 +18,7 @@ Requirements:
 The python package docopt is REQUIRED. In ubuntu the package can be
 installed via:
 
-$ sudo apt install python-docopt
+$ sudo apt install python3-docopt
 
 Or for linux in general via:
 
