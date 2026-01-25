@@ -22,16 +22,17 @@ $ sudo apt install python-docopt
 
 Or for linux in general via:
 
-$ pip install docopt==0.6.1
+$ pip install docopt==0.6.2
 
 To install;
 
-    mkdir ~/.myPrograms #if it doesn't already exist
-    cd ~/.myPrograms
+    mkdir -p $HOME/.myPrograms
+    cd $HOME/.myPrograms
     ln -s route/directory/for/isonav.py isonav #PAY ATTENTION HERE!
-    Add the following line at the end of your .bashrc (or .zshrc ...):
 
-export PATH=$PATH:~/.myPrograms
+Add the following line at the end of your .bashrc (or .zshrc ...):
+
+    export PATH=$PATH:$HOME/.myPrograms
 
 In there is a previous installation and it was done via the deprecated
 installScript.sh please review LEGACY for instructions to uninstall it
