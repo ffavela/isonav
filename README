@@ -11,19 +11,7 @@ Works with python 3.x.
 
 INSTALLATION:
 
-The installation process was tested only on Ubuntu 14.04 machines.
-
-To those unfamiliar to github, simply write on the command line (if you
-haven't already):
-
-$ git clone https://github.com/ffavela/isonav
-
-(Note: if you have already cloned in order to get the newer version do a
-$ git pull
-whithin the isonav directory). Please do this regularly to keep it updated,
-the program is in beta.
-
-And the repository will be cloned to your computer.
+The installation process was tested only on Ubuntu 24.04 machines.
 
 Requirements:
 
