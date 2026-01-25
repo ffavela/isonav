@@ -18,7 +18,7 @@ Requirements:
 The python package docopt is REQUIRED. In ubuntu the package can be
 installed via:
 
-$ sudo apt-get install python-docopt
+$ sudo apt install python-docopt
 
 Or for linux in general via:
 
@@ -33,7 +33,7 @@ download it, if it fails then it will tell you what might be wrong and
 where to download it manually in case the failing continues. Make sure
 that "curl" is installed, for ubuntu users you can install it via:
 
-sudo apt-get install curl
+sudo apt install curl
 
 If you have an Mac computer and you get an "Operation not permitted"
 error there is a work around, you'll need to disable the System
