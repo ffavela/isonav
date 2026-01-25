@@ -595,14 +595,3 @@ def argHand(args):
             finalString+='\t\t'+stringStuff[-1]
             print(finalString)
         return 0
-
-    if args["-d"] or args["--donate"]:
-        if verbose:
-            print("#Make a donation through bitcoin ;)")
-            print("#The address belongs to Francisco Favela")
-
-        flag=False
-        if args["--QR"]:
-            flag=True
-        pDonation(flag)
-        return 0
