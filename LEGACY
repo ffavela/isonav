@@ -1,28 +1,21 @@
-Run with sudo the install script via
+The legacy installation procedure was deprecated due to the fact that
+root privileges were needed. Something a user not doesn't always have.
+Plus getting the DB was a heachache because the old installScript
+worked until it didn't... So I'm going against my old self (better?)
+judgement and commited the DB to the repo. The DB is not really that
+large and it changes rarely if at all. So I'm favoring practicality
+and mental sanity over the "good" practices my old self held.
 
-$ sudo ./installScript.sh
+Run with sudo the uninstall script via:
 
-If you don't have the latest database the install script will try to
-download it, if it fails then it will tell you what might be wrong and
-where to download it manually in case the failing continues. Make sure
-that "curl" is installed, for ubuntu users you can install it via:
+$ sudo ./uninstallLegacy.sh
 
-sudo apt install curl
-
-If you have an Mac computer and you get an "Operation not permitted"
+If you have an Mac computer and you managed to install isonav via the
+legacy deprecated method you may get an "Operation not permitted"
 error there is a work around, you'll need to disable the System
 Integrity Protection. Simply reboot and press Cmd-R then open a
 terminal and type "csrutil disable" (without the quotes) reboot and
 run the install script again. It is encouraged to reenable it after
 the installation is done.
 
-In case you need uninstalling, simply do a:
-
-$ sudo ./installScript.sh --uninstall
-
-In case you don't want to install system wide, just make sure the data
-directory is available (as well as docopt) and you run it with:
-
-$ python isonav.py ...
-
-As a setback, the scripts probably won't work as expected.
+For the new install instructions see the README.
