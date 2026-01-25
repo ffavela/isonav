@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 #   Copyright (C) 2015, 2016, 2017, 2018 Francisco Favela
 
