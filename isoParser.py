@@ -32,11 +32,11 @@ validSymbols=['n','H','He','Li','Be','B','C','N','O','F','Ne',
            'Cn','Ed','Fl','Ef','Lv','Eh','Ei']
 
 #Simply to recognize the element isotope
-isoRe=re.compile('\d+[A-Z][a-z]?')
+isoRe=re.compile(r'\d+[A-Z][a-z]?')
 
-aValRe=re.compile('\d+')
+aValRe=re.compile(r'\d+')
 
-onlySymbol=re.compile('[A-Z][a-z]?')
+onlySymbol=re.compile(r'[A-Z][a-z]?')
 #Returns isotope's "A" and symbol in a tuple if it has the form isoRe
 #returns isotopes number if only number is specified. It returns the
 #element's symbol if that was the only thing provided. Always in a
