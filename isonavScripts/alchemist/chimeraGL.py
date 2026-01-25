@@ -155,6 +155,7 @@ def drawChimTelesGL(detIdx,subIdx,surfStat=False,t=0):
         drawSurfaces(verticies,t)
     #     pass
 
+    glColor((0,0,0))
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
@@ -205,7 +206,7 @@ def drawRing(detIdx,subTDict):
     telesN=teles_num[detIdx]
     for subIdx in range(telesN):
         tVal=subTDict[subIdx]
-        drawChimTelesGL(detIdx,subIdx,True,tVal)
+        drawChimTelesGL(detIdx,subIdx,False,tVal)
 
 def specialDrawRing(detIdx,myColor=(0,0,1),colorBool=False):
     telesN=teles_num[detIdx]
@@ -452,7 +453,6 @@ def main():
     # glRotatef(120, 0, 1, 0)
     glRotatef(thAng, 0, 1, 0)
     # glclearcolor(190, 190, 190, 1.0) #4 changing the background
-
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings(range(30))
     # gVerts,gEdges,gSurf=getOptVertStuff4Rings()
     # print(len(gSurf))
