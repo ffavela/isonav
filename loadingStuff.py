@@ -24,13 +24,11 @@ from enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
     DATA_PATH = "/usr/share/isonav/data1p4p5"
-# elif os.path.dirname(__file__) == ".":
+    print("#You have a legacy installation of isonav")
+    print("#See the new installation procedure in the README file")
 else:
-    # fileName=os.path.dirname(__file__)
-    DATA_PATH ="./data1p4p5"
-    print("#You do not have a working installation of isonav")
-    print("#See the installation procedure in the README file")
-    # sys.exit(1)
+    fileName=os.path.dirname(__file__)
+    DATA_PATH = fileName + "/data1p4p5"
 
 isoDictLoc=os.path.join(DATA_PATH, "isoDict.pkl")
 isoMassesLoc=os.path.join(DATA_PATH, "isoMasses.txt")
