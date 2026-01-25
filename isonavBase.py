@@ -1267,12 +1267,14 @@ def stoppingPowerI(iso1,iso2,E,I,L):
 
 #def getVcms(v1L,v2L,m1,m2):
 def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
-    mE=getEMass(isoEject)
-    mR=getEMass(isoRes)
-    exE=exList[2]+exList[3]
-    EEcm,ERcm,outEcmAvail,outEcmSys=getOutEcms(iso1,iso2,isoEject,isoRes,E1L,exE)
-    if outEcmAvail<=0:
-        return False,False,False
+    #In case the isos are excited b4 reaction
+    m1=getEMass(iso1)+exList[0]
+    m2=getEMass(iso2)+exList[1]
+    # print "m1,m2 = ", m1,m2
+    # print "E1L,E2L = ",E1L,E2L
+    v1L=sqrt(2.0*E1L/m1)*c
+    v2L=sqrt(2.0*E2L/m2)*c
+
     Vcm=1.0*(v1L*m1+v2L*m2)/(1.0*m1+m2)
     Q=getIsoQVal(iso1,iso2,isoEject,isoRes)
     Q-=sum(exList)#Maybe problems if target of projectile are excited
@@ -1288,15 +1290,15 @@ def getVcms(iso1,iso2,isoEject,isoRes,E1L,E2L=0,exList=[0,0,0,0]):
     if Ecm<=0:
         return False,False,False
     # print "E1cm,E2cm,Ecm = ",E1cm,E2cm,Ecm
-    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,outEcmAvail)
+    vEcm,vRcm=getVcmsFromEcm(isoEject,isoRes,Ecm,exList[2:])
     # print "v1cm,v2cm",v1cm,v2cm
     # print "vEcm,vRcm",vEcm,vRcm
 
-    return vEcm,vRcm,outVcmSys
+    return vEcm,vRcm,Vcm
 
-def getVcmsFromEcm(iso1,iso2,Ecm):
-    m1=getEMass(iso1)
-    m2=getEMass(iso2)
+def getVcmsFromEcm(iso1,iso2,Ecm,redXL=[0,0]):
+    m1=getEMass(iso1)+redXL[0]
+    m2=getEMass(iso2)+redXL[1]
     if Ecm<=0:
         return False,False
     #conservation of momentun
