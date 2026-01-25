@@ -201,34 +201,38 @@ def tNReaction(iso1,iso2):
             string4='\t'+"{0:0.2f}".format(float(coulE))
             print(string2+string3+string4)
 
-##Printing latex fiendly nReaction
-#Add the coulomb E functionality also here
-def latexNReaction(iso1,iso2):
-    reacList=nReaction(iso1,iso2)
-    a1,key1=getIso(iso1)
-    a2,key2=getIso(iso2)
-    sa1=str(a1)
-    sa2=str(a2)
+
+# Printing latex friendly nReaction
+# Add the coulomb E functionality also here
+def latexNReaction(iso1, iso2):
+    reacList = nReaction(iso1, iso2)
+    a1, key1 = getIso(iso1)
+    a2, key2 = getIso(iso2)
+    sa1 = str(a1)
+    sa2 = str(a2)
     print("""\\begin{eqnarray*} """)
 
-    print('{}^{'+sa1+'}\mathrm{'+key1+'}+'+'{}^{'+sa2+'}\mathrm{'+key2+'}\longrightarrow ')
-    maxVal=len(reacList)
+    print('{}^{' + sa1 + '}\\mathrm{' + key1 + '}+' + '{}^{' + sa2 +
+          '}\\mathrm{' + key2 + '}\\longrightarrow ')
+    # maxVal = len(reacList)
     for r in reacList:
-        if r==reacList[3]:
-            fStr='\\:\\rm{MeV}'
+        if r == reacList[3]:
+            fStr = '\\:\\rm{MeV}'
         else:
-            fStr='\\:\\rm{MeV}\\\\'
+            fStr = '\\:\\rm{MeV}\\\\'
 
-        r[3]=str(round(r[3],2))
-        aEject,kEject=getIso(r[0])
-        aRes,kRes=getIso(r[1])
-        aEject,aRes=str(aEject),str(aRes)
-        if kEject==None:
-            print('{}^{'+aRes+'}'+kRes+'&\\:Q='+r[3]+fStr)
+        r[3] = str(round(r[3],2))
+        aEject, kEject = getIso(r[0])
+        aRes, kRes = getIso(r[1])
+        aEject, aRes = str(aEject), str(aRes)
+        if kEject is None:
+            print('{}^{' + aRes + '}' + kRes + '&\\:Q=' + r[3] + fStr)
             continue
 
-        print('& {}^{'+aEject+'}\mathrm{'+kEject+'}+'+' {}^{'+aRes+'}\mathrm{'+kRes+'}&\\:Q='+r[3]+fStr)
-    print('\end{eqnarray*}')
+        print('& {}^{' + aEject + '}\\mathrm{' + kEject + '}+' +
+              ' {}^{' + aRes + '}\\mathrm{' + kRes + '}&\\:Q=' + r[3] + fStr)
+    print('\\end{eqnarray*}')
+
 
 def pIsotopes(iso,mFlag=False,flag=True):
     val=getIsotopes(iso)
