@@ -82,13 +82,11 @@ The typical abbreviations for some isotopes can be used:
 
 Examples:
 
-Note: All energies are in MeV
-The next gives a printout of the general usage (not all functions have been
-implemented yet). The -v option can be used in almost all cases
-(verbose).
+Note: All energies are in MeV The next gives a printout of the general
+usage (not all functions have been implemented yet). The -v option can
+be used in almost all cases (verbose).
 
-
-$ isonav 
+$ isonav
 Usage:
   isonav <number> [-v] (-s|--symbol)
   isonav <symbol> [-v] ([-p|--protons])
@@ -97,17 +95,23 @@ Usage:
   isonav <iso> [-v] ([-m|--mass]|--compton) [--amu --liquidDrop]
   isonav <iso> [-v] --mirror
   isonav <iso> [-v] ([-r | --radius]|[(-l|--levels) [--limit=val]])
-  isonav <iso> [-v] --Elab=val [--redDeBroglie]
-  isonav <iso> [-v] --decay
+  isonav <iso> [-v] --Elab=val (--deBroglie | --redDeBroglie)
+  isonav <iso> [-v] --Elab=val --L4TOF=L
+  isonav <iso> [-v] --decay [--Ex=val]
+  isonav <iso> [-v] (--alpha | --nEmission | --pEmission ) [--num=val]
+  isonav <iso> [-v] --Emission=val [--num=val]
   isonav <iso> [-v] (--BE | --BEperNucleon) [--liquidDrop]
   isonav <iso1> <iso2> [-v] (--coulomb | --reactions [--latex] )
+  isonav <iso1> <iso2> [-v] (--gamowEnergy | --T=temp --gamowPeak )
   isonav <iso1> <iso2> [-v] --fussion [--Elab=val]
   isonav <iso1> <iso2> [-v] --Elab=val --angle=val [[--xTreme|-x] --latex]
   isonav <iso1> <iso2> [-v] --scatE=val --angle=val
   isonav <isop> <isot> <isoEject> <isoRes> [-v] (-q|--QVal) [--amu]
   isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --maxAng
-  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [-x|--xTreme]
-  isonav [-v] ( -d | --donate ) [--QR]
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val ([--xEje=val] [--xRes=val])
+  isonav <isop> <isot> <isoEject> <isoRes> [-v] --Elab=val --angle=val [(-x|--xTreme) [--xF1=xFileEject.txt] [--xF2=xFileRes.txt]]
+  isonav <ion> [-v] --material=matName --Elab=val (--thickness=val [--depositedE] | --range) [--bloch] [--density=dens]
+  isonav [-v] --listMaterials [--material=matName]
   isonav -h | --version
 
 $ isonav 22 -s
@@ -122,244 +126,307 @@ Silver
 $ isonav 195Au --neutrons
 116
 
-$ isonav Pb -i #A can be also ommitted here
-185Pb
-186Pb
-.
-.
-.
-213Pb
-214Pb
-
-Forcing amu (instead of MeV) and being verbose:
-
-$ isonav Pb -iv
-#Isotopes of given element, and optional mass
+$ isonav Pb -i
+178Pb
+179Pb
+180Pb
+181Pb
+182Pb
+183Pb
+184Pb
 185Pb
 186Pb
 187Pb
 188Pb
 189Pb
 190Pb
-191Pb
-.
-.
-.
+...
+215Pb
+216Pb
+217Pb
+218Pb
+219Pb
+220Pb
+
+
+Being verbose:
+
+$ isonav Pb -iv
+Isotopes and masses, in MeV by default
+178Pb
+179Pb
+180Pb
+181Pb
+182Pb
+183Pb
+184Pb
+185Pb
+186Pb
+...
+216Pb
+217Pb
+218Pb
+219Pb
+220Pb
+
+Getting the masses and forcing to display in amu (not MeVs):
 
 $ isonav Au -im --amu
-175Au 	174.981567
-176Au 	175.98024
-177Au 	176.977234
-178Au 	177.975922
-179Au 	178.973419
-.
-.
-.
+169Au   168.99808
+170Au   169.995972
+171Au   170.991875791
+172Au   171.989942284
+173Au   172.986240924
+174Au   173.984717
+175Au   174.981303712
+...
+206Au   205.98474
+207Au   206.9884
+208Au   207.99345
+209Au   208.99735
+210Au   210.0025
 
-$ isonav 22Ne --mass #In MeV
-20484.8397894
+$ isonav 22Ne --mass
+20484.845484518828
 
 $ isonav 22Ne --mass --liquidDrop #Using the LD model
-20477.9424464
+20477.90454623588
 
 $ isonav 22Ne --mirror
 22Mg
 
-$ isonav 40Ca -r #Radius in fm
-4.10394227202
+$ isonav 40Ca -r #Nuclear radius in fm
+4.103942272024073
 
 $ isonav 12C --levels --limit=10
-1 0.0
-2 4.43891
-3 7.6542
-4 9.641
-5 10.3
-6 10.844
-7 11.16
-8 11.828
-9 12.71
-10 13.352
+1       0.0
+2       4.43891
+3       7.6541999999999994
+4       9.641
+5       10.3
+6       10.844
+7       11.16
+8       11.828
+9       12.71
+10      13.352
 
 $ isonav 12C --Elab=2.0 --redDeBroglie
-9.33202252339e-06
+9.332022523394577e-06
 
-These next parts are useful for identifying particles in terms of their
-energy in a nuclear scattering experiment.
+These next parts are useful for identifying particles in terms of
+their energy in a nuclear scattering experiment.
 
 $ isonav d 14N a 12C --Elab=3.0 --angle=35
-a 12C
-13.935	49.475	2.647
+4He     12C
+13.929  -130.521        2.645
 
-12C a
-5.883	47.431	10.699
+12C     4He
+5.881   -132.566        10.693
 
 $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
-*4He + 12C
-1	0.000		13.935	49.475	2.647
+*4He    12C
+1       0.000           13.929  -130.521        2.645
 
-4He + *12C
-1	0.000		13.935	49.475	2.647
-2	4.439		10.347	52.663	1.796
-3	7.654		7.715	56.670	1.213
-...
-13	15.440		0.976	-53.580	0.165
-14	16.106		0.211	-17.208	0.265
+4He     *12C
+1       0.000           13.929  -130.521        2.645
+2       4.439           10.341  -127.323        1.794
+3       7.654           7.710   -123.304        1.210
+4       9.641           6.061   -119.175        0.872
+5       10.300          5.509   -117.282        0.765
+6       10.844          5.051   -115.418        0.679
+7       11.160          4.784   -114.177        0.630
+8       11.828          4.216   -111.055        0.531
+9       12.710          3.456   -105.431        0.408
+10      13.352          2.896   -99.612 0.326
+11      14.083          2.245   -89.914 0.246
+12      15.110          1.293   -65.497 0.171
+13      15.440          0.969   -53.181 0.166
+14      16.106          0.198   -16.445 0.271
 
-*12C + 4He
-1	0.000		5.883	47.431	10.699
-2	4.439		4.510	49.765	7.633
-3	7.654		3.481	52.559	5.446
-.
-.
-.
-12	15.110		0.741	-89.554	0.731
-13	15.440		0.561	-77.486	0.581
+14      16.106          0.003   -1.617  0.465
 
-12C + *4He
-1	0.000		5.883	47.431	10.699
+*12C    4He
+1       0.000           5.881   -132.566        10.693
+2       4.439           4.507   -130.226        7.628
+3       7.654           3.478   -127.424        5.442
+4       9.641           2.819   -124.675        4.114
+5       10.300          2.595   -123.450        3.679
+6       10.844          2.407   -122.262        3.323
+7       11.160          2.297   -121.480        3.118
+8       11.828          2.060   -119.539        2.687
+9       12.710          1.737   -116.108        2.127
+10      13.352          1.493   -112.597        1.729
+11      14.083          1.200   -106.670        1.291
+12      15.110          0.737   -89.285 0.728
+13      15.440          0.556   -77.047 0.578
+
+12      15.110          0.000   -0.625  1.464
+13      15.440          0.016   -6.794  1.118
+
+12C     *4He
+1       0.000           5.881   -132.566        10.693
 
 Can also see Coulomb excitations
 $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
-*2H + 14N
-1	0.000		5.354	-75.758	0.146
+*2H     14N
+1       0.000           5.354   -75.758 0.146
+2       2.225           3.116   -45.059 0.160
 
-2H + *14N
-1	0.000		5.354	-75.758	0.146
-2	2.313		3.024	-43.702	0.163
-3	3.948		1.267	-19.746	0.285
+2H      *14N
+1       0.000           5.354   -75.758 0.146
+2       2.313           3.024   -43.689 0.163
+3       3.948           1.267   -19.738 0.285
 
-*14N + 2H
-1	0.000		1.987	56.922	3.513
-2	2.313		1.342	71.855	1.845
-3	3.948		0.516	-87.236	0.642
+*14N    2H
+1       0.000           1.987   -123.078        3.513
+2       2.313           1.342   -108.138        1.845
+3       3.948           0.513   -51.516 1.039
 
-14N + *2H
-1	0.000		1.987	56.922	3.513
+2       2.313           0.063   -9.113  3.124
+3       3.948           0.481   -48.333 1.071
+
+14N     *2H
+1       0.000           1.987   -123.078        3.513
+2       2.225           1.371   -109.124        1.905
+
+2       2.225           0.057   -8.519  3.219
 
 $ isonav d 14N --reactions
-0None	16O	None 	20.75
-4He	12C	0.00 	13.58
-1H	15N	0.00 	8.61
-8Be	8Be	0.00 	6.12
-1n	15O	0.00 	5.08
-2H	14N	0.00 	0.00
-3He	13C	2.35 	-2.06
-3H	13N	4.92 	-4.30
-5Li	11B	4.98 	-4.35
-5He	11C	6.91 	-6.04
-.
-.
-.
+#Given two isotopes it returns the coulomb energy barrier
+#Or the possible reactions.
+#Eject  Residue Thres   QValue  coulombE
+0None   16O     None    20.74   None
+4He     12C     0.00    13.57   3.71
+1H      15N     0.00    8.61    2.42
+8Be     8Be     0.00    6.12    4.80
+1n      15O     0.00    5.07    0.00
+2H      14N     0.00    0.00    2.29
+3He     13C     2.35    -2.06   3.80
+3H      13N     4.91    -4.30   2.21
+5Li     11B     4.97    -4.35   4.58
+5He     11C     6.73    -5.88   3.66
+6Li     10B     11.60   -10.14  4.53
+7Be     9Be     12.72   -11.12  4.81
+7Li     9B      12.95   -11.32  4.51
+6Be     10Be    17.14   -14.98  4.83
+6He     10C     19.78   -17.29  3.63
+4Li     12B     25.95   -22.69  4.64
+4H      12N     29.69   -25.96  2.17
+8Li     8B      31.87   -27.87  4.50
+3Li     13B     33.42   -29.23  4.74
+9Li     7B      41.89   -36.63  4.51
+...
 
 $ isonav p 14N  --fussion
-15O	7	7.276	0.025
+15O	7	7.276	0.021
 
 $ isonav p 14N --fussion --Elab=0.1 -v
 #Prints the fused element, if isotope exists.
 #Max populated level, and energy, and remaining KE in lab
-15O	7	7.276	0.125
+15O	7	7.276	0.121
 
 $ isonav d 14N --Elab=3.0 --angle=35
-4He 	12C
-13.935	49.475	2.647
-5.883	47.431	10.699
+4He     12C
+13.929  -130.521        2.645
 
-1H 	15N
-11.356	80.794	0.258
-1.577	61.299	10.036
+12C     4He
+5.881   -132.566        10.693
 
-8Be 	8Be
-5.912	51.150	3.207
-5.912	51.150	3.207
+1H      15N
+11.351  -99.191 0.257
 
-1n 	15O
-7.903	-84.902	0.176
-1.198	67.341	6.882
+15N     1H
+1.576   -118.695        10.032
 
-2H 	14N
-2.848	-70.134	0.152
-0.885	78.091	2.115
+8Be     8Be
+5.910   -128.846        3.205
 
-3He 	13C
-0.770	-35.844	0.171
-0.278	88.707	0.394
+8Be     8Be
+5.910   -128.846        3.205
+
+1n      15O
+7.896   -84.863 0.176
+
+15O     1n
+1.197   -112.642        6.875
+
+2H      14N
+2.848   -70.134 0.152
+
+14N     2H
+0.885   -101.910        2.115
+
+3He     13C
+0.772   -35.903 0.171
+
+13C     3He
+0.280   -50.709 0.663
+
+0.143   -30.168 0.800
 
 Where the first row after the expression is when the ejectile is
 expected at the given angle and the recond is when the residual is
 expected.
 
 $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
-*4He	12C
-1	0.000		13.935	49.475	2.647
+*4He    12C
+1       0.000           13.929  -130.521        2.645
 
-4He	*12C
-1	0.000		13.935	49.475	2.647
-2	4.439		10.347	52.663	1.796
-.
-.
-.
-14	16.106		0.211	-17.208	0.265
+4He     *12C
+1       0.000           13.929  -130.521        2.645
+2       4.439           10.341  -127.323        1.794
+3       7.654           7.710   -123.304        1.210
+4       9.641           6.061   -119.175        0.872
+5       10.300          5.509   -117.282        0.765
+6       10.844          5.051   -115.418        0.679
+7       11.160          4.784   -114.177        0.630
+8       11.828          4.216   -111.055        0.531
+9       12.710          3.456   -105.431        0.408
+10      13.352          2.896   -99.612 0.326
+11      14.083          2.245   -89.914 0.246
+12      15.110          1.293   -65.497 0.171
+13      15.440          0.969   -53.181 0.166
+14      16.106          0.198   -16.445 0.271
 
-*12C	4He
-1	0.000		5.883	47.431	10.699
-2	4.439		4.510	49.765	7.633
-.
-.
-.
-13	15.440		0.561	-77.486	0.581
+14      16.106          0.003   -1.617  0.465
 
-12C	*4He
-1	0.000		5.883	47.431	10.699
+*12C    4He
+1       0.000           5.881   -132.566        10.693
+2       4.439           4.507   -130.226        7.628
+...
+*1H     15N
+1       0.000           11.351  -99.191 0.257
 
-*1H	15N
-1	0.000		11.356	80.794	0.258
+1H      *15N
+1       0.000           11.351  -99.191 0.257
+2       5.270           6.190   -73.974 0.148
+3       5.299           6.162   -73.766 0.148
+4       6.324           5.148   -65.626 0.137
+5       7.155           4.321   -57.981 0.133
+6       7.301           4.175   -56.542 0.133
+...
+*15O    1n
+1       0.000           1.197   -112.642        6.875
+2       5.183           0.478   -80.290 2.411
+3       5.241           0.466   -79.106 2.365
 
-1H	*15N
-1	0.000		11.356	80.794	0.258
-2	5.270		6.195	-74.040	0.148
-3	5.299		6.167	-73.832	0.148
-4	6.324		5.152	-65.704	0.137
-5	7.155		4.326	-58.067	0.133
-6	7.301		4.180	-56.629	0.132
-.
-.
+2       5.183           0.080   -21.882 2.810
+3       5.241           0.085   -22.900 2.746
 
-*15N	1H
-1	0.000		1.577	61.299	10.036
-2	5.270		0.992	72.358	5.351
-.
-.
-.
+15O     *1n
+1       0.000           1.197   -112.642        6.875
 
-*1n	15O
-1	0.000		7.903	-84.902	0.176
+*2H     14N
+1       0.000           2.848   -70.134 0.152
+2       2.225           0.570   -21.267 0.205
 
-1n	*15O
-1	0.000		7.903	-84.902	0.176
-2	5.183		2.756	-41.222	0.140
-.
-.
+2H      *14N
+1       0.000           2.848   -70.134 0.152
+2       2.313           0.468   -18.499 0.220
 
-*15O	1n
-1	0.000		1.198	67.341	6.882
-2	5.183		0.480	88.102	2.352
-3	5.241		0.468	89.160	2.289
-
-15O	*1n
-1	0.000		1.198	67.341	6.882
-
-*2H	14N
-1	0.000		2.848	-70.134	0.152
-2	2.225		0.570	-21.252	0.205
-
-2H	*14N
-1	0.000		2.848	-70.134	0.152
-2	2.313		0.468	-18.503	0.220
-
-*14N	2H
-1	0.000		0.885	78.091	2.115
-.
-.
+*14N    2H
+1       0.000           0.885   -101.910        2.115
+...
 .............. You get the idea.
 
 $ isonav 235U --decay
@@ -381,10 +448,10 @@ $ isonav 235U --decay
 
 
 $ isonav 151Lu --pEmission
-1H	150Yb		1.232	0.008	1.241
+1(1H)   150Yb           1.241
 
 $ isonav 13Be --nEmission
-1n	12Be		0.471	0.039	0.510
+1(1n)   12Be            0.510
 
 #Double proton emission
 $ isonav 45Fe --pEmission --num=2
@@ -392,15 +459,14 @@ $ isonav 45Fe --pEmission --num=2
 
 $ isonav n --compton -v
 #The compton wavelength in fm
-1.31959074145
+1.3195908515350636
 
 The --xTreme cases can take some time and the outputs can become very
 large, here is an example of one case:
 
 $ isonav 14N 167Yb --Elab=5.5 --angle=20 --xTreme>14N167YbxTreme5p5MeVAngle20.txt
 
+Note the redirection `>` you may want to use it in order to save long
+outputs.
+
 #This took about 80 min in my computer
-
-The txt file is in:
-
-https://mega.co.nz/#!jMMQBJQR!tbHG6sQclgR895ezXMhqkBDMsel3E7vX0ATRKg8x4VE
