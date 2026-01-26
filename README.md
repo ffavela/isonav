@@ -1,13 +1,19 @@
-The program isonav (formerly isotope-navigator) is intended to be a
-command line interface program (for now) for making quick and easy
-calculations for nuclear reactions.
+# isonav
+
+A command line tool for making quick and easy nuclear reactions
+calculator.
+
+## About
+
+`isonav` (formerly isotope-navigator) is intended to be a command line
+interface program for making calculations for nuclear reactions.
 
 As any other command line software, the main advantage is that the
-program is callable either from a user or from another program. This is
-very attractive for various applications. See the "isonavScripts/"
+program is callable either from a user or from another program. This
+is very attractive for various applications. See the "isonavScripts/"
 directory for just a few script examples made for BaSH.
 
-Works with python 3.x.
+Works with python 3.x python 2.x support has been dropped.
 
 INSTALLATION:
 
@@ -16,13 +22,18 @@ The installation process was tested only on Ubuntu 24.04 machines.
 Requirements:
 
 The python package docopt is REQUIRED. In ubuntu the package can be
-installed via:
+installed via (for the moment this is the only package that needs sudo
+powers):
 
+```
 $ sudo apt install python3-docopt
+```
 
 Or for linux in general via:
 
+```
 $ pip install docopt==0.6.2
+```
 
 To install;
 
@@ -74,11 +85,13 @@ USAGE:
 
 The typical abbreviations for some isotopes can be used:
 
+```
 1n==n  #neutron
 1H==p
 2H==d
 3H==t
 4He==a
+```
 
 Examples:
 
@@ -86,6 +99,7 @@ Note: All energies are in MeV The next gives a printout of the general
 usage (not all functions have been implemented yet). The -v option can
 be used in almost all cases (verbose).
 
+```
 $ isonav
 Usage:
   isonav <number> [-v] (-s|--symbol)
@@ -113,19 +127,29 @@ Usage:
   isonav <ion> [-v] --material=matName --Elab=val (--thickness=val [--depositedE] | --range) [--bloch] [--density=dens]
   isonav [-v] --listMaterials [--material=matName]
   isonav -h | --version
+```
 
+```
 $ isonav 22 -s
 Ti
+```
 
+```
 $ isonav Au --protons #A value can be ommited here
 79
+```
 
+```
 $ isonav Ag --name
 Silver
+```
 
+```
 $ isonav 195Au --neutrons
 116
+```
 
+```
 $ isonav Pb -i
 178Pb
 179Pb
@@ -147,10 +171,11 @@ $ isonav Pb -i
 218Pb
 219Pb
 220Pb
-
+```
 
 Being verbose:
 
+```
 $ isonav Pb -iv
 Isotopes and masses, in MeV by default
 178Pb
@@ -168,9 +193,11 @@ Isotopes and masses, in MeV by default
 218Pb
 219Pb
 220Pb
+```
 
 Getting the masses and forcing to display in amu (not MeVs):
 
+```
 $ isonav Au -im --amu
 169Au   168.99808
 170Au   169.995972
@@ -185,19 +212,29 @@ $ isonav Au -im --amu
 208Au   207.99345
 209Au   208.99735
 210Au   210.0025
+```
 
+```
 $ isonav 22Ne --mass
 20484.845484518828
+```
 
+```
 $ isonav 22Ne --mass --liquidDrop #Using the LD model
 20477.90454623588
+```
 
+```
 $ isonav 22Ne --mirror
 22Mg
+```
 
+```
 $ isonav 40Ca -r #Nuclear radius in fm
 4.103942272024073
+```
 
+```
 $ isonav 12C --levels --limit=10
 1       0.0
 2       4.43891
@@ -209,20 +246,26 @@ $ isonav 12C --levels --limit=10
 8       11.828
 9       12.71
 10      13.352
+```
 
+```
 $ isonav 12C --Elab=2.0 --redDeBroglie
 9.332022523394577e-06
+```
 
 These next parts are useful for identifying particles in terms of
 their energy in a nuclear scattering experiment.
 
+```
 $ isonav d 14N a 12C --Elab=3.0 --angle=35
 4He     12C
 13.929  -130.521        2.645
 
 12C     4He
 5.881   -132.566        10.693
+```
 
+```
 $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 *4He    12C
 1       0.000           13.929  -130.521        2.645
@@ -265,8 +308,11 @@ $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 
 12C     *4He
 1       0.000           5.881   -132.566        10.693
+```
 
-Can also see Coulomb excitations
+It can also see Coulomb excitations
+
+```
 $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
 *2H     14N
 1       0.000           5.354   -75.758 0.146
@@ -290,7 +336,9 @@ $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
 2       2.225           1.371   -109.124        1.905
 
 2       2.225           0.057   -8.519  3.219
+```
 
+```
 $ isonav d 14N --reactions
 #Given two isotopes it returns the coulomb energy barrier
 #Or the possible reactions.
@@ -316,15 +364,21 @@ $ isonav d 14N --reactions
 3Li     13B     33.42   -29.23  4.74
 9Li     7B      41.89   -36.63  4.51
 ...
+```
 
+```
 $ isonav p 14N  --fussion
 15O	7	7.276	0.021
+```
 
+```
 $ isonav p 14N --fussion --Elab=0.1 -v
 #Prints the fused element, if isotope exists.
 #Max populated level, and energy, and remaining KE in lab
 15O	7	7.276	0.121
+```
 
+```
 $ isonav d 14N --Elab=3.0 --angle=35
 4He     12C
 13.929  -130.521        2.645
@@ -363,11 +417,13 @@ $ isonav d 14N --Elab=3.0 --angle=35
 0.280   -50.709 0.663
 
 0.143   -30.168 0.800
+```
 
 Where the first row after the expression is when the ejectile is
 expected at the given angle and the recond is when the residual is
 expected.
 
+```
 $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 *4He    12C
 1       0.000           13.929  -130.521        2.645
@@ -428,7 +484,9 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 1       0.000           0.885   -101.910        2.115
 ...
 .............. You get the idea.
+```
 
+```
 $ isonav 235U --decay
 76Zn	159Sm		111.947	53.485	165.431
 77Zn	158Sm		110.923	54.037	164.960
@@ -445,26 +503,36 @@ $ isonav 235U --decay
 .
 .Lots of stuff
 .
+```
 
-
+```
 $ isonav 151Lu --pEmission
 1(1H)   150Yb           1.241
+```
 
+```
 $ isonav 13Be --nEmission
 1(1n)   12Be            0.510
+```
 
+```
 #Double proton emission
 $ isonav 45Fe --pEmission --num=2
 2(1H)	43Cr		1.154
+```
 
+```
 $ isonav n --compton -v
 #The compton wavelength in fm
 1.3195908515350636
+```
 
 The --xTreme cases can take some time and the outputs can become very
 large, here is an example of one case:
 
+```
 $ isonav 14N 167Yb --Elab=5.5 --angle=20 --xTreme>14N167YbxTreme5p5MeVAngle20.txt
+```
 
 Note the redirection `>` you may want to use it in order to save long
 outputs.
