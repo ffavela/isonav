@@ -16,7 +16,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from isonavBase import *
-import webbrowser
 
 
 def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
