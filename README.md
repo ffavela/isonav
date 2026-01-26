@@ -49,10 +49,10 @@ To uninstall simply remove the symlink. In case the is empty then you
 can remove it too as well as the export on your `rc` file.
 
 If there is a previous installation and it was done via the deprecated
-installScript.sh please review LEGACY for instructions to uninstall it
-and some reasons for deprecating that method. TLDR: If there is a
-legacy install present then run `sudo ./uninstallLegacy.sh` to remove
-it.
+installScript.sh please review [LEGACY](LEGACY.md) for instructions to
+uninstall it and some reasons for deprecating that method. TLDR: If
+there is a legacy install present then run `sudo ./uninstallLegacy.sh`
+to remove it.
 
 Resources:
 
