@@ -19,89 +19,94 @@ from isonavBase import *
 from outputFunctions import *
 from operator import itemgetter
 
+
 def getOrdMatList(matDict):
-    newList=[]
+    newList = []
     for e in matDict:
-        vl=matDict[e]
-        newList.append([e,vl[0],vl[1],vl[2],vl[3]])
-    sortList=sorted(newList,key=itemgetter(2))
+        vl = matDict[e]
+        newList.append([e, vl[0], vl[1], vl[2], vl[3]])
+    sortList = sorted(newList, key=itemgetter(2))
     return sortList
 
+
 def makeSureIso(iso):
-    A,k=getIso(iso)
-    if A == None or k == None:
+    A, k = getIso(iso)
+    if A is None or k is None:
         return False
     return True
 
-def testVal(stuff,strFlag="E"):
-    if stuff==False:
+
+def testVal(stuff, strFlag="E"):
+    if stuff is False:
         return False
     try:
-        stuff=float(stuff)
+        stuff = float(stuff)
     except:
-        stuff=None
-    val=isinstance(stuff,float) or isinstance(stuff,int)
+        stuff = None
+    val = isinstance(stuff,float) or isinstance(stuff, int)
     if val:
-        if strFlag=="E" or strFlag=="T" or strFlag=="L":
-            if not 0<=stuff:
+        if strFlag == "E" or strFlag == "T" or strFlag == "L":
+            if not 0 <= stuff:
                 return False
-        if strFlag=="angle":
-            if not 0<=stuff<=180:
+        if strFlag == "angle":
+            if not 0 <= stuff <= 180:
                 return False
         return True
     return False
 
-commonVal=["n","p","d","t","a"]
+
+commonVal = ["n", "p", "d", "t", "a"]
+
 
 def argHand(args):
-    verbose=args["-v"]
-    Elab=args['--Elab']
-    angle=args['--angle']
-    scatE=args["--scatE"]
-    iso=args["<iso>"]
-    iso1=args["<iso1>"]
-    iso2=args["<iso2>"]
-    isop=args["<isop>"]
-    isot=args["<isot>"]
-    isoE=args["<isoEject>"]
-    isoR=args["<isoRes>"]
-    alpha=args["--alpha"]
-    pEmit=args["--pEmission"]
-    nEmit=args["--nEmission"]
-    Emit=args["--Emission"]
-    num=args["--num"]
-    name=args["--name"]
-    symbol=args["<symbol>"]
-    T=args["--T"]
-    ion=args["<ion>"]
-    material=args["--material"]
-    thick=args["--thickness"]
-    ionRange=args["--range"]
-    deltaE=args["--depositedE"]
-    bloch=args["--bloch"]
-    density=args["--density"]
-    lsMat=args["--listMaterials"]
-    xEje=args["--xEje"]
-    xRes=args["--xRes"]
-    xF1=args["--xF1"]
-    xF2=args["--xF2"]
-    L=args["--L4TOF"]
-    redDeBroglie=args["--redDeBroglie"]
-    deBroglieFlag=args["--deBroglie"] or redDeBroglie
-    Ex=args["--Ex"]
+    verbose = args["-v"]
+    Elab = args['--Elab']
+    angle = args['--angle']
+    scatE = args["--scatE"]
+    iso = args["<iso>"]
+    iso1 = args["<iso1>"]
+    iso2 = args["<iso2>"]
+    isop = args["<isop>"]
+    isot = args["<isot>"]
+    isoE = args["<isoEject>"]
+    isoR = args["<isoRes>"]
+    alpha = args["--alpha"]
+    pEmit = args["--pEmission"]
+    nEmit = args["--nEmission"]
+    Emit = args["--Emission"]
+    num = args["--num"]
+    name = args["--name"]
+    symbol = args["<symbol>"]
+    T = args["--T"]
+    ion = args["<ion>"]
+    material = args["--material"]
+    thick = args["--thickness"]
+    ionRange = args["--range"]
+    deltaE = args["--depositedE"]
+    bloch = args["--bloch"]
+    density = args["--density"]
+    lsMat = args["--listMaterials"]
+    xEje = args["--xEje"]
+    xRes = args["--xRes"]
+    xF1 = args["--xF1"]
+    xF2 = args["--xF2"]
+    L = args["--L4TOF"]
+    redDeBroglie = args["--redDeBroglie"]
+    deBroglieFlag = args["--deBroglie"] or redDeBroglie
+    Ex = args["--Ex"]
 
     if iso:
-        vals=[i[0] for i in getIsotopes(iso)]
+        vals = [i[0] for i in getIsotopes(iso)]
 
     if iso in commonVal:
-        vals=commonVal
+        vals = commonVal
 
     if args["--symbol"] or args["-s"]:
         if verbose:
             print("#Given a number it returns the periodic table symbol")
-        number=args["<number>"]
+        number = args["<number>"]
         try:
-            number=int(number)
+            number = int(number)
         except:
             print("Error; <number> has to be an integer")
             return 5
@@ -136,12 +141,12 @@ def argHand(args):
     if args["--isotopes"] or args["-i"]:
         if verbose:
             print("Isotopes and masses, in MeV by default")
-        flag=True
-        mFlag=False
+        flag = True
+        mFlag = False
         if args["-m"]:
-            mFlag=True
+            mFlag = True
             if args["--amu"]:
-                flag=False
+                flag = False
 
         pIsotopes(iso,mFlag,flag)
         return 0
@@ -153,7 +158,7 @@ def argHand(args):
         print(mirror(iso))
         return 0
 
-    if args["-r"]==True or args["--radius"]==True:
+    if args["-r"] is True or args["--radius"] is True:
         if verbose:
             print("#Returns the isotope's radius, in fermis, using r=1.2*A**(1.0/3)")
         if not makeSureIso(iso):
@@ -163,7 +168,7 @@ def argHand(args):
         print(nRadius(iso))
         return 0
 
-    if args["-l"]==True or args["--levels"]==True:
+    if args["-l"] is True or args["--levels"] is True:
         if verbose:
             print("#Returns the energy levels of the isotope, prints at most limit levels")
         if not makeSureIso(iso):
@@ -175,21 +180,21 @@ def argHand(args):
             return 999
 
         if args["--limit"]:
-            limit=int(args["--limit"])
-            pLevels(iso,limit)
+            limit = int(args["--limit"])
+            pLevels(iso, limit)
             return 0
 
         pLevels(iso)
         return 0
 
-    if Elab != None and iso and deBroglieFlag:
-        if verbose==True:
+    if Elab is not None and iso and deBroglieFlag:
+        if verbose is True:
             print("#Returns the deBroglie wavelength by default, in angstrom")
 
-        if not testVal(Elab,"E"):
+        if not testVal(Elab, "E"):
             print("Error; energy has to be a positive number")
             return 777
-        Elab=float(Elab)
+        Elab = float(Elab)
 
         if not makeSureIso(iso):
             print("Not a valid isotope")
@@ -204,28 +209,27 @@ def argHand(args):
         print("Error; Elab needs a numerical value")
         return 2
 
-    if L != None and Elab != None and iso:
-        if verbose == True:
+    if L is not None and Elab is not None and iso:
+        if verbose is True:
             print("Given an isotope, an energy in MeV & a length in cm")
             print("it returns the time of flight in ns.")
         if not testVal(L,"L"):
             print("Error; Length has to be a positive number")
             return 1029
-        L=float(L)/100 #because input is in cm
+        L = float(L)/100  # because input is in cm
 
         if not testVal(Elab,"E"):
             print("Error; energy has to be a positive number")
             return 1028
-        Elab=float(Elab)
+        Elab = float(Elab)
 
-        tof=getTOF(iso,Elab,L)
-        tof *= 10**9 #because output is in ns
+        tof = getTOF(iso,Elab,L)
+        tof *= 10**9  # because output is in ns
         print(tof)
         return 0
 
-
     if args["-m"] or args["--mass"]:
-        if verbose==True:
+        if verbose is True:
             print("#Returns the mass in MeV or in amu if --amu is used")
 
         if not makeSureIso(iso):
@@ -233,7 +237,7 @@ def argHand(args):
             return 1
 
         if args["--liquidDrop"]:
-            if args["--amu"]==True:
+            if args["--amu"] is True:
                 print(getLDMass(args['<iso>']))
                 return 0
             else:
@@ -243,14 +247,14 @@ def argHand(args):
         if iso not in vals:
             print("Error; isotope not in database")
             return 999
-        if args["--amu"]==True:
+        if args["--amu"] is True:
             print(getMass(args['<iso>']))
         else:
             print(getEMass(args['<iso>']))
         return 0
 
-    if  args["--compton"]:
-        if verbose==True:
+    if args["--compton"]:
+        if verbose is True:
             print("#The compton wavelength in fm")
         if not makeSureIso(iso):
             print("Not a valid isotope")
@@ -292,13 +296,13 @@ def argHand(args):
             print("#Given two isotopes it returns the coulomb energy barrier")
             print("#Or the possible reactions.")
         if args["--reactions"]:
-            if verbose==True:
+            if verbose is True:
                 print("#Eject\tResidue\tThres\tQValue\tcoulombE")
 
             if not checkIsoExistence(iso1,iso2):
                 return 665
 
-            if args["--latex"]==True:
+            if args["--latex"] is True:
                 latexNReaction(iso1,iso2)
             else:
                 tNReaction(iso1,iso2)
@@ -316,11 +320,11 @@ def argHand(args):
             return 0
 
         if args["--gamowPeak"]:
-            if not testVal(T,"T"):
+            if not testVal(T, "T"):
                 print("Error; temperature has to be a positive number")
                 return 8889
 
-            T=float(T)
+            T = float(T)
             print(gamowPeak(iso1,iso2,T))
             return 0
 
@@ -332,133 +336,132 @@ def argHand(args):
             print("Not a valid isotope")
             return 1
         if Ex:
-            if not testVal(Ex,"E"):
+            if not testVal(Ex, "E"):
                 print("Error; Ex has to be a positive number")
                 return 1119
-            Ex=float(Ex)
-        if Ex == None:
+            Ex = float(Ex)
+        if Ex is None:
             Ex = 0.0
-        pDecay(iso,Ex=Ex)
+        pDecay(iso, Ex=Ex)
         return 0
 
     if alpha or nEmit or pEmit:
         if num:
-            num=int(num)
+            num = int(num)
         else:
-            num=1
+            num = 1
 
         if verbose:
-            print("#Decay for the cases of alpha and proton or neutron emission ")
+            print("#Decay for the cases of alpha and proton or neutron emission")
             print("#By default num=1")
         if alpha:
-            pDecay(iso,"4He",num)
+            pDecay(iso, "4He", num)
             return 0
 
         if nEmit:
-            pDecay(iso,"1n",num)
+            pDecay(iso, "1n", num)
             return 0
 
         if pEmit:
-            pDecay(iso,"1H",num)
+            pDecay(iso, "1H", num)
             return 0
 
     if Emit:
         if verbose:
             print("#eject\tdaughter\tQval[MeV]")
         #Adding the common abbreviations
-        if Emit=="p":
-            Emit="1H"
-        if Emit=="n":
-            Emit="1n"
-        if Emit=="d":
-            Emit="2H"
-        if Emit=="t":
-            Emit="3H"
-        if Emit=="a":
-            Emit="4He"
-        num=int(num)
-        pDecay2(iso,Emit,num)
+        if Emit == "p":
+            Emit = "1H"
+        if Emit == "n":
+            Emit = "1n"
+        if Emit == "d":
+            Emit = "2H"
+        if Emit == "t":
+            Emit = "3H"
+        if Emit == "a":
+            Emit = "4He"
+        num = int(num)
+        pDecay2(iso, Emit, num)
         return 0
 
     if args["--fussion"]:
-        if not checkIsoExistence(iso1,iso2):
+        if not checkIsoExistence(iso1, iso2):
             return 665
 
         if Elab:
-            if not testVal(Elab,"E"):
+            if not testVal(Elab, "E"):
                 print("Error; energy has to be a positive number")
                 return 777
-            Elab=float(Elab)
+            Elab = float(Elab)
         else:
-            Elab=0
+            Elab = 0
         if verbose:
             print("#Prints the fused element, if isotope exists.")
             print("#Max populated level, and energy, and remaining KE in lab")
-        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
-        pFussion(iso1,iso2,Elab)
+        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
+        pFussion(iso1, iso2, Elab)
 
     if iso1 and Elab:
-        if not testVal(Elab,"E"):
+        if not testVal(Elab, "E"):
             print("Error; energy has to be a positive number")
             return 777
 
-        Elab=float(Elab)
+        Elab = float(Elab)
 
-        if not checkIsoExistence(iso1,iso2):
+        if not checkIsoExistence(iso1, iso2):
             return 665
 
-        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
-        if angle!=None:
-            if verbose==True:
+        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
+        if angle is not None:
+            if verbose is True:
                 print("#Energy at given angle for the ejectile and the residue")
-            if not testVal(angle,"angle"):
+            if not testVal(angle, "angle"):
                 print("Error; 0<=angle<=180 has to be True ")
                 return 888
 
             angle=float(angle)
-            if angle==0:
+            if angle == 0:
                 print("Error, give a positive angle")
                 return 222
 
-            if args["--xTreme"]==True or args["-x"]==True:
-                if verbose==True:
+            if args["--xTreme"] is True or args["-x"] is True:
+                if verbose is True:
                     print("#Prints out angles and energies of the reactions")
                     print("#lev\tlevE\t\tEe\tang2L\tEr")
-                pXXTremeTest(iso1,iso2,Elab,angle)
+                pXXTremeTest(iso1, iso2, Elab, angle)
                 return 0
 
             # print xTremeTest(iso1,iso2,Elab,angle)
-            pXTremeTest(iso1,iso2,Elab,angle)
+            pXTremeTest(iso1, iso2, Elab, angle)
             return 0
 
     if scatE:
-        if verbose==True:
+        if verbose is True:
             print("#Gives the beam energy [MeV]")
 
-        if not checkIsoExistence(iso1,iso2):
+        if not checkIsoExistence(iso1, iso2):
             return 665
 
-        iso1,iso2=getRealIso(iso1),getRealIso(iso2)
+        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
         if not testVal(scatE):
             print("Error; scattered energy has to be a number")
-            return 10 #Making this up as I go
-        scatE=float(scatE)
+            return 10  # Making this up as I go
+        scatE = float(scatE)
 
-        if not testVal(angle,"angle"):
+        if not testVal(angle, "angle"):
             print("Error; 0<=angle<=180 has to be True")
             return 888
-        angle=float(angle)
+        angle = float(angle)
 
-        print(findOE(scatE,angle,iso1,iso2))
+        print(findOE(scatE, angle, iso1, iso2))
         return 0
 
     if args["--QVal"] or args["-q"]:
         if args["--amu"]:
-            print(getIsoQValAMU(isop,isot,isoE,isoR))
+            print(getIsoQValAMU(isop, isot, isoE, isoR))
         else:
-            print(getIsoQVal(isop,isot,isoE,isoR))
+            print(getIsoQVal(isop, isot, isoE, isoR))
         return 0
-
 
     if args["--maxAng"]:
         if verbose:
@@ -466,61 +469,63 @@ def argHand(args):
         if not testVal(Elab):
             print("Error; energy has to be a positive number")
             return 777
-        Elab=float(Elab)
-        if not checkReaction(isop,isot,isoE,isoR):
+        Elab = float(Elab)
+        if not checkReaction(isop, isot, isoE, isoR):
             return 666
-        a=getMaxAngles(isop,isot,isoE,isoR,Elab)
+        a = getMaxAngles(isop, isot, isoE, isoR, Elab)
         print(a[0], a[1])
         return 0
-    #if angle means angle!=0 but there might be a problem here.
+    # if angle means angle != 0 but there might be a problem here.
     if angle and args["<isoRes>"]:
         if verbose:
             print("#Prints the energies that'll reach the detector")
             print("If the --xF format is used then it takes the energy levels from")
             print("a single column txt file")
 
-        if not testVal(Elab,"E"):
+        if not testVal(Elab, "E"):
             print("Error; energy has to be a positive number")
             return 777
 
-        if not testVal(angle,"angle"):
+        if not testVal(angle, "angle"):
             print("Error; 0<=angle<=180 has to be True")
             return 888
 
-        Elab=float(Elab)
-        angle=float(angle)
+        Elab = float(Elab)
+        angle = float(angle)
 
-        if not checkReaction(isop,isot,isoE,isoR):
+        if not checkReaction(isop, isot, isoE, isoR):
             return 666
 
-        isop,isot=getRealIso(isop),getRealIso(isot)
-        isoE,isoR=getRealIso(isoE),getRealIso(isoR)
+        isop, isot = getRealIso(isop), getRealIso(isot)
+        isoE, isoR = getRealIso(isoE), getRealIso(isoR)
         if args["-x"] or args["--xTreme"]:
-            pXReaction(isop,isot,isoE,isoR,Elab,angle,xF1,xF2)
+            pXReaction(isop, isot, isoE, isoR, Elab,
+                       angle, xF1, xF2)
             return 0
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
 
-        if xEje != None:
+        if xEje is not None:
             if not testVal(xEje,"E"):
                 print("Error; ejectile excitation energy has to be a positive number")
                 return 798
-            xEje=float(xEje)
+            xEje = float(xEje)
         else:
-            xEje=0.0
+            xEje = 0.0
 
-        if xRes != None:
+        if xRes is not None:
             if not testVal(xRes,"E"):
                 print("Error; residual excitation energy has to be a positive number")
                 return 799
-            xRes=float(xRes)
+            xRes = float(xRes)
         else:
-            xRes=0.0
+            xRes = 0.0
 
-        exList=[0,0,xEje,xRes]
-        pSReaction(isop,isot,isoE,isoR,Elab,angle,exList)
+        exList=[0, 0, xEje, xRes]
+        pSReaction(isop, isot, isoE, isoR, Elab,
+                   angle, exList)
         return 0
 
-    if args["--material"] and Elab != None:
+    if args["--material"] and Elab is not None:
         if verbose:
             print("Given the ion, it's energy, the material name and the material")
             print("thickness (in microns) it prints the final energy of the ion.")
@@ -532,37 +537,37 @@ def argHand(args):
         if not makeSureIso(ion):
             print("Ion has to be a valid isotope")
             return 1
-        if not testVal(Elab,"E"):
+        if not testVal(Elab, "E"):
             print("Error; ion energy has to be a positive number")
             return 12345
-        E=float(Elab)
+        E = float(Elab)
         if not ionRange:
             if not testVal(thick,"E"):
-                print ("Error; thickness has to be a positive number")
+                print("Error; thickness has to be a positive number")
                 return 12346
-            thick=float(thick)
+            thick = float(thick)
         #Note checkMaterial loads the proper I (and rho) to a global
         #dictionary so no need to put it as argument in other functions
         #;-)
-        if density != None:
+        if density is not None:
             density=float(density)
-            if not testVal(density,"E"):
+            if not testVal(density, "E"):
                 print("Error; density has to be a positive number (g/cm^3)")
                 return 12347
 
-        if not checkMaterial(material,bloch,density):
+        if not checkMaterial(material, bloch, density):
             print("Error; material not yet implemented :(")
             return 12347
-        if deltaE != False:
-            eLoss=integrateELoss(ion,E,material,thick)
+        if deltaE is not False:
+            eLoss = integrateELoss(ion, E, material, thick)
             if eLoss == -1.0:
-                val2Print=E
+                val2Print = E
             else:
-                val2Print=E-eLoss
+                val2Print = E - eLoss
         elif ionRange:
-            val2Print=getParticleRange(ion,E,material)
+            val2Print = getParticleRange(ion, E, material)
         else:
-            val2Print=integrateELoss(ion,E,material,thick)
+            val2Print = integrateELoss(ion, E, material, thick)
         print("%.3f" % val2Print)
         return 0
 
@@ -572,26 +577,26 @@ def argHand(args):
             print("#the Z, A_r,density (in gm/cm^3) and I (mean excitation")
             print("#potential in eV)\n")
             print("#Mat\tZ\tA_r\trho\t\tI")
-        materialDict=getChemDictFromFile()
-        if material != None:
+        materialDict = getChemDictFromFile()
+        if material is not None:
             if not checkMaterial(material):
                 print("Error; material not yet implemented :(")
                 return 4321
 
-            stringStuff=[str(val) for val in materialDict[material]]
+            stringStuff = [str(val) for val in materialDict[material]]
             #TODO: improve this printout
-            finalString=material
+            finalString = material
             for s in stringStuff[0:-1]:
-                finalString+='\t'+s
-            finalString+='\t\t'+stringStuff[-1]
+                finalString += '\t' + s
+            finalString += '\t\t' + stringStuff[-1]
             print(finalString)
             return 0
-        sortMatList=getOrdMatList(materialDict)
+        sortMatList = getOrdMatList(materialDict)
         for e in sortMatList:
-            stringStuff=[str(val) for val in e]
-            finalString=e[0]
+            stringStuff = [str(val) for val in e]
+            finalString = e[0]
             for s in stringStuff[1:-1]:
-                finalString+='\t'+s
-            finalString+='\t\t'+stringStuff[-1]
+                finalString += '\t' + s
+            finalString += '\t\t' + stringStuff[-1]
             print(finalString)
         return 0

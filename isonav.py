@@ -45,10 +45,8 @@
 
 from docopt import docopt
 from argumentHandling import argHand
-import sqlite3
 
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='v1.6.1')
-    # print(args)
     argHand(args)
