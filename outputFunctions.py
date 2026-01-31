@@ -18,7 +18,6 @@
 import isonavBase as iB
 import isoParser as iP
 
-
 def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
                exList=[0, 0, 0, 0]):
     react1, react2 = iB.sReaction(iso1, iso2, isoEject, isoRes,
@@ -260,7 +259,7 @@ def pIsotopes(iso, mFlag=False, flag=True):
 
 def pDecay(iso, emit="", num=1, Ex=0.0):
     if emit == "":
-        dec = QDecay(iso, Ex)
+        dec = iB.QDecay(iso, Ex)
         for d in dec:
             print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
     else:
