@@ -1,17 +1,21 @@
+from isonavBase import getKey, QStable, QDecay, nReaction
+from loadingStuff import iDict
+
 # Some miscellaneous functions
 # May need to update them
+
 
 def firstNoQNeg(val=5):
     fQDict = {}
     for i in range(117):
         k = getKey(i+1)
         print(i+1, k)
-        if k == False:
+        if k is False:
             continue
         for iso in iDict[k][1]:
             isoVal = str(iso)+k
             d = QStable(isoVal)
-        if d == False:
+        if d is False:
             continue
         if d != []:
             fQDict[k] = [i+1, iso]
@@ -29,7 +33,7 @@ def numberReact(iso1):
             print(e, i)
             iso2 = str(i)+e
             nR = nReaction(iso1, iso2)
-            if nR == False:
+            if nR is False:
                 print(0)
             else:
                 print(len(nR))
@@ -43,12 +47,12 @@ def firstQPos(val=5):
     for i in range(117):
         k = getKey(i+1)
         print(i+1, k)
-        if k == False:
+        if k is False:
             continue
         for iso in iDict[k][1]:
             isoVal = str(iso)+k
             d = QDecay(isoVal)
-            if d == False:
+            if d is False:
                 continue
             if d != []:
                 fQListX.append(i+1)
