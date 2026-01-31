@@ -1,9 +1,10 @@
 #!/bin/bash
 
-#Just a series of tests, not very descriptive for now
+# Just a series of tests, not very descriptive for now
+# The expected output is in expectedBehavior.txt
 
-echo "$ isonav"
-isonav
+echo "$ isonav 2>&1"
+isonav 2>&1
 echo ""
 echo "$ isonav 22 -s"
 isonav 22 -s
