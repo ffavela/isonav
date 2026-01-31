@@ -1,29 +1,30 @@
 import sqlite3
 from isoParser import getIso
-from loadingStuff import listStuff
-from isonav import getPnum,iDict
+from isonav import getPnum
 
 conn = sqlite3.connect('isoData.db')
 c = conn.cursor()
 
+
 def myString2List(s):
-    if len(s)<=2:
+    if len(s) <= 2:
         return []
-    c=s[2:-2].split("', '")
+    c = s[2:-2].split("', '")
     return c
 
+
 c.execute('SELECT * FROM isoMasses')
-massVal=c.fetchall()
+massVal = c.fetchall()
 
 print("Creating a dictionary")
-myDict={}
+myDict = {}
 for m in massVal:
-    A,k=getIso(m[0])
+    A, k = getIso(m[0])
     # print isoStuff,m[1],getPnum(isoStuff[1])
-    p=getPnum(k)
+    p = getPnum(k)
     if k not in myDict:
-        myDict[k]=[p,{}]
-    myDict[k][1][A]=[float(m[1])]
+        myDict[k] = [p, {}]
+    myDict[k][1][A] = [float(m[1])]
 
 # print "Populating the rest of it"
 # for key in myDict:
@@ -39,7 +40,7 @@ for m in massVal:
 #             if int(exData[0]) not in levDict:
 #                 levDict[exData[0]]=[float(exData[1]),myString2List(exData[2])]
 #         # print levDict
-        
+
 #         myDict[key][1][aVal].append(levDict)
 
 # print "Testing each element individually"

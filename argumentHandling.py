@@ -43,7 +43,7 @@ def testVal(stuff, strFlag="E"):
         stuff = float(stuff)
     except:
         stuff = None
-    val = isinstance(stuff,float) or isinstance(stuff, int)
+    val = isinstance(stuff, float) or isinstance(stuff, int)
     if val:
         if strFlag == "E" or strFlag == "T" or strFlag == "L":
             if not 0 <= stuff:
@@ -148,7 +148,7 @@ def argHand(args):
             if args["--amu"]:
                 flag = False
 
-        pIsotopes(iso,mFlag,flag)
+        pIsotopes(iso, mFlag, flag)
         return 0
 
     if args["--mirror"]:
@@ -202,9 +202,9 @@ def argHand(args):
 
         if testVal(Elab):
             if redDeBroglie:
-                print(reducedDeBroglie(iso,Elab))
+                print(reducedDeBroglie(iso, Elab))
             else:
-                print(deBroglie(iso,Elab))
+                print(deBroglie(iso, Elab))
             return 0
         print("Error; Elab needs a numerical value")
         return 2
@@ -213,17 +213,17 @@ def argHand(args):
         if verbose is True:
             print("Given an isotope, an energy in MeV & a length in cm")
             print("it returns the time of flight in ns.")
-        if not testVal(L,"L"):
+        if not testVal(L, "L"):
             print("Error; Length has to be a positive number")
             return 1029
         L = float(L)/100  # because input is in cm
 
-        if not testVal(Elab,"E"):
+        if not testVal(Elab, "E"):
             print("Error; energy has to be a positive number")
             return 1028
         Elab = float(Elab)
 
-        tof = getTOF(iso,Elab,L)
+        tof = getTOF(iso, Elab, L)
         tof *= 10**9  # because output is in ns
         print(tof)
         return 0
@@ -299,16 +299,16 @@ def argHand(args):
             if verbose is True:
                 print("#Eject\tResidue\tThres\tQValue\tcoulombE")
 
-            if not checkIsoExistence(iso1,iso2):
+            if not checkIsoExistence(iso1, iso2):
                 return 665
 
             if args["--latex"] is True:
-                latexNReaction(iso1,iso2)
+                latexNReaction(iso1, iso2)
             else:
-                tNReaction(iso1,iso2)
+                tNReaction(iso1, iso2)
             return 0
 
-        print(coulombE(iso1,iso2))
+        print(coulombE(iso1, iso2))
         return 0
 
     if args["--gamowEnergy"] or args["--gamowPeak"]:
@@ -316,7 +316,7 @@ def argHand(args):
             print("#Gamow functions, in MeV")
 
         if args["--gamowEnergy"]:
-            print(gamowE(iso1,iso2))
+            print(gamowE(iso1, iso2))
             return 0
 
         if args["--gamowPeak"]:
@@ -325,7 +325,7 @@ def argHand(args):
                 return 8889
 
             T = float(T)
-            print(gamowPeak(iso1,iso2,T))
+            print(gamowPeak(iso1, iso2, T))
             return 0
 
     if args["--decay"] and iso:
@@ -369,7 +369,7 @@ def argHand(args):
     if Emit:
         if verbose:
             print("#eject\tdaughter\tQval[MeV]")
-        #Adding the common abbreviations
+        # Adding the common abbreviations
         if Emit == "p":
             Emit = "1H"
         if Emit == "n":
@@ -419,7 +419,7 @@ def argHand(args):
                 print("Error; 0<=angle<=180 has to be True ")
                 return 888
 
-            angle=float(angle)
+            angle = float(angle)
             if angle == 0:
                 print("Error, give a positive angle")
                 return 222
@@ -505,7 +505,7 @@ def argHand(args):
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
 
         if xEje is not None:
-            if not testVal(xEje,"E"):
+            if not testVal(xEje, "E"):
                 print("Error; ejectile excitation energy has to be a positive number")
                 return 798
             xEje = float(xEje)
@@ -513,14 +513,14 @@ def argHand(args):
             xEje = 0.0
 
         if xRes is not None:
-            if not testVal(xRes,"E"):
+            if not testVal(xRes, "E"):
                 print("Error; residual excitation energy has to be a positive number")
                 return 799
             xRes = float(xRes)
         else:
             xRes = 0.0
 
-        exList=[0, 0, xEje, xRes]
+        exList = [0, 0, xEje, xRes]
         pSReaction(isop, isot, isoE, isoR, Elab,
                    angle, exList)
         return 0
@@ -542,15 +542,15 @@ def argHand(args):
             return 12345
         E = float(Elab)
         if not ionRange:
-            if not testVal(thick,"E"):
+            if not testVal(thick, "E"):
                 print("Error; thickness has to be a positive number")
                 return 12346
             thick = float(thick)
-        #Note checkMaterial loads the proper I (and rho) to a global
-        #dictionary so no need to put it as argument in other functions
-        #;-)
+        # Note checkMaterial loads the proper I (and rho) to a global
+        # dictionary so no need to put it as argument in other functions
+        # ;-)
         if density is not None:
-            density=float(density)
+            density = float(density)
             if not testVal(density, "E"):
                 print("Error; density has to be a positive number (g/cm^3)")
                 return 12347
@@ -584,7 +584,7 @@ def argHand(args):
                 return 4321
 
             stringStuff = [str(val) for val in materialDict[material]]
-            #TODO: improve this printout
+            # TODO: improve this printout
             finalString = material
             for s in stringStuff[0:-1]:
                 finalString += '\t' + s

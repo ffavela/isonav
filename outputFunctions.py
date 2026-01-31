@@ -27,7 +27,7 @@ def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
         return 0
 
     fR1 = react1[0][1:]
-    sR1 = react2[0][1:]#switching the ejectile and the residue
+    sR1 = react2[0][1:]  # switching the ejectile and the residue
     stringFormat = "%.3f\t" * (3-1) + "%.3f"
     if fR1[1] is not False:
         print(isoEject + '\t' + isoRes)
@@ -63,8 +63,8 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
     xReactF = []
     xReactSDict = {}
     for lr in xReactL:
-        exitReact=lr[0]
-        exitRString=exitReact[0] + '\t' + exitReact[1]
+        exitReact = lr[0]
+        exitRString = exitReact[0] + '\t' + exitReact[1]
         if exitRString not in xReactSDict:
             xReactSDict[exitRString] = []
         for info in lr[1:]:
@@ -93,7 +93,7 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
                 for ee in E:
                     if ee[1] == []:
                         continue
-                    secSolBool=True
+                    secSolBool = True
                     level = ee[0][0]
                     lE = ee[0][1]
                     rest = ee[1][1:]
@@ -103,7 +103,7 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
                     print("")
 
 
-def pXXTremeTest(iso1,iso2,Elab,angle):
+def pXXTremeTest(iso1, iso2, Elab, angle):
     XXList = xXTremeTest(iso1, iso2, Elab, angle)
     stringFormat = "%d\t%0.3f\t\t" + "%.3f\t" * 2 + "%.3f"
     for e in XXList:
@@ -111,7 +111,7 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
         isoR = e[0][1]
         EThres = e[0][2]
         QVal = e[0][3]
-        tup = (isoE,isoR,EThres,QVal)
+        tup = (isoE, isoR, EThres, QVal)
         reaction = e[1]
         for ee in reaction:
             if len(ee[1]) > 0:
@@ -143,7 +143,7 @@ def pXXTremeTest(iso1,iso2,Elab,angle):
                     print("")
 
 
-def pXTremeTest(iso1,iso2,Elab,angle):
+def pXTremeTest(iso1, iso2, Elab, angle):
     rawVal = xTremeTest(iso1, iso2, Elab, angle)
     dictSecSol = {}
     for rV in rawVal:
@@ -202,7 +202,7 @@ def tNReaction(iso1, iso2):
         else:
             string2 = e[0]+'\t'+e[1]+'\t'+"{0:0.2f}".format(float(e[2]))
             string3 = '\t'+"{0:0.2f}".format(float(e[3]))
-            coulE = coulombE(e[0],e[1])
+            coulE = coulombE(e[0], e[1])
             string4 = '\t'+"{0:0.2f}".format(float(coulE))
             print(string2+string3+string4)
 
@@ -226,7 +226,7 @@ def latexNReaction(iso1, iso2):
         else:
             fStr = '\\:\\rm{MeV}\\\\'
 
-        r[3] = str(round(r[3],2))
+        r[3] = str(round(r[3], 2))
         aEject, kEject = getIso(r[0])
         aRes, kRes = getIso(r[1])
         aEject, aRes = str(aEject), str(aRes)
@@ -256,19 +256,20 @@ def pIsotopes(iso, mFlag=False, flag=True):
         print(i[0])
     return 0
 
+
 def pDecay(iso, emit="", num=1, Ex=0.0):
     if emit == "":
         dec = QDecay(iso, Ex)
         for d in dec:
             print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
     else:
-        dec = emitDecay2(iso,emit,num)
+        dec = emitDecay2(iso, emit, num)
         if dec is None or dec is False:
             return 1
         print("%s\t%s\t\t%.3f" % tuple(dec))
 
 
-def pDecay2(iso,emit,num=1):
+def pDecay2(iso, emit, num=1):
     dec = emitDecay2(iso, emit, num)
     if dec is None or dec is False:
         return 1
@@ -286,7 +287,7 @@ simpleDict = {"n": "1n", "p": "1H", "d": "2H", "t": "3H", "a": "4He"}
 
 def getRealIso(myIso):
     if myIso in simpleDict:
-        myIso=simpleDict[myIso]
+        myIso = simpleDict[myIso]
     return myIso
 
 
