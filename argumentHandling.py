@@ -15,8 +15,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from isonavBase import *
-from outputFunctions import *
+import isonavBase as iB
+import outputFunctions as oF
+import isoParser as iP
+import loadingStuff as lS
 from operator import itemgetter
 
 
@@ -30,7 +32,7 @@ def getOrdMatList(matDict):
 
 
 def makeSureIso(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     if A is None or k is None:
         return False
     return True
@@ -96,7 +98,7 @@ def argHand(args):
     Ex = args["--Ex"]
 
     if iso:
-        vals = [i[0] for i in getIsotopes(iso)]
+        vals = [i[0] for i in iB.getIsotopes(iso)]
 
     if iso in commonVal:
         vals = commonVal
@@ -111,19 +113,19 @@ def argHand(args):
             print("Error; <number> has to be an integer")
             return 5
 
-        print(getKey(number))
+        print(iB.getKey(number))
         return 0
 
     if args["--protons"] or args["-p"]:
         if verbose:
             print("#Given an isotope or purely the symbol it returns the number of protons")
-        print(getPnum(symbol))
+        print(iB.getPnum(symbol))
         return 0
 
     if name:
         if verbose:
             print("#Given an element symbol it prints out the name")
-        pName(symbol)
+        oF.pName(symbol)
         return 0
 
     if args["--neutrons"] or args["-n"]:
@@ -135,7 +137,7 @@ def argHand(args):
         if verbose:
             print("Given an isotope it returns the number of neutrons")
 
-        print(getNnum(iso))
+        print(iB.getNnum(iso))
         return 0
 
     if args["--isotopes"] or args["-i"]:
@@ -148,14 +150,14 @@ def argHand(args):
             if args["--amu"]:
                 flag = False
 
-        pIsotopes(iso, mFlag, flag)
+        oF.pIsotopes(iso, mFlag, flag)
         return 0
 
     if args["--mirror"]:
         if verbose:
             print("Given an isotope it returns the mirror isotope")
 
-        print(mirror(iso))
+        print(iB.mirror(iso))
         return 0
 
     if args["-r"] is True or args["--radius"] is True:
@@ -165,7 +167,7 @@ def argHand(args):
             print("Not a valid isotope")
             return 1
 
-        print(nRadius(iso))
+        print(iB.nRadius(iso))
         return 0
 
     if args["-l"] is True or args["--levels"] is True:
@@ -181,10 +183,10 @@ def argHand(args):
 
         if args["--limit"]:
             limit = int(args["--limit"])
-            pLevels(iso, limit)
+            oF.pLevels(iso, limit)
             return 0
 
-        pLevels(iso)
+        oF.pLevels(iso)
         return 0
 
     if Elab is not None and iso and deBroglieFlag:
@@ -202,9 +204,9 @@ def argHand(args):
 
         if testVal(Elab):
             if redDeBroglie:
-                print(reducedDeBroglie(iso, Elab))
+                print(iB.reducedDeBroglie(iso, Elab))
             else:
-                print(deBroglie(iso, Elab))
+                print(iB.deBroglie(iso, Elab))
             return 0
         print("Error; Elab needs a numerical value")
         return 2
@@ -223,7 +225,7 @@ def argHand(args):
             return 1028
         Elab = float(Elab)
 
-        tof = getTOF(iso, Elab, L)
+        tof = iB.getTOF(iso, Elab, L)
         tof *= 10**9  # because output is in ns
         print(tof)
         return 0
@@ -238,19 +240,19 @@ def argHand(args):
 
         if args["--liquidDrop"]:
             if args["--amu"] is True:
-                print(getLDMass(args['<iso>']))
+                print(iB.getLDMass(args['<iso>']))
                 return 0
             else:
-                print(getLDEMass(args['<iso>']))
+                print(iB.getLDEMass(args['<iso>']))
                 return 0
 
         if iso not in vals:
             print("Error; isotope not in database")
             return 999
         if args["--amu"] is True:
-            print(getMass(args['<iso>']))
+            print(iB.getMass(args['<iso>']))
         else:
-            print(getEMass(args['<iso>']))
+            print(iB.getEMass(args['<iso>']))
         return 0
 
     if args["--compton"]:
@@ -263,7 +265,7 @@ def argHand(args):
         if iso not in vals:
             print("Error; isotope not in database")
             return 999
-        print(comptonW(args['<iso>']))
+        print(iB.comptonW(args['<iso>']))
         return 0
 
     if args["--BE"] or args["--BEperNucleon"]:
@@ -275,20 +277,20 @@ def argHand(args):
 
         if args["--BE"]:
             if args["--liquidDrop"]:
-                print(getLDBE(iso))
+                print(iB.getLDBE(iso))
             else:
                 if iso not in vals:
                     print("Error; isotope not in database")
                     return 999
-                print(getBE(iso))
+                print(iB.getBE(iso))
         elif args["--BEperNucleon"]:
             if args["--liquidDrop"]:
-                print(getLDBEperNucleon(iso))
+                print(iB.getLDBEperNucleon(iso))
             else:
                 if iso not in vals:
                     print("Error; isotope not in database")
                     return 999
-                print(getBEperNucleon(iso))
+                print(iB.getBEperNucleon(iso))
         return 0
 
     if args["--coulomb"] or args["--reactions"]:
@@ -299,16 +301,16 @@ def argHand(args):
             if verbose is True:
                 print("#Eject\tResidue\tThres\tQValue\tcoulombE")
 
-            if not checkIsoExistence(iso1, iso2):
+            if not iB.checkIsoExistence(iso1, iso2):
                 return 665
 
             if args["--latex"] is True:
-                latexNReaction(iso1, iso2)
+                oF.latexNReaction(iso1, iso2)
             else:
-                tNReaction(iso1, iso2)
+                oF.tNReaction(iso1, iso2)
             return 0
 
-        print(coulombE(iso1, iso2))
+        print(iB.coulombE(iso1, iso2))
         return 0
 
     if args["--gamowEnergy"] or args["--gamowPeak"]:
@@ -316,7 +318,7 @@ def argHand(args):
             print("#Gamow functions, in MeV")
 
         if args["--gamowEnergy"]:
-            print(gamowE(iso1, iso2))
+            print(iB.gamowE(iso1, iso2))
             return 0
 
         if args["--gamowPeak"]:
@@ -325,7 +327,7 @@ def argHand(args):
                 return 8889
 
             T = float(T)
-            print(gamowPeak(iso1, iso2, T))
+            print(iB.gamowPeak(iso1, iso2, T))
             return 0
 
     if args["--decay"] and iso:
@@ -342,7 +344,7 @@ def argHand(args):
             Ex = float(Ex)
         if Ex is None:
             Ex = 0.0
-        pDecay(iso, Ex=Ex)
+        oF.pDecay(iso, Ex=Ex)
         return 0
 
     if alpha or nEmit or pEmit:
@@ -355,15 +357,15 @@ def argHand(args):
             print("#Decay for the cases of alpha and proton or neutron emission")
             print("#By default num=1")
         if alpha:
-            pDecay(iso, "4He", num)
+            oF.pDecay(iso, "4He", num)
             return 0
 
         if nEmit:
-            pDecay(iso, "1n", num)
+            oF.pDecay(iso, "1n", num)
             return 0
 
         if pEmit:
-            pDecay(iso, "1H", num)
+            oF.pDecay(iso, "1H", num)
             return 0
 
     if Emit:
@@ -381,11 +383,11 @@ def argHand(args):
         if Emit == "a":
             Emit = "4He"
         num = int(num)
-        pDecay2(iso, Emit, num)
+        oF.pDecay2(iso, Emit, num)
         return 0
 
     if args["--fussion"]:
-        if not checkIsoExistence(iso1, iso2):
+        if not iB.checkIsoExistence(iso1, iso2):
             return 665
 
         if Elab:
@@ -398,8 +400,8 @@ def argHand(args):
         if verbose:
             print("#Prints the fused element, if isotope exists.")
             print("#Max populated level, and energy, and remaining KE in lab")
-        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
-        pFussion(iso1, iso2, Elab)
+        iso1, iso2 = oF.getRealIso(iso1), oF.getRealIso(iso2)
+        oF.pFussion(iso1, iso2, Elab)
 
     if iso1 and Elab:
         if not testVal(Elab, "E"):
@@ -408,10 +410,10 @@ def argHand(args):
 
         Elab = float(Elab)
 
-        if not checkIsoExistence(iso1, iso2):
+        if not iB.checkIsoExistence(iso1, iso2):
             return 665
 
-        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
+        iso1, iso2 = oF.getRealIso(iso1), oF.getRealIso(iso2)
         if angle is not None:
             if verbose is True:
                 print("#Energy at given angle for the ejectile and the residue")
@@ -428,21 +430,21 @@ def argHand(args):
                 if verbose is True:
                     print("#Prints out angles and energies of the reactions")
                     print("#lev\tlevE\t\tEe\tang2L\tEr")
-                pXXTremeTest(iso1, iso2, Elab, angle)
+                oF.pXXTremeTest(iso1, iso2, Elab, angle)
                 return 0
 
             # print xTremeTest(iso1,iso2,Elab,angle)
-            pXTremeTest(iso1, iso2, Elab, angle)
+            oF.pXTremeTest(iso1, iso2, Elab, angle)
             return 0
 
     if scatE:
         if verbose is True:
             print("#Gives the beam energy [MeV]")
 
-        if not checkIsoExistence(iso1, iso2):
+        if not iB.checkIsoExistence(iso1, iso2):
             return 665
 
-        iso1, iso2 = getRealIso(iso1), getRealIso(iso2)
+        iso1, iso2 = oF.getRealIso(iso1), oF.getRealIso(iso2)
         if not testVal(scatE):
             print("Error; scattered energy has to be a number")
             return 10  # Making this up as I go
@@ -453,14 +455,14 @@ def argHand(args):
             return 888
         angle = float(angle)
 
-        print(findOE(scatE, angle, iso1, iso2))
+        print(iB.findOE(scatE, angle, iso1, iso2))
         return 0
 
     if args["--QVal"] or args["-q"]:
         if args["--amu"]:
-            print(getIsoQValAMU(isop, isot, isoE, isoR))
+            print(iB.getIsoQValAMU(isop, isot, isoE, isoR))
         else:
-            print(getIsoQVal(isop, isot, isoE, isoR))
+            print(iB.getIsoQVal(isop, isot, isoE, isoR))
         return 0
 
     if args["--maxAng"]:
@@ -470,9 +472,9 @@ def argHand(args):
             print("Error; energy has to be a positive number")
             return 777
         Elab = float(Elab)
-        if not checkReaction(isop, isot, isoE, isoR):
+        if not iB.checkReaction(isop, isot, isoE, isoR):
             return 666
-        a = getMaxAngles(isop, isot, isoE, isoR, Elab)
+        a = iB.getMaxAngles(isop, isot, isoE, isoR, Elab)
         print(a[0], a[1])
         return 0
     # if angle means angle != 0 but there might be a problem here.
@@ -493,14 +495,14 @@ def argHand(args):
         Elab = float(Elab)
         angle = float(angle)
 
-        if not checkReaction(isop, isot, isoE, isoR):
+        if not iB.checkReaction(isop, isot, isoE, isoR):
             return 666
 
-        isop, isot = getRealIso(isop), getRealIso(isot)
-        isoE, isoR = getRealIso(isoE), getRealIso(isoR)
+        isop, isot = oF.getRealIso(isop), oF.getRealIso(isot)
+        isoE, isoR = oF.getRealIso(isoE), oF.getRealIso(isoR)
         if args["-x"] or args["--xTreme"]:
-            pXReaction(isop, isot, isoE, isoR, Elab,
-                       angle, xF1, xF2)
+            oF.pXReaction(isop, isot, isoE, isoR, Elab,
+                          angle, xF1, xF2)
             return 0
         # sReact=sReaction(isop,isot,isoE,isoR,Elab,angle)
 
@@ -521,8 +523,8 @@ def argHand(args):
             xRes = 0.0
 
         exList = [0, 0, xEje, xRes]
-        pSReaction(isop, isot, isoE, isoR, Elab,
-                   angle, exList)
+        oF.pSReaction(isop, isot, isoE, isoR, Elab,
+                      angle, exList)
         return 0
 
     if args["--material"] and Elab is not None:
@@ -555,19 +557,19 @@ def argHand(args):
                 print("Error; density has to be a positive number (g/cm^3)")
                 return 12347
 
-        if not checkMaterial(material, bloch, density):
+        if not iB.checkMaterial(material, bloch, density):
             print("Error; material not yet implemented :(")
             return 12347
         if deltaE is not False:
-            eLoss = integrateELoss(ion, E, material, thick)
+            eLoss = iB.integrateELoss(ion, E, material, thick)
             if eLoss == -1.0:
                 val2Print = E
             else:
                 val2Print = E - eLoss
         elif ionRange:
-            val2Print = getParticleRange(ion, E, material)
+            val2Print = iB.getParticleRange(ion, E, material)
         else:
-            val2Print = integrateELoss(ion, E, material, thick)
+            val2Print = iB.integrateELoss(ion, E, material, thick)
         print("%.3f" % val2Print)
         return 0
 
@@ -577,9 +579,9 @@ def argHand(args):
             print("#the Z, A_r,density (in gm/cm^3) and I (mean excitation")
             print("#potential in eV)\n")
             print("#Mat\tZ\tA_r\trho\t\tI")
-        materialDict = getChemDictFromFile()
+        materialDict = lS.getChemDictFromFile()
         if material is not None:
-            if not checkMaterial(material):
+            if not iB.checkMaterial(material):
                 print("Error; material not yet implemented :(")
                 return 4321
 

@@ -15,13 +15,14 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from isonavBase import *
+import isonavBase as iB
+import isoParser as iP
 
 
 def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
                exList=[0, 0, 0, 0]):
-    react1, react2 = sReaction(iso1, iso2, isoEject, isoRes,
-                               ELab, ang, exList)
+    react1, react2 = iB.sReaction(iso1, iso2, isoEject, isoRes,
+                                  ELab, ang, exList)
     if not react1:
         print("Reaction is invalid")
         return 0
@@ -58,8 +59,8 @@ def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
 
 def pXReaction(isop, isot, isoE, isoR, Elab,
                angle, xF1, xF2):
-    xReactL = xReaction(isop, isot, isoE, isoR,
-                        Elab, angle, xF1, xF2)
+    xReactL = iB.xReaction(isop, isot, isoE, isoR,
+                           Elab, angle, xF1, xF2)
     xReactF = []
     xReactSDict = {}
     for lr in xReactL:
@@ -104,7 +105,7 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
 
 
 def pXXTremeTest(iso1, iso2, Elab, angle):
-    XXList = xXTremeTest(iso1, iso2, Elab, angle)
+    XXList = iB.xXTremeTest(iso1, iso2, Elab, angle)
     stringFormat = "%d\t%0.3f\t\t" + "%.3f\t" * 2 + "%.3f"
     for e in XXList:
         isoE = e[0][0]
@@ -144,7 +145,7 @@ def pXXTremeTest(iso1, iso2, Elab, angle):
 
 
 def pXTremeTest(iso1, iso2, Elab, angle):
-    rawVal = xTremeTest(iso1, iso2, Elab, angle)
+    rawVal = iB.xTremeTest(iso1, iso2, Elab, angle)
     dictSecSol = {}
     for rV in rawVal:
         stringEntry = rV[0][0]+"\t"+rV[0][1]
@@ -194,7 +195,7 @@ def pXTremeTest(iso1, iso2, Elab, angle):
 
 # Printing it nicely for a spreadsheet.
 def tNReaction(iso1, iso2):
-    rList = nReaction(iso1, iso2)
+    rList = iB.nReaction(iso1, iso2)
     for e in rList:
         if e[2] == 'None':
             string1 = str(e[0])+'\t'+str(e[1])+'\t'+str(e[2])+'\t'
@@ -202,7 +203,7 @@ def tNReaction(iso1, iso2):
         else:
             string2 = e[0]+'\t'+e[1]+'\t'+"{0:0.2f}".format(float(e[2]))
             string3 = '\t'+"{0:0.2f}".format(float(e[3]))
-            coulE = coulombE(e[0], e[1])
+            coulE = iB.coulombE(e[0], e[1])
             string4 = '\t'+"{0:0.2f}".format(float(coulE))
             print(string2+string3+string4)
 
@@ -210,9 +211,9 @@ def tNReaction(iso1, iso2):
 # Printing latex friendly nReaction
 # Add the coulomb E functionality also here
 def latexNReaction(iso1, iso2):
-    reacList = nReaction(iso1, iso2)
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
+    reacList = iB.nReaction(iso1, iso2)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
     sa1 = str(a1)
     sa2 = str(a2)
     print("""\\begin{eqnarray*} """)
@@ -227,8 +228,8 @@ def latexNReaction(iso1, iso2):
             fStr = '\\:\\rm{MeV}\\\\'
 
         r[3] = str(round(r[3], 2))
-        aEject, kEject = getIso(r[0])
-        aRes, kRes = getIso(r[1])
+        aEject, kEject = iP.getIso(r[0])
+        aRes, kRes = iP.getIso(r[1])
         aEject, aRes = str(aEject), str(aRes)
         if kEject is None:
             print('{}^{' + aRes + '}' + kRes + '&\\:Q=' + r[3] + fStr)
@@ -240,7 +241,7 @@ def latexNReaction(iso1, iso2):
 
 
 def pIsotopes(iso, mFlag=False, flag=True):
-    val = getIsotopes(iso)
+    val = iB.getIsotopes(iso)
     eCoef = 1
     if mFlag:
         if flag:
@@ -263,21 +264,21 @@ def pDecay(iso, emit="", num=1, Ex=0.0):
         for d in dec:
             print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
     else:
-        dec = emitDecay2(iso, emit, num)
+        dec = iB.emitDecay2(iso, emit, num)
         if dec is None or dec is False:
             return 1
         print("%s\t%s\t\t%.3f" % tuple(dec))
 
 
 def pDecay2(iso, emit, num=1):
-    dec = emitDecay2(iso, emit, num)
+    dec = iB.emitDecay2(iso, emit, num)
     if dec is None or dec is False:
         return 1
     print("%s\t%s\t\t%.3f" % tuple(dec))
 
 
 def pFussion(iso1, iso2, Elab):
-    l = fussionCase(iso1, iso2, Elab)
+    l = iB.fussionCase(iso1, iso2, Elab)
     stringFormat = "%s\t%d\t%.3f\t%.3f"
     print(stringFormat % tuple(l))
 
@@ -293,7 +294,7 @@ def getRealIso(myIso):
 
 def pLevels(iso, limit="NaN"):
     iso = getRealIso(iso)
-    levs = getAllLevels(iso)
+    levs = iB.getAllLevels(iso)
     if limit == "NaN":
         for l in levs:
             print(str(l[0])+'\t'+str(l[1]))
@@ -308,6 +309,6 @@ def pLevels(iso, limit="NaN"):
 
 
 def pName(s):
-    eName = getNameFromSymbol(s)
+    eName = iB.getNameFromSymbol(s)
     if eName is not False:
         print(eName)

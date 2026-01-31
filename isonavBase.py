@@ -15,12 +15,12 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from math import *
-from loadingStuff import *
-from isoParser import *
+import math as m
+import loadingStuff as lS
+import isoParser as iP
 import sqlite3
 
-conn = sqlite3.connect(isoDatadb)
+conn = sqlite3.connect(lS.isoDatadb)
 cursor = conn.cursor()
 
 # important constant
@@ -39,7 +39,7 @@ N_a = 6.022140857e23  # mol^-1, Avogadro constant
 
 
 def checkDictIso(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     if len(iDict[k][1][A]) <= 1:
         return False
     else:
@@ -47,39 +47,39 @@ def checkDictIso(iso):
 
 
 def getKey(pNum):
-    if 0 <= pNum < len(listStuff):
-        return listStuff[pNum]
+    if 0 <= pNum < len(lS.listStuff):
+        return lS.listStuff[pNum]
     return False
 
 
 def getPnum(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     if k == "None" or k == "0None":
         return 0
-    if k not in listStuff:
+    if k not in lS.listStuff:
         return False
-    return listStuff.index(k)
+    return lS.listStuff.index(k)
 
 
 def getNnum(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     return A - getPnum(k)
 
 
 def getMass(iso):
-    a, key = getIso(iso)
+    a, key = iP.getIso(iso)
     return iDict[key][1][a][0]
 
 
 def getNameFromSymbol(s):
-    if s not in nameDict:
+    if s not in lS.nameDict:
         return False
-    return nameDict[s]
+    return lS.nameDict[s]
 
 
 def printElemList():
     i = 0
-    for e in listStuff:
+    for e in lS.listStuff:
         print(i, e)
         i += 1
 
@@ -91,7 +91,7 @@ def printElemList():
 def getVelcm(iso1, iso2, E1):
     m1 = getEMass(iso1)
     m2 = getEMass(iso2)
-    v1 = sqrt(2.0*E1/m1)*c
+    v1 = m.sqrt(2.0*E1/m1)*c
     v2 = 0  # assuming it is still
     Vcm = (1.0 * v1 * m1 + 1.0 * v2 * m2)/(m1 + m2)
     v1p = v1 - Vcm
@@ -138,7 +138,7 @@ def getEcmsFromECM(iso1, iso2, ECM):
     m1 = getEMass(iso1)
     m2 = getEMass(iso2)
     mu = 1.0*m1*m2/(m1+m2)
-    P = sqrt(2.0*mu*ECM)/c
+    P = m.sqrt(2.0*mu*ECM)/c
     E1 = 0.5*(P*c)**2/m1
     E2 = 0.5*(P*c)**2/m2
     return E1, E2
@@ -149,7 +149,7 @@ def getEcmsFromECM2(m1, m2, ECM):
     # m1=getEMass(iso1)
     # m2=getEMass(iso2)
     mu = 1.0*m1*m2/(m1+m2)
-    P = sqrt(2.0*mu*ECM)/c
+    P = m.sqrt(2.0*mu*ECM)/c
     E1 = 0.5*(P*c)**2/m1
     E2 = 0.5*(P*c)**2/m2
     return E1, E2
@@ -169,15 +169,15 @@ def getAllVs(iso1, iso2, isoE, isoR, E1L):
     EcmAvail = getAvailEnergy(iso1, iso2, isoE, isoR, E1L)
     ejectE, resE = getEcmsFromECM(isoE, isoR, EcmAvail)
     print(ejectE, resE)
-    vE = sqrt(2.0*ejectE/getEMass(isoE))*c
-    vR = sqrt(2.0*resE/getEMass(isoR))*c
+    vE = m.sqrt(2.0*ejectE/getEMass(isoE))*c
+    vR = m.sqrt(2.0*resE/getEMass(isoR))*c
 
 ############################################
 
 
 def checkIsoExistence(iso1, iso2):
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
 
     if key1 not in iDict or key2 not in iDict:
         print("Error: keys have to be in the dictionary")
@@ -190,7 +190,7 @@ def checkIsoExistence(iso1, iso2):
 
 
 def checkIsoExist1(iso):
-    a, key = getIso(iso)
+    a, key = iP.getIso(iso)
 
     if key not in iDict:
         # print "Error: keys have to be in the dictionary"
@@ -200,7 +200,7 @@ def checkIsoExist1(iso):
 
 def nRadius(iso):
     # In fermis
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     return 1.2*A**(1.0/3.0)
 
 
@@ -238,8 +238,8 @@ def thresholdE(iso1, iso2, iso3, iso4):
 
 def reaction(iso1, iso2,  Ex=0.0):
     # Think about meoizing
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
     isoExist = checkIsoExistence(iso1, iso2)
     amuEx = Ex/eCoef
     if not isoExist or isoExist == "Decay":
@@ -442,7 +442,7 @@ def getNewIso(iso, emit="4He", num=1):
 
 # Prints out all the possible neg Q's
 def QStable(iso1):
-    a1, key1 = getIso(iso1)
+    a1, key1 = iP.getIso(iso1)
     decayCand = nReaction(iso1, '0None')
     if decayCand is False:
         return False
@@ -451,10 +451,10 @@ def QStable(iso1):
 
 
 def checkReaction(iso1, iso2, isoEject, isoRes):
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
-    aEject, eject = getIso(isoEject)
-    aRes, res = getIso(isoRes)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
+    aEject, eject = iP.getIso(isoEject)
+    aRes, res = iP.getIso(isoRes)
     # Making sure that the cases 'n' are '1n' 'p' is '1H' etc
     if eject is None or res is None:
         print("Reaction is invalid")
@@ -484,10 +484,10 @@ def checkReaction(iso1, iso2, isoEject, isoRes):
 
 def sReaction(iso1, iso2, isoEject, isoRes, ELab=2.9,
               ang=30, exList=[0, 0, 0, 0]):
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
-    aEject, eject = getIso(isoEject)
-    aRes, res = getIso(isoRes)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
+    aEject, eject = iP.getIso(isoEject)
+    aRes, res = iP.getIso(isoRes)
 
     react = checkReaction(iso1, iso2, isoEject, isoRes)
     if not checkArguments(ELab, react, eject, res):
@@ -513,8 +513,8 @@ def checkSecSol(emp, emt, emE, emR, ELab):
         print(Ethres, Emax)
         if Ethres < ELab < Emax:
             print("Possible second solution")
-            thetaM = acos(sqrt(-(emR+emE)*(emR*Q+(emR-emp)*ELab)
-                               / (emp*emE*ELab)))
+            thetaM = m.acos(m.sqrt(-(emR+emE)*(emR*Q+(emR-emp)*ELab) /
+                                   (emp*emE*ELab)))
             return thetaM
     return False
 
@@ -527,16 +527,16 @@ def solveNum(ang, vE, vR, Vcm, isoE, isoR,
     emR = getEMass(isoR) + exList[3]
     thEject = 0
     dTh = 0.2
-    ang = radians(ang)
-    if ang > pi/2:
-        ang -= pi
+    ang = m.radians(ang)
+    if ang > m.pi/2:
+        ang -= m.pi
     tolerance = 0.0001
     while True:
         thEject += dTh
-        vEy = vE*sin(thEject)
-        vEz = vE*cos(thEject)
-        vRy = vR*sin(pi-thEject)
-        vRz = vR*cos(pi-thEject)
+        vEy = vE*m.sin(thEject)
+        vEz = vE*m.cos(thEject)
+        vRy = vR*m.sin(m.pi-thEject)
+        vRz = vR*m.cos(m.pi-thEject)
 
         # They actually have to be zero
         # deltaPy=(vEy*emE-vRy*emR)*1.0/c**2
@@ -546,9 +546,9 @@ def solveNum(ang, vE, vR, Vcm, isoE, isoR,
             print("No solution was found, div by zero")
             print("#####################################################")
             return False
-        thEjectLab = atan(1.0*vEy/(vEz+Vcm))
+        thEjectLab = m.atan(1.0*vEy/(vEz+Vcm))
         ELabEject = emE*(1.0*vEy**2+(vEz+Vcm)**2)/(2*c**2)
-        theResLab = atan(1.0*vRy/(vRz+Vcm))
+        theResLab = m.atan(1.0*vRy/(vRz+Vcm))
         ELabResid = emR*(1.0*vRy**2+(vRz+Vcm)**2)/(2*c**2)
 
         diff = ang - thEjectLab
@@ -556,12 +556,12 @@ def solveNum(ang, vE, vR, Vcm, isoE, isoR,
             break
         if dTh > 0 and diff < 0 or dTh < 0 and diff > 0:
             dTh *= -1.0/2
-        if thEject >= pi:
+        if thEject >= m.pi:
             # print "No solution was found"
             # print "#####################################################"
             return False
 
-    return [degrees(thEjectLab), ELabEject, degrees(theResLab),
+    return [m.degrees(thEjectLab), ELabEject, m.degrees(theResLab),
             ELabResid]
 
 
@@ -605,8 +605,8 @@ def fussionCase(iso1, iso2, E1L, E2L=0):
 
 
 def getCompound(iso1, iso2):
-    a1, k1 = getIso(iso1)
-    a2, k2 = getIso(iso2)
+    a1, k1 = iP.getIso(iso1)
+    a2, k2 = iP.getIso(iso2)
 
     p1 = getPnum(iso1)
     p2 = getPnum(iso2)
@@ -623,7 +623,7 @@ def getCompound(iso1, iso2):
 
 
 def getCorrespLevE(iso, E):
-    aVal, eName = getIso(iso)
+    aVal, eName = iP.getIso(iso)
     getMoreData(iso)
     if not checkDictIso(iso):
         return False
@@ -640,7 +640,7 @@ def getCorrespLevE(iso, E):
 
 
 def getLevelE(iso1, level):
-    A, k = getIso(iso1)
+    A, k = iP.getIso(iso1)
     getMoreData(iso1)
     if not checkDictIso(iso1):
         return 0
@@ -648,7 +648,7 @@ def getLevelE(iso1, level):
 
 
 def getAllLevels(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     getMoreData(iso)
     if not checkDictIso(iso):
         return 0
@@ -660,7 +660,7 @@ def getAllLevels(iso):
 
 def getPopLevels(iso1, aE):
     levels = []
-    iso, eName = getIso(iso1)
+    iso, eName = iP.getIso(iso1)
 
     getMoreData(iso1)
     if not checkDictIso(iso1):
@@ -677,7 +677,7 @@ def getPopLevels(iso1, aE):
 
 def getMoreData(iso, xFile=None):
     # Careful with neutrons and Nones
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     levDict = {}
     if len(iDict[k][1][A]) < 2:
         if xFile is None:
@@ -686,7 +686,7 @@ def getMoreData(iso, xFile=None):
             # Creating subDictionary
             for exData in cursor.fetchall():
                 if int(exData[0]) not in levDict:
-                    levDict[exData[0]] = [float(exData[1]), myString2List(exData[2])]
+                    levDict[exData[0]] = [float(exData[1]), iP.myString2List(exData[2])]
                     # print("Debug in getMoreData",levDict[exData[0]])
                     iDict[k][1][A].append(levDict)
         else:
@@ -707,7 +707,7 @@ def getCoef(iso1, iso2, isoE, isoR,
     # Pi=sqrt(2*emp*ELab)/c
     # Vcm=Pi*c**2/(emp+emt)
     # EcmSys=(Pi*c)**2/(2.0*(emp+emt))
-    v1 = sqrt(2.0*ELab/emp)*c
+    v1 = m.sqrt(2.0*ELab/emp)*c
     v2 = 0  # For future improvement
     Vcm = (1.0*emp*v1+1.0*emt*v2)/(emp+emt)
     EcmSys = 0.5*(Vcm/c)**2*(emp+emt)
@@ -720,7 +720,7 @@ def getCoef(iso1, iso2, isoE, isoR,
         return False, False, Vcm, Ef
     # Final momentum, in cm.
     muf = 1.0*emE*emR/(emE+emR)
-    Pf = sqrt(2.0*Ef*muf)/c
+    Pf = m.sqrt(2.0*Ef*muf)/c
     vE = 1.0*Pf*c**2/emE
     vR = 1.0*Pf*c**2/emR
     return vE, vR, Vcm, Ef
@@ -729,7 +729,7 @@ def getCoef(iso1, iso2, isoE, isoR,
 def getEMass(iso1):
     if iso1 == "n":
         iso1 = "1n"
-    A, k = getIso(iso1)
+    A, k = iP.getIso(iso1)
     vals = [i[0] for i in getIsotopes(iso1)]
     vals.append("p")
     vals.append("d")
@@ -760,7 +760,7 @@ def exLevReact(ang, iso1, iso2, isoEject, isoRes, E1L,
     exList = [0, 0, 0, 0]
     for e in popLevels:
         # print e
-        if e[1] == False and e[0] != 1:
+        if e[1] is False and e[0] != 1:
             # print("#Entered false for e[1] en exLevReact")
             continue
         if eVal == 1:
@@ -806,10 +806,10 @@ def iso2String(k, iso, eVal=''):
 
 def xReaction(iso1, iso2, isoEject, isoRes,
               ELab=2.9, ang=30, xf1=None, xf2=None):
-    a1, key1 = getIso(iso1)
-    a2, key2 = getIso(iso2)
-    aEject, eject = getIso(isoEject)
-    aRes, res = getIso(isoRes)
+    a1, key1 = iP.getIso(iso1)
+    a2, key2 = iP.getIso(iso2)
+    aEject, eject = iP.getIso(isoEject)
+    aRes, res = iP.getIso(isoRes)
 
     react = checkReaction(iso1, iso2, isoEject, isoRes)
     if not checkArguments(ELab, react, eject, res):
@@ -823,10 +823,10 @@ def xReaction(iso1, iso2, isoEject, isoRes,
     E1L = ELab
     # For now E2L=0
     E2L = 0
-    if xf1 != None:
+    if xf1 is not None:
         getMoreData(isoEject, xf1)
 
-    if xf2 != None:
+    if xf2 is not None:
         getMoreData(isoRes, xf2)
 
     c = [iso2String(eject, aEject, '*'), iso2String(res, aRes, '')]
@@ -960,10 +960,10 @@ def findOE(Eang, ang, iso1, iso2):
 
 
 def rutherford0(iso1, iso2, Ecm, theta):
-    theta = radians(theta)
+    theta = m.radians(theta)
     z1 = getPnum(iso1)
     z2 = getPnum(iso2)
-    dSigma = (z1*z2*alpha*hbc/(4*Ecm))**2/sin(theta/2)**4
+    dSigma = (z1*z2*alpha*hbc/(4*Ecm))**2/m.sin(theta/2)**4
     # converting to mb
     dSigma *= 10
     return dSigma
@@ -976,26 +976,26 @@ def rutherfordLab0(iso1, iso2, ELab, thetaL):
     # see m. cottereau and f. lefebvres recuel de problemes...
     thetaCM = solveAng(thetaL, K)
     dSigmaL = rutherford0(iso1, iso2, Ecm, thetaCM) *\
-        (1+K**2+2*K*cos(thetaCM))**(3.0/2.0)/(1+K*cos(thetaCM))
+        (1+K**2+2*K*m.cos(thetaCM))**(3.0/2.0)/(1+K*m.cos(thetaCM))
     return dSigmaL
 
 
 def solveAng(thetaL, ratio, direction="f"):
     """ Returns the CM angle """
-    thetaL = radians(thetaL)
-    tgThetaL = tan(thetaL)
+    thetaL = m.radians(thetaL)
+    tgThetaL = m.tan(thetaL)
     # "f" is for forward sol "b" for backward sol
     if direction == "f":
         thetaCM = 0
         dTh = 0.05
         sign = 1
     else:
-        thetaCM = pi
+        thetaCM = m.pi
         dTh = -0.05
         sign = -1
 
     def myFunct(thetaCM, ratio):
-        return sin(thetaCM)/(cos(thetaCM)+ratio)
+        return m.sin(thetaCM)/(m.cos(thetaCM)+ratio)
     tolerance = 0.0001
     # i=0
     while True:
@@ -1010,12 +1010,12 @@ def solveAng(thetaL, ratio, direction="f"):
         if dTh > 0 and diff < 0 or dTh < 0 and diff > 0:
             dTh *= -1.0/2
             # print "Sign switch"
-        if sign == 1 and thetaCM >= pi or sign == -1 and thetaCM < 0:
+        if sign == 1 and thetaCM >= m.pi or sign == -1 and thetaCM < 0:
             # print "No solution was found"
             return False
         thetaCM += dTh
-    thetaL = degrees(atan(fVal))
-    return degrees(thetaCM)
+    thetaL = m.degrees(m.atan(fVal))
+    return m.degrees(thetaCM)
 
 
 def getAngs(iso1, iso2, isoE, isoR, E1L, exList, thetaL):
@@ -1051,23 +1051,23 @@ def getEsAndAngs(iso1, iso2, isoE, isoR, E1L, E2L=0, thetaL=0,
     else:
         thEjectCM = angs[1]
 
-    thEjectCM = radians(thEjectCM)
-    theResCM = pi - thEjectCM
+    thEjectCM = m.radians(thEjectCM)
+    theResCM = m.pi - thEjectCM
 
     emE = getEMass(isoE) + exList[2]
     emR = getEMass(isoR) + exList[3]
 
-    vEy = vE * sin(thEjectCM)
-    vEz = vE * cos(thEjectCM)
-    vRy = vR * sin(theResCM)
-    vRz = vR * cos(theResCM)
+    vEy = vE * m.sin(thEjectCM)
+    vEz = vE * m.cos(thEjectCM)
+    vRy = vR * m.sin(theResCM)
+    vRz = vR * m.cos(theResCM)
 
-    thEjectLab = atan(vEy/(vEz+Vcm))
+    thEjectLab = m.atan(vEy/(vEz+Vcm))
     ELabEject = emE*(vEy**2+(vEz+Vcm)**2)/(2*c**2)
-    theResLab = atan(vRy/(vRz+Vcm))
+    theResLab = m.atan(vRy/(vRz+Vcm))
     ELabResid = emR*(vRy**2+(vRz+Vcm)**2)/(2*c**2)
 
-    return [degrees(thEjectLab), ELabEject, degrees(theResLab),
+    return [m.degrees(thEjectLab), ELabEject, m.degrees(theResLab),
             ELabResid]
 
 
@@ -1084,16 +1084,16 @@ def getMaxAng(iso1, iso2, isoE, isoR, E1L, E2L=0, exList=[0, 0, 0, 0]):
     r2 = 1.0*vR/Vcm
 
     if r1 >= 1:
-        maxAng1 = pi
+        maxAng1 = m.pi
     else:
-        maxAng1 = atan2(r1, sqrt(1.0-r1**2))
+        maxAng1 = m.atan2(r1, m.sqrt(1.0-r1**2))
 
     if r2 >= 1:
-        maxAng2 = pi
+        maxAng2 = m.pi
     else:
-        maxAng2 = atan2(r2, sqrt(1.0-r2**2))
+        maxAng2 = m.atan2(r2, m.sqrt(1.0-r2**2))
 
-    return [degrees(maxAng1), degrees(maxAng2)]
+    return [m.degrees(maxAng1), m.degrees(maxAng2)]
 
 
 def nEvents(Ni, aDens, dSigma, dOmega):
@@ -1101,7 +1101,7 @@ def nEvents(Ni, aDens, dSigma, dOmega):
 
 
 def getdOmega(r, R):
-    return pi*(r/R)**2
+    return m.pi*(r/R)**2
 
 # Converts current into # of charges
 
@@ -1119,7 +1119,7 @@ def getT(ps, ts, E, angle, Nr, dOmega):
 
 
 def getdSigma(Nn, dOmega, T):
-   return 1.0*Nn/(dOmega*T)
+    return 1.0*Nn/(dOmega*T)
 
 
 def getdSigma2(pIso, tIso, Nruth, Nnucl, ELab, angle):
@@ -1142,7 +1142,7 @@ def getDensityIncmSquare(T, current):
 
 def getBE(iso):
     # iso=str(A)+s
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     z = getPnum(iso)
     em = getEMass(iso)
     # proton mass
@@ -1155,7 +1155,7 @@ def getBE(iso):
 
 
 def getBEperNucleon(iso):
-    A, k = getIso(iso)
+    A, k = iP.getIso(iso)
     return 1.0*getBE(iso)/A
 
 # Using the liquid drop model for the binding energy
@@ -1164,12 +1164,12 @@ def getBEperNucleon(iso):
 
 def getLDBE(iso, a1=15.6, a2=16.8, a3=0.72, a4=23.3, a5=34):
     # All the coefficients are in MeV
-    A, s = getIso(iso)
+    A, s = iP.getIso(iso)
     Z = getPnum(s)
     N = getNnum(iso)
-    if N%2 == 0 and Z%2 == 0:  # Even even case
+    if (N % 2) == 0 and (Z % 2) == 0:  # Even even case
         a5 *= -1  # Greater stability
-    elif (A%2) == 1:  # Odd even case
+    elif (A % 2) == 1:  # Odd even case
         a5 = 0
     BE = -a1*A + a2*A**(2.0/3.0) + a3*Z**2/A**(1.0/3.0) +\
         a4*(N-Z)**2/A + a5*A**(-3.0/4.0)
@@ -1179,14 +1179,14 @@ def getLDBE(iso, a1=15.6, a2=16.8, a3=0.72, a4=23.3, a5=34):
 
 
 def getLDBEperNucleon(iso):
-    A, s = getIso(iso)
+    A, s = iP.getIso(iso)
     return 1.0*getLDBE(iso)/A
 
 # Using the LD model to get the eMass
 
 
 def getLDEMass(iso):
-    A, s = getIso(iso)
+    A, s = iP.getIso(iso)
     Z = getPnum(iso)
     # proton mass
     pm = getEMass("1H")
@@ -1206,14 +1206,14 @@ def getLDMass(iso):
 def deBroglie(iso, E):
     # iso=str(A)+element
     em = getEMass(iso)
-    p = sqrt(2.0*em*E)  # a "c" from here goes to the hc
+    p = m.sqrt(2.0*em*E)  # a "c" from here goes to the hc
     return hc/p/100  # 1/100 to convert to angstrom
 
 # reduced de Broglie wavelength in angstrom
 
 
 def reducedDeBroglie(iso, E):
-    return deBroglie(iso, E)/(2.0*pi)
+    return deBroglie(iso, E)/(2.0*m.pi)
 
 # Compton wavelength
 
@@ -1235,7 +1235,7 @@ def rComptonW(iso):
 
 def hardSphereCTCS(iso):
     a = nRadius(iso)
-    return pi*a**2/100  # 1/100 barn conversion.
+    return m.pi*a**2/100  # 1/100 barn conversion.
 
 # Hard sphere quantum total CS
 # Note; this is an approximation from an expansion.
@@ -1243,7 +1243,7 @@ def hardSphereCTCS(iso):
 
 def hardSphereQTCS(iso):
     a = nRadius(iso)
-    return 4*pi*a**2/100  # 1/100 barn conversion.
+    return 4*m.pi*a**2/100  # 1/100 barn conversion.
 
 # soft sphere differential CS
 
@@ -1258,7 +1258,7 @@ def softSphereDCS(isop, isot, V0=50):
 
 
 def softSphereTCS(isop, isot, V0=50):
-    return 4*pi*softSphereDCS(isop, isot, V0)
+    return 4*m.pi*softSphereDCS(isop, isot, V0)
 
 # soft sphere using the second Born approximation
 
@@ -1275,7 +1275,7 @@ def softSphereDSBorn(isop, isot, V0=50):
 
 
 def softSphereTSBorn(isop, isot, V0=50):
-    return 4*pi*softSphereDSBorn(isop, isot, V0)
+    return 4*m.pi*softSphereDSBorn(isop, isot, V0)
 
 # Using the Yukawa potential
 
@@ -1283,9 +1283,9 @@ def softSphereTSBorn(isop, isot, V0=50):
 def yukawaDCS(isop, isot, E, theta, beta, mu):
     # iso=str(ap)+sp
     eMass = getEMass(isop)
-    theta = radians(theta)
-    k = sqrt(2*eMass*E/hbc)
-    kappa = 2*k*sin(theta/2)
+    theta = m.radians(theta)
+    k = m.sqrt(2*eMass*E/hbc)
+    kappa = 2*k*m.sin(theta/2)
     return (-2*eMass*beta/(hbc**2*(mu**2+kappa**2)))**2
 
 # Getting the total CS for the Yukawa potential, Griffiths 11.12 Note;
@@ -1295,16 +1295,16 @@ def yukawaDCS(isop, isot, E, theta, beta, mu):
 def yukawaTCS(isop, isot, E, theta, beta, mu):
     # iso=str(ap)+sp
     eMass = getEMass(isop)
-    theta = radians(theta)
-    k = sqrt(2*eMass*E/hbc)
-    kappa = 2*k*sin(theta/2)
-    return pi*(4*eMass*beta/(mu*hbc))**2/((mu*kappa)**2+8*eMass*E)
+    theta = m.radians(theta)
+    k = m.sqrt(2*eMass*E/hbc)
+    kappa = 2*k*m.sin(theta/2)
+    return m.pi*(4*eMass*beta/(mu*hbc))**2/((mu*kappa)**2+8*eMass*E)
 
 # Using krane pg 248 eq 8.72
 
 
 def getTAlpha(radIso):
-    A, k = getIso(radIso)
+    A, k = iP.getIso(radIso)
     daughterIso = str(A-4)+getKey(getPnum(k)-2)
     # print daughterIso
     Q = getIsoQVal('0None', radIso, '4He', daughterIso)
@@ -1316,8 +1316,8 @@ def getTAlpha(radIso):
 
 def gamowAlpha(iso1):
     isoEject = "4He"
-    # a1,s1=getIso(iso1)
-    # aEject,sEject=getIso(isoEject)
+    # a1,s1=iP.getIso(iso1)
+    # aEject,sEject=iP.getIso(isoEject)
     decay = findDecay(iso1, isoEject)
     if decay != 'None':
         Q = decay[2]
@@ -1332,7 +1332,7 @@ def gamowAlpha(iso1):
     x = 1.0*Q/B
     # Both equations should give the same... but they don't!!
     # See Krane pg 253, eq. 8.16
-    G = sqrt(2*em/Q)*alpha*z1*z2*(pi/2-2*sqrt(x))
+    G = m.sqrt(2*em/Q)*alpha*z1*z2*(m.pi/2-2*m.sqrt(x))
     # G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
     return G
 
@@ -1344,7 +1344,7 @@ def gamowAlpha(iso1):
 
 def gamowHL(iso1):
     isoEject = "4He"
-    a1, s1 = getIso(iso1)
+    a1, s1 = iP.getIso(iso1)
     decay = findDecay(iso1, isoEject)
     # Q=6
     if decay != 'None':
@@ -1357,13 +1357,13 @@ def gamowHL(iso1):
     V0 = 35  # 50
     em = getEMass(iso1)
     G = gamowAlpha(iso1)
-    tHalf = ln2*a/cfm*sqrt(em/(V0+Q))*e**(2*G)
+    tHalf = ln2*a/cfm*m.sqrt(em/(V0+Q))*m.e**(2*G)
     return tHalf
 
 
 def findDecay(iso1, ejectIso):
     rList = QDecay(iso1)
-    # aEject,sEject=getIso(ejectIso)
+    # aEject,sEject=iP.getIso(ejectIso)
     # for e in rList:
     #     if sEject==e[0] and aEject==e[1]:
     #         return e
@@ -1383,19 +1383,17 @@ def getB(iso1, isoEject):
     z2 = getPnum(isoEject)
     return alpha*hbc*z1*z2/a
 
+
 # This is still in testing
-
-
 def stoppingPowerD(iso1, iso2, E, I):
     z1 = getPnum(iso1)
     z2 = getPnum(iso2)
     A = getMass(iso2)
     # In MeV/cm
-    return -z1**2*z2*log(2195*E/I)/(A*E)
+    return -z1**2*z2*m.log(2195*E/I)/(A*E)
+
 
 # This is also still in testing
-
-
 def stoppingPowerI(iso1, iso2, E, I, L):
     # L in microns (10**-4 cm)
     x = 0
@@ -1410,9 +1408,8 @@ def stoppingPowerI(iso1, iso2, E, I, L):
 # Testing analytic #################################################
 #########################################################################
 
+
 # def getVcms(v1L,v2L,m1,m2):
-
-
 def getVcms(iso1, iso2, isoEject, isoRes, E1L, E2L=0,
             exList=[0, 0, 0, 0]):
     # In case the isos are excited b4 reaction
@@ -1420,8 +1417,8 @@ def getVcms(iso1, iso2, isoEject, isoRes, E1L, E2L=0,
     m2 = getEMass(iso2) + exList[1]
     # print "m1,m2 = ", m1,m2
     # print "E1L,E2L = ",E1L,E2L
-    v1L = sqrt(2.0*E1L/m1)*c
-    v2L = sqrt(2.0*E2L/m2)*c
+    v1L = m.sqrt(2.0*E1L/m1)*c
+    v2L = m.sqrt(2.0*E2L/m2)*c
 
     Vcm = 1.0*(v1L*m1+v2L*m2)/(1.0*m1+m2)
     Q = getIsoQVal(iso1, iso2, isoEject, isoRes)
@@ -1451,7 +1448,7 @@ def getVcmsFromEcm(iso1, iso2, Ecm, redXL=[0, 0]):
     if Ecm <= 0:
         return False, False
     # conservation of momentun
-    v1cm = sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
+    v1cm = m.sqrt(2.0*Ecm/(m1*(1+1.0*m1/m2)))*c
     v2cm = (1.0*m1)/m2*v1cm
     return v1cm, v2cm
 
@@ -1485,26 +1482,26 @@ def analyticSol(iso1, iso2, isoEject, isoRes, E1L,
     retVal2 = []
     if sol2 != []:
         angLA2, Ea2, angLB2, Eb2 = sol2
-        retVal2 = [degrees(angLA2), Ea2, degrees(angLB2), Eb2]
-    retVal1 = [degrees(angLA1), Ea1, degrees(angLB1), Eb1]
+        retVal2 = [m.degrees(angLA2), Ea2, m.degrees(angLB2), Eb2]
+    retVal1 = [m.degrees(angLA1), Ea1, m.degrees(angLB1), Eb1]
     return [retVal1, retVal2]
 
 
 def analyticDetails(vEcm, vRcm, Vcm, angle, isoEject,
                     isoRes, redExL=[0, 0]):
-    angle = radians(angle)
-    kAng = tan(angle)
+    angle = m.radians(angle)
+    kAng = m.tan(angle)
     k1 = 1.0*vEcm/Vcm
     discr = 1 - (1+kAng**2)*(1-k1**2)
     secSol = True
     if discr < 0:
         # print "Angle maybe too large"
         return [[False, False, False, False], []]
-    if angle <= pi/2:
-        vxa1 = Vcm*(1+sqrt(discr))/(1+kAng**2)
+    if angle <= m.pi/2:
+        vxa1 = Vcm*(1+m.sqrt(discr))/(1+kAng**2)
     else:  # angle >= pi/2
         # Using the backward solution for this case
-        vxa1 = Vcm*(1-sqrt(discr))/(1+kAng**2)
+        vxa1 = Vcm*(1-m.sqrt(discr))/(1+kAng**2)
         secSol = False
     if Vcm <= vEcm:
         # There can only be one solution in this case.
@@ -1514,9 +1511,9 @@ def analyticDetails(vEcm, vRcm, Vcm, angle, isoEject,
     # vxa2=Vcm*(1-sqrt(discr))/(1+kAng**2)
     vya1 = kAng*vxa1
     # vya2=kAng*vxa2
-    va1 = sqrt(vxa1**2+vya1**2)
+    va1 = m.sqrt(vxa1**2+vya1**2)
     # va2=sqrt(vxa2**2+vya2**2)
-    angLA1 = atan2(vya1, vxa1)
+    angLA1 = m.atan2(vya1, vxa1)
     # angLA2=atan(vya2/vxa2)
 
     # To get the angle and velocity of the corresponding particle, we
@@ -1530,24 +1527,24 @@ def analyticDetails(vEcm, vRcm, Vcm, angle, isoEject,
     # sa1=vya1CM/vxa1CM
     # sa2=vya2CM/vxa2CM
     # 3.- The corresponding angles
-    angA1 = atan2(vya1CM, vxa1CM)
+    angA1 = m.atan2(vya1CM, vxa1CM)
     # angA2=atan(sa2)
     # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
-    angB1 = angA1 - pi
+    angB1 = angA1 - m.pi
     # angB2=angA2-pi
     # 4.- The corresponding center of mass velocity values
-    vxb1CM = vRcm*cos(angB1)
-    vyb1CM = vRcm*sin(angB1)
+    vxb1CM = vRcm*m.cos(angB1)
+    vyb1CM = vRcm*m.sin(angB1)
     # vxb2CM=vRcm*cos(angB2)
     # vyb2CM=vRcm*sin(angB2)
     # 5.- The lab values
     vxb1 = vxb1CM+Vcm
     vyb1 = vyb1CM
-    vb1 = sqrt(vxb1**2+vyb1**2)
+    vb1 = m.sqrt(vxb1**2+vyb1**2)
     # vxb2=vxb2CM+Vcm
     # vyb2=vyb2CM
     # vb2=sqrt(vxb2**2+vyb2**2)
-    angLB1 = atan2(vyb1, vxb1)
+    angLB1 = m.atan2(vyb1, vxb1)
     # angLB2=atan(vyb2/vxb2)
 
     Ea1 = getEFromV(isoEject, va1, redExL[0])
@@ -1557,10 +1554,10 @@ def analyticDetails(vEcm, vRcm, Vcm, angle, isoEject,
     secSolList = []
     if secSol:
         # Calculating the second solutions here
-        vxa2 = Vcm*(1-sqrt(discr))/(1+kAng**2)
+        vxa2 = Vcm*(1-m.sqrt(discr))/(1+kAng**2)
         vya2 = kAng*vxa2
-        va2 = sqrt(vxa2**2+vya2**2)
-        angLA2 = atan2(vya2, vxa2)
+        va2 = m.sqrt(vxa2**2+vya2**2)
+        angLA2 = m.atan2(vya2, vxa2)
 
         # To get the angle and velocity of the corresponding particle, we
         # do the following 1.- Get the center of mass velocity of
@@ -1571,18 +1568,18 @@ def analyticDetails(vEcm, vRcm, Vcm, angle, isoEject,
         # 2.- Get the slopes #No need
         # sa2=vya2CM/vxa2CM
         # 3.- The corresponding angles
-        angA2 = atan2(vya2CM, vxa2CM)
+        angA2 = m.atan2(vya2CM, vxa2CM)
         # print "angA1,angA2 = ", degrees(angA1),degrees(angA2)
-        angB2 = angA2 - pi
+        angB2 = angA2 - m.pi
         # 4.- The corresponding center of mass velocity values
-        vxb2CM = vRcm*cos(angB2)
-        vyb2CM = vRcm*sin(angB2)
+        vxb2CM = vRcm*m.cos(angB2)
+        vyb2CM = vRcm*m.sin(angB2)
         # 5.- The lab values
         vxb2 = vxb2CM+Vcm
         vyb2 = vyb2CM
-        vb2 = sqrt(vxb2**2+vyb2**2)
+        vb2 = m.sqrt(vxb2**2+vyb2**2)
         # print(vb2)
-        angLB2 = atan2(vyb2, vxb2)
+        angLB2 = m.atan2(vyb2, vxb2)
         Ea2 = getEFromV(isoEject, va2, redExL[0])
         Eb2 = getEFromV(isoRes, vb2, redExL[1])
 
@@ -1607,27 +1604,27 @@ def getMaxAngles(iso1, iso2, isoEject, isoRes, E1L,
         discr1 = k1**2/(1.0-k1**2)
         # print "discr1 = ",discr1
         if discr1 < 0:  # Vcm < vEcm
-            maxAng1 = pi
+            maxAng1 = m.pi
         else:
-            maxAng1 = atan(sqrt(discr1))
+            maxAng1 = m.atan(m.sqrt(discr1))
     else:
-        maxAng1 = pi  # Maybe it should be pi/2
+        maxAng1 = m.pi  # Maybe it should be pi/2
 
     if k2 != 1:
         discr2 = k2**2/(1.0-k2**2)
         # print "discr2 = ",discr2
         if discr2 < 0:  # Vcm < vRcm
-            maxAng2 = pi
+            maxAng2 = m.pi
         else:
-            maxAng2 = atan(sqrt(discr2))
+            maxAng2 = m.atan(m.sqrt(discr2))
     else:
-        maxAng2 = pi  # Maybe it should be pi/2
+        maxAng2 = m.pi  # Maybe it should be pi/2
 
-    return [degrees(maxAng1), degrees(maxAng2)]
+    return [m.degrees(maxAng1), m.degrees(maxAng2)]
 
 
 def getIsotopes(s):
-    a, key = getIso(s)
+    a, key = iP.getIso(s)
     l = []
     if key not in iDict:
         return False
@@ -1640,7 +1637,7 @@ def getIsotopes(s):
 # iDict=populateDict()
 
 
-iDict = fastPopulateDict()
+iDict = lS.fastPopulateDict()
 
 
 def gamowE(iso1, iso2):
@@ -1650,7 +1647,7 @@ def gamowE(iso1, iso2):
     em1 = getEMass(iso1)
     em2 = getEMass(iso1)
     eMu = em1*em2/(em1+em2)
-    GE = 2*(pi*z1*z2*alpha)**2*eMu
+    GE = 2*(m.pi*z1*z2*alpha)**2*eMu
     return GE
 
 
@@ -1678,7 +1675,7 @@ def getBeta(iso, E):
     # v=sqrt(2.0*E/m)*c, and beta=v/c
     # beta=sqrt(2.0*E/m)
     # Using the relativistic version
-    beta = sqrt(1-(1/(E/m+1))**2)
+    beta = m.sqrt(1-(1/(E/m+1))**2)
     return beta
 
 
@@ -1729,13 +1726,13 @@ materialDictCache = {}
 def getMaterialProperties(material, bloch=False, density=None):
     if material in materialDictCache:
         return materialDictCache[material]
-    materialDict = getChemDictFromFile()
+    materialDict = lS.getChemDictFromFile()
     if material not in materialDict:
         return False, False, False, False
     if bloch:
         Z = materialDict[material][0]
         materialDict[material][-1] = getBlochMeanExcE(Z)
-    if density != None:
+    if density is not None:
         materialDict[material][2] = density
     if materialDict[material][-1] == '-':
         return False, False, False, False
@@ -1755,7 +1752,7 @@ def getBetheLoss(iso, E, material):
         return None
     C_beta, B_beta = coefs
     # remember dE/dx is negative, it is the relativistic formula
-    dEx = C_beta/beta2*(log((B_beta*beta2)/(1-beta2))-beta2)
+    dEx = C_beta/beta2*(m.log((B_beta*beta2)/(1-beta2))-beta2)
     return dEx
 
 
@@ -1775,7 +1772,7 @@ def getCBbetaCoef(iso, material):
     zNum = getPnum(iso)
     # "I" was given in eV so it has to be converted in MeV
     I *= 10**(-6)
-    C_beta = 4*pi/electEMass*n*zNum**2*(hbc*alpha)**2
+    C_beta = 4*m.pi/electEMass*n*zNum**2*(hbc*alpha)**2
     C_beta *= 10**(9)  # Converting the units into MeV/mu^3
     B_beta = 2*electEMass/I
     CBDictCache[myString] = [C_beta, B_beta]
@@ -1797,9 +1794,9 @@ def integrateELoss(iso, E, material, thick):
         return -2
     C_beta, B_beta = coefs
     ionMass = getEMass(iso)
-    # e=2.71...
-    EM = e*ionMass/(2*B_beta)
-    dExMax = (C_beta*B_beta)/e
+    # m.e=2.71...
+    EM = m.e*ionMass/(2*B_beta)
+    dExMax = (C_beta*B_beta)/m.e
     fracCrit = 0.01
     ##############
     dEx = getBetheLoss(iso, E, material)
@@ -1833,9 +1830,9 @@ def getParticleRange(iso, E, material):
         return -2
     C_beta, B_beta = coefs
     ionMass = getEMass(iso)
-    # e=2.71...
-    EM = e*ionMass/(2*B_beta)
-    dExMax = (C_beta*B_beta)/e
+    # m.e=2.71...
+    EM = m.e*ionMass/(2*B_beta)
+    dExMax = (C_beta*B_beta)/m.e
     fracCrit = 0.01
     ##############
     thick = 0
