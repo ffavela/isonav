@@ -25,13 +25,13 @@ The python package docopt is REQUIRED. In ubuntu the package can be
 installed via (for the moment this is the only package that needs sudo
 powers):
 
-```
+```bash
 $ sudo apt install python3-docopt
 ```
 
 Or for linux in general via:
 
-```
+```bash
 $ pip install docopt==0.6.2
 ```
 
@@ -85,7 +85,7 @@ USAGE:
 
 The typical abbreviations for some isotopes can be used:
 
-```
+```console
 1n==n  #neutron
 1H==p
 2H==d
@@ -99,7 +99,7 @@ Note: All energies are in MeV The next gives a printout of the general
 usage (not all functions have been implemented yet). The -v option can
 be used in almost all cases (verbose).
 
-```
+```bash
 $ isonav
 Usage:
   isonav <number> [-v] (-s|--symbol)
@@ -129,27 +129,27 @@ Usage:
   isonav -h | --version
 ```
 
-```
+```bash
 $ isonav 22 -s
 Ti
 ```
 
-```
+```bash
 $ isonav Au --protons #A value can be ommited here
 79
 ```
 
-```
+```bash
 $ isonav Ag --name
 Silver
 ```
 
-```
+```bash
 $ isonav 195Au --neutrons
 116
 ```
 
-```
+```bash
 $ isonav Pb -i
 178Pb
 179Pb
@@ -175,7 +175,7 @@ $ isonav Pb -i
 
 Being verbose:
 
-```
+```bash
 $ isonav Pb -iv
 Isotopes and masses, in MeV by default
 178Pb
@@ -197,7 +197,7 @@ Isotopes and masses, in MeV by default
 
 Getting the masses and forcing to display in amu (not MeVs):
 
-```
+```bash
 $ isonav Au -im --amu
 169Au   168.99808
 170Au   169.995972
@@ -214,27 +214,27 @@ $ isonav Au -im --amu
 210Au   210.0025
 ```
 
-```
+```bash
 $ isonav 22Ne --mass
 20484.845484518828
 ```
 
-```
+```bash
 $ isonav 22Ne --mass --liquidDrop #Using the LD model
 20477.90454623588
 ```
 
-```
+```bash
 $ isonav 22Ne --mirror
 22Mg
 ```
 
-```
+```bash
 $ isonav 40Ca -r #Nuclear radius in fm
 4.103942272024073
 ```
 
-```
+```bash
 $ isonav 12C --levels --limit=10
 1       0.0
 2       4.43891
@@ -248,7 +248,7 @@ $ isonav 12C --levels --limit=10
 10      13.352
 ```
 
-```
+```bash
 $ isonav 12C --Elab=2.0 --redDeBroglie
 9.332022523394577e-06
 ```
@@ -256,7 +256,7 @@ $ isonav 12C --Elab=2.0 --redDeBroglie
 These next parts are useful for identifying particles in terms of
 their energy in a nuclear scattering experiment.
 
-```
+```bash
 $ isonav d 14N a 12C --Elab=3.0 --angle=35
 4He     12C
 13.929  -130.521        2.645
@@ -265,7 +265,7 @@ $ isonav d 14N a 12C --Elab=3.0 --angle=35
 5.881   -132.566        10.693
 ```
 
-```
+```bash
 $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 *4He    12C
 1       0.000           13.929  -130.521        2.645
@@ -312,7 +312,7 @@ $ isonav d 14N a 12C --Elab=3.0 --angle=35 --xTreme
 
 It can also see Coulomb excitations
 
-```
+```bash
 $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
 *2H     14N
 1       0.000           5.354   -75.758 0.146
@@ -338,7 +338,7 @@ $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
 2       2.225           0.057   -8.519  3.219
 ```
 
-```
+```bash
 $ isonav d 14N --reactions
 #Given two isotopes it returns the coulomb energy barrier
 #Or the possible reactions.
@@ -366,19 +366,19 @@ $ isonav d 14N --reactions
 ...
 ```
 
-```
+```bash
 $ isonav p 14N  --fussion
 15O	7	7.276	0.021
 ```
 
-```
+```bash
 $ isonav p 14N --fussion --Elab=0.1 -v
 #Prints the fused element, if isotope exists.
 #Max populated level, and energy, and remaining KE in lab
 15O	7	7.276	0.121
 ```
 
-```
+```bash
 $ isonav d 14N --Elab=3.0 --angle=35
 4He     12C
 13.929  -130.521        2.645
@@ -423,7 +423,7 @@ Where the first row after the expression is when the ejectile is
 expected at the given angle and the recond is when the residual is
 expected.
 
-```
+```bash
 $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 *4He    12C
 1       0.000           13.929  -130.521        2.645
@@ -486,7 +486,7 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 .............. You get the idea.
 ```
 
-```
+```bash
 $ isonav 235U --decay
 76Zn	159Sm		111.947	53.485	165.431
 77Zn	158Sm		110.923	54.037	164.960
@@ -505,12 +505,12 @@ $ isonav 235U --decay
 .
 ```
 
-```
+```bash
 $ isonav 151Lu --pEmission
 1(1H)   150Yb           1.241
 ```
 
-```
+```bash
 $ isonav 13Be --nEmission
 1(1n)   12Be            0.510
 ```
@@ -521,7 +521,7 @@ $ isonav 45Fe --pEmission --num=2
 2(1H)	43Cr		1.154
 ```
 
-```
+```bash
 $ isonav n --compton -v
 #The compton wavelength in fm
 1.3195908515350636
@@ -530,7 +530,7 @@ $ isonav n --compton -v
 The --xTreme cases can take some time and the outputs can become very
 large, here is an example of one case:
 
-```
+```bash
 $ isonav 14N 167Yb --Elab=5.5 --angle=20 --xTreme>14N167YbxTreme5p5MeVAngle20.txt
 ```
 
