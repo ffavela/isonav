@@ -1,4 +1,6 @@
-from binCorComplement import *
+import binCorComplement as bCC
+import math as m
+import sys
 
 # print('Number of arguments:', len(sys.argv), 'arguments.')
 # print('Argument List:', str(sys.argv))
@@ -28,12 +30,12 @@ myBool = checkArgs(sys.argv)
 
 
 def checkIfValidAddr(r, t):
-    if r not in ring_tags:
+    if r not in bCC.ring_tags:
         return False
-    tagIdx = getTagIndex(r)
+    tagIdx = bCC.getTagIndex(r)
     if not isinstance(t, int):
         return False
-    if not 0 <= t < teles_num[tagIdx]:
+    if not 0 <= t < bCC.teles_num[tagIdx]:
         return False
     return True
 
@@ -51,10 +53,10 @@ if sys.argv[1] == "--getRelTheta":
         # if checkIfValidAddr(r2,t2) == False:
         #     print("Error 2 not a valid address")
         # print(r1,t1,r2,t2)
-        myRNorm1 = getNormalVector(r1, t1)
-        myRNorm2 = getNormalVector(r2, t2)
-        thetaRel = getThetaRel(myRNorm1, myRNorm2)
-        print("%3.2f" % degrees(thetaRel))
+        myRNorm1 = bCC.getNormalVector(r1, t1)
+        myRNorm2 = bCC.getNormalVector(r2, t2)
+        thetaRel = bCC.getThetaRel(myRNorm1, myRNorm2)
+        print("%3.2f" % m.degrees(thetaRel))
     else:
         print("Not enough number of variables")
 
@@ -69,8 +71,8 @@ if sys.argv[1] == "--getDetInRange":
         # if checkIfValidAddr(r,t) == False:
         #     print("Error not a valid address")
 
-        relTheta = radians(float(sys.argv[2+myShift]))
-        myRange = radians(float(sys.argv[3+myShift]))
+        relTheta = m.radians(float(sys.argv[2+myShift]))
+        myRange = m.radians(float(sys.argv[3+myShift]))
 
 # print(getTagIndex("1i"))
 
@@ -78,12 +80,12 @@ if sys.argv[1] == "--getDetInRange":
 
 # print(getTagIndex("1231S"))
 
-# print(getNormalVector("S24",9))
+# print(bCC.getNormalVector("S24",9))
 
-# rNorm1=getNormalVector("1i",0)
-# rNorm2=getNormalVector("S26",8)
+# rNorm1=bCC.getNormalVector("1i",0)
+# rNorm2=bCC.getNormalVector("S26",8)
 
-# print(degrees(getThetaRel(rNorm1,rNorm2)))
+# print(m.degrees(getThetaRel(rNorm1,rNorm2)))
 
 # myAwesomeDict=getRelAngleDict("6i",26)
 
