@@ -277,7 +277,7 @@ def drawAllChimera(tDict):
 def specialDrawAllChimera(colorL, colorBool=True):
     # oGLGL.glBegin(oGLGL.GL_LINES)
     for i in range(bCC.maxRing):
-        ringT = bCC.ring_tags[i]
+        # ringT = bCC.ring_tags[i]
         myColor = colorL[i]
         specialDrawRing(i, myColor, colorBool)
     # oGLGL.glEnd()

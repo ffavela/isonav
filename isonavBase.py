@@ -1454,8 +1454,8 @@ def getVcmsFromEcm(iso1, iso2, Ecm, redXL=[0, 0]):
 
 
 def getEFromV(iso, v, xMass=0):
-    m = getEMass(iso) + xMass
-    return 0.5*m*(v/c)**2
+    em = getEMass(iso) + xMass
+    return 0.5*em*(v/c)**2
 
 # Testing the non numeric solution
 
@@ -1670,12 +1670,12 @@ def temp2E(T):
 
 
 def getBeta(iso, E):
-    m = getEMass(iso)
+    em = getEMass(iso)
     # The non relativistic version is:
     # v=sqrt(2.0*E/m)*c, and beta=v/c
     # beta=sqrt(2.0*E/m)
     # Using the relativistic version
-    beta = m.sqrt(1-(1/(E/m+1))**2)
+    beta = m.sqrt(1-(1/(E/em+1))**2)
     return beta
 
 
