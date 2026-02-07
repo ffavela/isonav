@@ -45,8 +45,13 @@
 
 from docopt import docopt
 from argumentHandling import argHand
+import sys
+
+
+def main(argv):
+    args = docopt(__doc__, argv, version='v1.6.1')
+    argHand(args)
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='v1.6.1')
-    argHand(args)
+    main(sys.argv[1:])
