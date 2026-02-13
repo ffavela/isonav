@@ -44,7 +44,7 @@
 """
 
 from docopt import docopt
-from argumentHandling import argHand
+from lib.argumentHandling import argHand
 import sys
 
 

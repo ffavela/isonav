@@ -19,7 +19,7 @@ from os import listdir
 from os.path import isfile, join
 import pickle
 import os.path
-from enxParser import *
+from lib.enxParser import *
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
     DATA_PATH = "/usr/share/isonav/data1p4p5"
@@ -27,7 +27,7 @@ if os.path.dirname(__file__) == "/usr/share/isonav":
     print("#See the new installation procedure in the README file")
 else:
     fileName = os.path.dirname(__file__)
-    DATA_PATH = fileName + "/data1p4p5"
+    DATA_PATH = fileName + "/../data1p4p5"  # `/..` should be improved
 
 isoDictLoc = os.path.join(DATA_PATH, "isoDict.pkl")
 isoMassesLoc = os.path.join(DATA_PATH, "isoMasses.txt")

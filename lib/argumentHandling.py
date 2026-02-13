@@ -15,10 +15,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import isonavBase as iB
-import outputFunctions as oF
-import isoParser as iP
-import loadingStuff as lS
+import lib.isonavBase as iB
+import lib.outputFunctions as oF
+import lib.isoParser as iP
+import lib.loadingStuff as lS
 from operator import itemgetter
 
 
