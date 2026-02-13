@@ -339,7 +339,7 @@ $ isonav d 14N d 14N --Elab=5.5 --angle=25 --xTreme
 ```
 
 ```bash
-$ isonav d 14N --reactions
+$ isonav d 14N --reactions -v
 #Given two isotopes it returns the coulomb energy barrier
 #Or the possible reactions.
 #Eject  Residue Thres   QValue  coulombE
