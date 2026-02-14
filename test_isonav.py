@@ -965,3 +965,10 @@ def test_compton():
     expOut = """#The compton wavelength in fm
 1.3195908515350636"""
     assert expOut == out
+
+
+def test_Eloss():
+    argv = ['--material', 'C', '--Elab', '6.0', '--thickness', '0.44', 'a']
+    out = get_output(argv)
+    expOut = """5.934"""
+    assert expOut == out
