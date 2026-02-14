@@ -18,6 +18,7 @@
 import math
 import lib.loadingStuff as lS  # type: ignore
 import lib.isoParser as iP  # type: ignore
+from functools import lru_cache
 import sqlite3
 
 conn = sqlite3.connect(lS.isoDatadb)
@@ -1717,15 +1718,9 @@ def checkMaterial(material, bloch=False, density=None):
         return False
     return True
 
-# Global variable to avoid loading the pkl file over and over again.
 
-
-materialDictCache = {}
-
-
+@lru_cache
 def getMaterialProperties(material, bloch=False, density=None):
-    if material in materialDictCache:
-        return materialDictCache[material]
     materialDict = lS.getChemDictFromFile()
     if material not in materialDict:
         return False, False, False, False
@@ -1736,7 +1731,6 @@ def getMaterialProperties(material, bloch=False, density=None):
         materialDict[material][2] = density
     if materialDict[material][-1] == '-':
         return False, False, False, False
-    materialDictCache[material] = materialDict[material]
     return materialDict[material]
 
 
@@ -1756,13 +1750,8 @@ def getBetheLoss(iso, E, material):
     return dEx
 
 
-CBDictCache = {}
-
-
+@lru_cache
 def getCBbetaCoef(iso, material):
-    myString = "[" + iso + "," + material + "]"
-    if myString in CBDictCache:
-        return CBDictCache[myString]
     Z, A_r, rho, I = getMaterialProperties(material)
     if rho is False:
         return None
@@ -1775,8 +1764,7 @@ def getCBbetaCoef(iso, material):
     C_beta = 4*math.pi/electEMass*n*zNum**2*(hbc*alpha)**2
     C_beta *= 10**(9)  # Converting the units into MeV/mu^3
     B_beta = 2*electEMass/I
-    CBDictCache[myString] = [C_beta, B_beta]
-    return CBDictCache[myString]
+    return [C_beta, B_beta]
 
 
 def integrateELoss(iso, E, material, thick):
