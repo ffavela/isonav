@@ -1,6 +1,6 @@
 import sqlite3
 from isoParser import getIso
-from isonav import getPnum
+from isonav import getPnum  # type: ignore
 
 conn = sqlite3.connect('isoData.db')
 c = conn.cursor()

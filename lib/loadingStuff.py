@@ -19,7 +19,7 @@ from os import listdir
 from os.path import isfile, join
 import pickle
 import os.path
-from lib.enxParser import *
+import lib.enxParser as enx  # type: ignore
 
 if os.path.dirname(__file__) == "/usr/share/isonav":
     DATA_PATH = "/usr/share/isonav/data1p4p5"
@@ -123,7 +123,7 @@ def populateDict2(iDict):
                     # iDict[listStuff[i]][1][int(j[1])].append([])
                     continue
                 fName = "excitedData/"+fName
-                pDPart = enxParse(fName)
+                pDPart = enx.enxParse(fName)
                 iDict[listStuff[i]][1][int(j[1])].append(pDPart)
                 # if j <=3:
                 #     print iDict[listStuff[i]][1][int(j[1])]

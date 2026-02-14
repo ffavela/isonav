@@ -16,8 +16,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import math as m
-import lib.loadingStuff as lS
-import lib.isoParser as iP
+import lib.loadingStuff as lS  # type: ignore
+import lib.isoParser as iP  # type: ignore
 import sqlite3
 
 conn = sqlite3.connect(lS.isoDatadb)

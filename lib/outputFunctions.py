@@ -15,8 +15,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import lib.isonavBase as iB
-import lib.isoParser as iP
+import lib.isonavBase as iB  # type: ignore
+import lib.isoParser as iP  # type: ignore
 
 
 def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,

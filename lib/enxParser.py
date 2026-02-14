@@ -23,7 +23,7 @@ def enxParse(enxFile):
     levelDict = {}
     for e in lines:
         a = levelParseOne(e)
-        if a != False and int(a[0]) not in levelDict:
+        if a is False and int(a[0]) not in levelDict:
             # a[0]=level, [float(a[2])/1000 energy in MeV and extra stuff
             levelDict[int(a[0])] = [float(a[2])/1000, a[3:]]
     # for l in levelDict:
