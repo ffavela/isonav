@@ -10,7 +10,7 @@ from PIL import Image
 import binCorComplement as bCC
 
 from random import random
-import math as m
+import math
 
 import miscellaneous as misc
 
@@ -56,10 +56,10 @@ surfaces = (
     (6, 5, 1, 2),
     )
 
-# theta_min_val=m.radians(163)
-# theta_max_val=m.radians(176)
+# theta_min_val=math.radians(163)
+# theta_max_val=math.radians(176)
 
-# delta_phi_val=m.radians(45)
+# delta_phi_val=math.radians(45)
 
 # dDist=.45
 detValDict = {}
@@ -68,9 +68,9 @@ detValDict = {}
 def getDetValues(detIdx, subIdx):
     mySimpleStr = str([detIdx, subIdx])
     if mySimpleStr not in detValDict:
-        theta_min_val = m.radians(bCC.theta_min[detIdx])
-        theta_max_val = m.radians(bCC.theta_max[detIdx])
-        delta_phi_val = m.radians(bCC.delta_phi[detIdx])
+        theta_min_val = math.radians(bCC.theta_min[detIdx])
+        theta_max_val = math.radians(bCC.theta_max[detIdx])
+        delta_phi_val = math.radians(bCC.delta_phi[detIdx])
         dDist = bCC.det_dist[detIdx]/50.0
         shift = delta_phi_val*subIdx
         detValDict[mySimpleStr] = theta_min_val, theta_max_val, \
@@ -89,31 +89,31 @@ def getVerticies4Telescope(dDist, theta_min_val, theta_max_val,
         delta_r = 0.1
         dDDist = dDist+delta_r
         verticies = (
-            (dDist*m.sin(theta_max_val)*m.cos(delta_phi_val/2+shift),
-             dDist*m.sin(theta_max_val)*m.sin(delta_phi_val/2+shift),
-             dDist*m.cos(theta_max_val)),
-            (dDist*m.sin(theta_max_val)*m.cos(-delta_phi_val/2+shift),
-             dDist*m.sin(theta_max_val)*m.sin(-delta_phi_val/2+shift),
-             dDist*m.cos(theta_max_val)),
-            (dDist*m.sin(theta_min_val)*m.cos(-delta_phi_val/2+shift),
-             dDist*m.sin(theta_min_val)*m.sin(-delta_phi_val/2+shift),
-             dDist*m.cos(theta_min_val)),
-            (dDist*m.sin(theta_min_val)*m.cos(delta_phi_val/2+shift),
-             dDist*m.sin(theta_min_val)*m.sin(delta_phi_val/2+shift),
-             dDist*m.cos(theta_min_val)),
+            (dDist*math.sin(theta_max_val)*math.cos(delta_phi_val/2+shift),
+             dDist*math.sin(theta_max_val)*math.sin(delta_phi_val/2+shift),
+             dDist*math.cos(theta_max_val)),
+            (dDist*math.sin(theta_max_val)*math.cos(-delta_phi_val/2+shift),
+             dDist*math.sin(theta_max_val)*math.sin(-delta_phi_val/2+shift),
+             dDist*math.cos(theta_max_val)),
+            (dDist*math.sin(theta_min_val)*math.cos(-delta_phi_val/2+shift),
+             dDist*math.sin(theta_min_val)*math.sin(-delta_phi_val/2+shift),
+             dDist*math.cos(theta_min_val)),
+            (dDist*math.sin(theta_min_val)*math.cos(delta_phi_val/2+shift),
+             dDist*math.sin(theta_min_val)*math.sin(delta_phi_val/2+shift),
+             dDist*math.cos(theta_min_val)),
 
-            (dDDist*m.sin(theta_max_val)*m.cos(delta_phi_val/2+shift),
-             dDDist*m.sin(theta_max_val)*m.sin(delta_phi_val/2+shift),
-             dDDist*m.cos(theta_max_val)),
-            (dDDist*m.sin(theta_max_val)*m.cos(-delta_phi_val/2+shift),
-             dDDist*m.sin(theta_max_val)*m.sin(-delta_phi_val/2+shift),
-             dDDist*m.cos(theta_max_val)),
-            (dDDist*m.sin(theta_min_val)*m.cos(-delta_phi_val/2+shift),
-             dDDist*m.sin(theta_min_val)*m.sin(-delta_phi_val/2+shift),
-             dDDist*m.cos(theta_min_val)),
-            (dDDist*m.sin(theta_min_val)*m.cos(delta_phi_val/2+shift),
-             dDDist*m.sin(theta_min_val)*m.sin(delta_phi_val/2+shift),
-             dDDist*m.cos(theta_min_val)),
+            (dDDist*math.sin(theta_max_val)*math.cos(delta_phi_val/2+shift),
+             dDDist*math.sin(theta_max_val)*math.sin(delta_phi_val/2+shift),
+             dDDist*math.cos(theta_max_val)),
+            (dDDist*math.sin(theta_max_val)*math.cos(-delta_phi_val/2+shift),
+             dDDist*math.sin(theta_max_val)*math.sin(-delta_phi_val/2+shift),
+             dDDist*math.cos(theta_max_val)),
+            (dDDist*math.sin(theta_min_val)*math.cos(-delta_phi_val/2+shift),
+             dDDist*math.sin(theta_min_val)*math.sin(-delta_phi_val/2+shift),
+             dDDist*math.cos(theta_min_val)),
+            (dDDist*math.sin(theta_min_val)*math.cos(delta_phi_val/2+shift),
+             dDDist*math.sin(theta_min_val)*math.sin(delta_phi_val/2+shift),
+             dDDist*math.cos(theta_min_val)),
         )
         vertValDict[myAwesomeStr] = verticies
     return vertValDict[myAwesomeStr]
@@ -127,7 +127,7 @@ def drawSurfaces(verticies, t=0.999):
             x += 1
             # oGLGL.glColor3fv(colors[x])
             # oGLGL.glColor3fv((1,0,0))
-            # myColor=(m.cos(t*pi/2)**2,0,m.sin(t*pi/2)**2)
+            # myColor=(math.cos(t*pi/2)**2,0,math.sin(t*pi/2)**2)
             # myColor=(random(),random(),random())
             if t == "white":
                 myColor = (1, 1, 0)

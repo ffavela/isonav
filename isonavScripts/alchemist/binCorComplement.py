@@ -1,7 +1,7 @@
 # A complementary script for angle calculations with reference of a
 # detector
 
-import math as m
+import math
 import numpy as np
 
 ##################################################################
@@ -78,12 +78,12 @@ vector
     """
     idx1 = getTagIndex(ringStr)
     idx2 = subDect
-    theta = m.radians(thetaVals[idx1])
-    phi = m.radians(delta_phi[idx1]*idx2)
+    theta = math.radians(thetaVals[idx1])
+    phi = math.radians(delta_phi[idx1]*idx2)
 
-    xNorm = m.sin(theta)*m.cos(phi)
-    yNorm = m.sin(theta)*m.sin(phi)
-    zNorm = m.cos(theta)
+    xNorm = math.sin(theta)*math.cos(phi)
+    yNorm = math.sin(theta)*math.sin(phi)
+    zNorm = math.cos(theta)
 
     rNorm = np.array([xNorm, yNorm, zNorm])
 
@@ -103,7 +103,7 @@ via the dot product
 
     """
     myDot = np.dot(rNorm1, rNorm2)
-    thetaRel = m.acos(myDot)
+    thetaRel = math.acos(myDot)
     return thetaRel
 
 
@@ -147,7 +147,7 @@ detector"""
             myNormV = getNormalVector(iTag, myInternalIdx)
             thetaRel = getThetaRel(rNormRef, myNormV)
 
-            myThetaDict[iTag].append(m.degrees(thetaRel))
+            myThetaDict[iTag].append(math.degrees(thetaRel))
 
         # print(myThetaDict[iTag])
     return myThetaDict

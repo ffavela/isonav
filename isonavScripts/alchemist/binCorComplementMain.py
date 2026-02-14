@@ -1,5 +1,5 @@
 import binCorComplement as bCC
-import math as m
+import math
 import sys
 
 # print('Number of arguments:', len(sys.argv), 'arguments.')
@@ -56,7 +56,7 @@ if sys.argv[1] == "--getRelTheta":
         myRNorm1 = bCC.getNormalVector(r1, t1)
         myRNorm2 = bCC.getNormalVector(r2, t2)
         thetaRel = bCC.getThetaRel(myRNorm1, myRNorm2)
-        print("%3.2f" % m.degrees(thetaRel))
+        print("%3.2f" % math.degrees(thetaRel))
     else:
         print("Not enough number of variables")
 
@@ -71,8 +71,8 @@ if sys.argv[1] == "--getDetInRange":
         # if checkIfValidAddr(r,t) == False:
         #     print("Error not a valid address")
 
-        relTheta = m.radians(float(sys.argv[2+myShift]))
-        myRange = m.radians(float(sys.argv[3+myShift]))
+        relTheta = math.radians(float(sys.argv[2+myShift]))
+        myRange = math.radians(float(sys.argv[3+myShift]))
 
 # print(getTagIndex("1i"))
 
@@ -85,7 +85,7 @@ if sys.argv[1] == "--getDetInRange":
 # rNorm1=bCC.getNormalVector("1i",0)
 # rNorm2=bCC.getNormalVector("S26",8)
 
-# print(m.degrees(getThetaRel(rNorm1,rNorm2)))
+# print(math.degrees(getThetaRel(rNorm1,rNorm2)))
 
 # myAwesomeDict=getRelAngleDict("6i",26)
 
