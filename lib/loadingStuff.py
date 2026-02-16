@@ -215,13 +215,13 @@ def generateIsoMfromWebM():
 # print len(isoVal)
 
 
-def getChemDict(chemTxtFile):
+def getChemDict(chemTxtFile: str) -> dict[str, list[float | str]]:
     """Loads a txt file with the properties for the energy loss
     calculations"""
     with open(chemTxtFile) as chemFile:
         theLines = chemFile.readlines()
 
-    chemDict = {}
+    chemDict: dict[str, list[float | str]] = {}
     for line in theLines:
         if line[0] == '#':
             continue
@@ -229,14 +229,14 @@ def getChemDict(chemTxtFile):
         if len(myList) > 0:
             symbol = myList[0]
             Z = int(myList[1])
-            A_r = myList[2]
-            if A_r[0] == '(':
-                A_r = A_r[1:-1]
-            A_r = float(A_r)
-            density = myList[5]
-            I = myList[-1]
+            sA_r: str = myList[2]
+            if sA_r[0] == '(':
+                sA_r = sA_r[1:-1]
+            A_r = float(sA_r)
+            density: str | float = myList[5]
             if density != '-':
                 density = float(density)
+            I: str | float = myList[-1]
             if I != '-':
                 I = float(I)
             chemDict[symbol] = [Z, A_r, density, I]

@@ -19,31 +19,33 @@ import lib.isonavBase as iB  # type: ignore
 import lib.outputFunctions as oF  # type: ignore
 import lib.isoParser as iP  # type: ignore
 import lib.loadingStuff as lS  # type: ignore
+from typing import Any
 from operator import itemgetter
 
 
-def getOrdMatList(matDict):
-    newList = []
+def getOrdMatList(matDict: dict[str, list[str | float]])\
+        -> list[list[str | float]]:
+    newList: list[list[str | float]] = []
     for e in matDict:
         vl = matDict[e]
         newList.append([e, vl[0], vl[1], vl[2], vl[3]])
-    sortList = sorted(newList, key=itemgetter(2))
+    sortList: list[list[str | float]] = sorted(newList, key=itemgetter(2))
     return sortList
 
 
-def makeSureIso(iso):
+def makeSureIso(iso: str) -> bool:
     A, k = iP.getIso(iso)
     if A is None or k is None:
         return False
     return True
 
 
-def testVal(stuff, strFlag="E"):
+def testVal(stuff: Any, strFlag="E") -> bool:
     if stuff is False:
         return False
     try:
         stuff = float(stuff)
-    except:
+    except ValueError:
         stuff = None
     val = isinstance(stuff, float) or isinstance(stuff, int)
     if val:
@@ -57,45 +59,45 @@ def testVal(stuff, strFlag="E"):
     return False
 
 
-commonVal = ["n", "p", "d", "t", "a"]
+commonVal: list[str] = ["n", "p", "d", "t", "a"]
 
 
-def argHand(args):
-    verbose = args["-v"]
-    Elab = args['--Elab']
-    angle = args['--angle']
-    scatE = args["--scatE"]
-    iso = args["<iso>"]
-    iso1 = args["<iso1>"]
-    iso2 = args["<iso2>"]
-    isop = args["<isop>"]
-    isot = args["<isot>"]
-    isoE = args["<isoEject>"]
-    isoR = args["<isoRes>"]
-    alpha = args["--alpha"]
-    pEmit = args["--pEmission"]
-    nEmit = args["--nEmission"]
-    Emit = args["--Emission"]
-    num = args["--num"]
-    name = args["--name"]
-    symbol = args["<symbol>"]
-    T = args["--T"]
-    ion = args["<ion>"]
-    material = args["--material"]
-    thick = args["--thickness"]
-    ionRange = args["--range"]
-    deltaE = args["--depositedE"]
-    bloch = args["--bloch"]
-    density = args["--density"]
-    lsMat = args["--listMaterials"]
-    xEje = args["--xEje"]
-    xRes = args["--xRes"]
-    xF1 = args["--xF1"]
-    xF2 = args["--xF2"]
-    L = args["--L4TOF"]
-    redDeBroglie = args["--redDeBroglie"]
-    deBroglieFlag = args["--deBroglie"] or redDeBroglie
-    Ex = args["--Ex"]
+def argHand(args: dict[str, str]) -> int:
+    verbose: str = args["-v"]
+    Elab: str | float = args['--Elab']
+    angle: str | float = args['--angle']
+    scatE: str | float = args["--scatE"]
+    iso: str = args["<iso>"]
+    iso1: str = args["<iso1>"]
+    iso2: str = args["<iso2>"]
+    isop: str = args["<isop>"]
+    isot: str = args["<isot>"]
+    isoE: str = args["<isoEject>"]
+    isoR: str = args["<isoRes>"]
+    alpha: str | None = args["--alpha"]
+    pEmit: str | None = args["--pEmission"]
+    nEmit: str | None = args["--nEmission"]
+    Emit: str = args["--Emission"]
+    num: str | int = args["--num"]
+    name: str = args["--name"]
+    symbol: str = args["<symbol>"]
+    T: str | float = args["--T"]
+    ion: str = args["<ion>"]
+    material: str = args["--material"]
+    thick: str | float = args["--thickness"]
+    ionRange: str | None = args["--range"]
+    deltaE: str | None = args["--depositedE"]
+    bloch: str | None = args["--bloch"]
+    density: str | float = args["--density"]
+    lsMat: str | None = args["--listMaterials"]
+    xEje: str | float = args["--xEje"]
+    xRes: str | float = args["--xRes"]
+    xF1: str = args["--xF1"]
+    xF2: str = args["--xF2"]
+    L: str | float = args["--L4TOF"]
+    redDeBroglie: str | None = args["--redDeBroglie"]
+    deBroglieFlag: str | None = args["--deBroglie"] or redDeBroglie
+    Ex: str | float | None = args["--Ex"]
 
     if iso:
         vals = [i[0] for i in iB.getIsotopes(iso)]
@@ -106,10 +108,10 @@ def argHand(args):
     if args["--symbol"] or args["-s"]:
         if verbose:
             print("#Given a number it returns the periodic table symbol")
-        number = args["<number>"]
+        number: str | int = args["<number>"]
         try:
             number = int(number)
-        except:
+        except ValueError:
             print("Error; <number> has to be an integer")
             return 5
 
@@ -347,7 +349,7 @@ def argHand(args):
         oF.pDecay(iso, Ex=Ex)
         return 0
 
-    if alpha or nEmit or pEmit:
+    if alpha or nEmit or pEmit or Emit:
         if num:
             num = int(num)
         else:
@@ -602,3 +604,4 @@ def argHand(args):
             finalString += '\t\t' + stringStuff[-1]
             print(finalString)
         return 0
+    return 3
