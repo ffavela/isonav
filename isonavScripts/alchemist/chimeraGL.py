@@ -2,8 +2,8 @@ import pygame
 
 import pygame.locals as pgL
 
-import OpenGL.GL as oGLGL
-import OpenGL.GLU as oGLU
+import OpenGL.GL as oGLGL  # type: ignore
+import OpenGL.GLU as oGLU  # type: ignore
 
 from PIL import Image
 
