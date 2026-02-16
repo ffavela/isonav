@@ -19,21 +19,23 @@ import lib.isonavBase as iB  # type: ignore
 import lib.isoParser as iP  # type: ignore
 
 
-def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
-               exList=[0, 0, 0, 0]):
-    react1, react2 = iB.sReaction(iso1, iso2, isoEject, isoRes,
-                                  ELab, ang, exList)
+def pSReaction(
+    iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30, exList=[0, 0, 0, 0]
+):
+    react1, react2 = iB.sReaction(
+        iso1, iso2, isoEject, isoRes, ELab, ang, exList
+    )
     if not react1:
-        print("Reaction is invalid")
+        print('Reaction is invalid')
         return 0
 
     fR1 = react1[0][1:]
     sR1 = react2[0][1:]  # switching the ejectile and the residue
-    stringFormat = "%.3f\t" * (3-1) + "%.3f"
+    stringFormat = '%.3f\t' * (3 - 1) + '%.3f'
     if fR1[1] is not False:
         print(isoEject + '\t' + isoRes)
         print(stringFormat % tuple(fR1))
-        print("")
+        print('')
     # The second solution
     if react2 != []:
         fR2 = react1[1][1:]
@@ -43,24 +45,22 @@ def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30,
                 print(isoEject + '\t' + isoRes)
 
             print(stringFormat % tuple(fR2))
-            print("")
+            print('')
 
     if sR1 != [False, False, False]:
         print(isoRes + '\t' + isoEject)
         print(stringFormat % tuple(sR1))
-        print("")
+        print('')
     if sR2 != []:
         if sR1 == []:
             print(isoRes + '\t' + isoEject)
-            print("\n")
+            print('\n')
         print(stringFormat % tuple(sR2))
-        print("")
+        print('')
 
 
-def pXReaction(isop, isot, isoE, isoR, Elab,
-               angle, xF1, xF2):
-    xReactL = iB.xReaction(isop, isot, isoE, isoR,
-                           Elab, angle, xF1, xF2)
+def pXReaction(isop, isot, isoE, isoR, Elab, angle, xF1, xF2):
+    xReactL = iB.xReaction(isop, isot, isoE, isoR, Elab, angle, xF1, xF2)
     xReactF = []
     xReactSDict = {}
     for lr in xReactL:
@@ -74,7 +74,7 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
             xReactSDict[exitRString].append(secSolEs)
         xReactF.append([exitReact, firstSolEs])
 
-    stringFormat = "%d\t" + "%.3f\t\t" + "%.3f\t" * 2 + "%.3f"
+    stringFormat = '%d\t' + '%.3f\t\t' + '%.3f\t' * 2 + '%.3f'
 
     for e in xReactF:
         if e[1] == []:
@@ -87,7 +87,7 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
             rest = ee[1][1:]
             tup = (level, lE, rest[0], rest[1], rest[2])
             print(stringFormat % tuple(tup))
-        print("")
+        print('')
         if stringValue in xReactSDict:
             for E in xReactSDict[stringValue]:
                 secSolBool = False
@@ -101,12 +101,12 @@ def pXReaction(isop, isot, isoE, isoR, Elab,
                     tup = (level, lE, rest[0], rest[1], rest[2])
                     print(stringFormat % tuple(tup))
                 if secSolBool:
-                    print("")
+                    print('')
 
 
 def pXXTremeTest(iso1, iso2, Elab, angle):
     XXList = iB.xXTremeTest(iso1, iso2, Elab, angle)
-    stringFormat = "%d\t%0.3f\t\t" + "%.3f\t" * 2 + "%.3f"
+    stringFormat = '%d\t%0.3f\t\t' + '%.3f\t' * 2 + '%.3f'
     for e in XXList:
         isoE = e[0][0]
         isoR = e[0][1]
@@ -127,7 +127,7 @@ def pXXTremeTest(iso1, iso2, Elab, angle):
                     resE = states[1][3]
                     tup = (level, levE, ejectE, resAng, resE)
                     print(stringFormat % tup)
-                print("")
+                print('')
                 secStateBool = False
                 for secStates in ee[2]:
                     if secStates[1] != []:
@@ -137,23 +137,22 @@ def pXXTremeTest(iso1, iso2, Elab, angle):
                         ejectE = secStates[1][1]
                         resAng = secStates[1][2]
                         resE = secStates[1][3]
-                        tup = (level, levE, ejectE, resAng,
-                               resE)
+                        tup = (level, levE, ejectE, resAng, resE)
                         print(stringFormat % tup)
                 if secStateBool:
-                    print("")
+                    print('')
 
 
 def pXTremeTest(iso1, iso2, Elab, angle):
     rawVal = iB.xTremeTest(iso1, iso2, Elab, angle)
     dictSecSol = {}
     for rV in rawVal:
-        stringEntry = rV[0][0]+"\t"+rV[0][1]
+        stringEntry = rV[0][0] + '\t' + rV[0][1]
         if stringEntry not in dictSecSol:
             dictSecSol[stringEntry] = rV[2]
 
-    stringFormat = "%.3f\t%.3f\t%.3f"
-    stringFormat2 = "%s\t%s"
+    stringFormat = '%.3f\t%.3f\t%.3f'
+    stringFormat2 = '%s\t%s'
     for v in rawVal:
         isoE = v[0][0]
         isoR = v[0][1]
@@ -165,7 +164,7 @@ def pXTremeTest(iso1, iso2, Elab, angle):
         if tup != (False, False, False):
             print(isosString1)
             print(stringFormat % tuple(tup))
-            print("")
+            print('')
             if dictSecSol[isosString1][0] != []:
                 vv = dictSecSol[isosString1][0]
                 ejectE = vv[1]
@@ -173,16 +172,16 @@ def pXTremeTest(iso1, iso2, Elab, angle):
                 resE = vv[3]
                 tup = (ejectE, resAng, resE)
                 print(stringFormat % tuple(tup))
-                print("")
+                print('')
         ejectE = v[1][1][1]
         resAng = v[1][1][2]
         resE = v[1][1][3]
         tup = (ejectE, resAng, resE)
-        isosString2 = isoR+'\t'+isoE
+        isosString2 = isoR + '\t' + isoE
         if tup != (False, False, False):
             print(isosString2)
             print(stringFormat % tuple(tup))
-            print("")
+            print('')
             if dictSecSol[isosString1][1] != []:
                 vv = dictSecSol[isosString1][1]
                 ejectE = vv[1]
@@ -190,7 +189,7 @@ def pXTremeTest(iso1, iso2, Elab, angle):
                 resE = vv[3]
                 tup = (ejectE, resAng, resE)
                 print(stringFormat % tuple(tup))
-                print("")
+                print('')
 
 
 # Printing it nicely for a spreadsheet.
@@ -198,14 +197,16 @@ def tNReaction(iso1, iso2):
     rList = iB.nReaction(iso1, iso2)
     for e in rList:
         if e[2] == 'None':
-            string1 = str(e[0])+'\t'+str(e[1])+'\t'+str(e[2])+'\t'
-            print(string1+"{0:0.2f}".format(float(e[3]))+"\tNone")
+            string1 = str(e[0]) + '\t' + str(e[1]) + '\t' + str(e[2]) + '\t'
+            print(string1 + '{0:0.2f}'.format(float(e[3])) + '\tNone')
         else:
-            string2 = e[0]+'\t'+e[1]+'\t'+"{0:0.2f}".format(float(e[2]))
-            string3 = '\t'+"{0:0.2f}".format(float(e[3]))
+            string2 = (
+                e[0] + '\t' + e[1] + '\t' + '{0:0.2f}'.format(float(e[2]))
+            )
+            string3 = '\t' + '{0:0.2f}'.format(float(e[3]))
             coulE = iB.coulombE(e[0], e[1])
-            string4 = '\t'+"{0:0.2f}".format(float(coulE))
-            print(string2+string3+string4)
+            string4 = '\t' + '{0:0.2f}'.format(float(coulE))
+            print(string2 + string3 + string4)
 
 
 # Printing latex friendly nReaction
@@ -218,8 +219,18 @@ def latexNReaction(iso1, iso2):
     sa2 = str(a2)
     print("""\\begin{eqnarray*} """)
 
-    print('{}^{' + sa1 + '}\\mathrm{' + key1 + '}+' + '{}^{' + sa2 +
-          '}\\mathrm{' + key2 + '}\\longrightarrow ')
+    print(
+        '{}^{'
+        + sa1
+        + '}\\mathrm{'
+        + key1
+        + '}+'
+        + '{}^{'
+        + sa2
+        + '}\\mathrm{'
+        + key2
+        + '}\\longrightarrow '
+    )
     # maxVal = len(reacList)
     for r in reacList:
         if r == reacList[3]:
@@ -235,8 +246,20 @@ def latexNReaction(iso1, iso2):
             print('{}^{' + aRes + '}' + kRes + '&\\:Q=' + r[3] + fStr)
             continue
 
-        print('& {}^{' + aEject + '}\\mathrm{' + kEject + '}+' +
-              ' {}^{' + aRes + '}\\mathrm{' + kRes + '}&\\:Q=' + r[3] + fStr)
+        print(
+            '& {}^{'
+            + aEject
+            + '}\\mathrm{'
+            + kEject
+            + '}+'
+            + ' {}^{'
+            + aRes
+            + '}\\mathrm{'
+            + kRes
+            + '}&\\:Q='
+            + r[3]
+            + fStr
+        )
     print('\\end{eqnarray*}')
 
 
@@ -247,43 +270,43 @@ def pIsotopes(iso, mFlag=False, flag=True):
         if flag:
             eCoef = 931.4941
         if val is False:
-            print("Symbol not in database")
+            print('Symbol not in database')
             return False
         for i in val:
             i[1] *= eCoef
-            print(str(i[0])+"\t"+str(i[1]))
+            print(str(i[0]) + '\t' + str(i[1]))
         return 0
     for i in val:
         print(i[0])
     return 0
 
 
-def pDecay(iso, emit="", num=1, Ex=0.0):
-    if emit == "":
+def pDecay(iso, emit='', num=1, Ex=0.0):
+    if emit == '':
         dec = iB.QDecay(iso, Ex)
         for d in dec:
-            print("%s\t%s\t\t%.3f\t%.3f\t%.3f" % tuple(d))
+            print('%s\t%s\t\t%.3f\t%.3f\t%.3f' % tuple(d))
     else:
         dec = iB.emitDecay2(iso, emit, num)
         if dec is None or dec is False:
             return 1
-        print("%s\t%s\t\t%.3f" % tuple(dec))
+        print('%s\t%s\t\t%.3f' % tuple(dec))
 
 
 def pDecay2(iso, emit, num=1):
     dec = iB.emitDecay2(iso, emit, num)
     if dec is None or dec is False:
         return 1
-    print("%s\t%s\t\t%.3f" % tuple(dec))
+    print('%s\t%s\t\t%.3f' % tuple(dec))
 
 
 def pFussion(iso1, iso2, Elab):
     l = iB.fussionCase(iso1, iso2, Elab)
-    stringFormat = "%s\t%d\t%.3f\t%.3f"
+    stringFormat = '%s\t%d\t%.3f\t%.3f'
     print(stringFormat % tuple(l))
 
 
-simpleDict = {"n": "1n", "p": "1H", "d": "2H", "t": "3H", "a": "4He"}
+simpleDict = {'n': '1n', 'p': '1H', 'd': '2H', 't': '3H', 'a': '4He'}
 
 
 def getRealIso(myIso):
@@ -292,19 +315,19 @@ def getRealIso(myIso):
     return myIso
 
 
-def pLevels(iso, limit="NaN"):
+def pLevels(iso, limit='NaN'):
     iso = getRealIso(iso)
     levs = iB.getAllLevels(iso)
-    if limit == "NaN":
+    if limit == 'NaN':
         for l in levs:
-            print(str(l[0])+'\t'+str(l[1]))
+            print(str(l[0]) + '\t' + str(l[1]))
         return 0
     counter = 0
     for l in levs:
         counter += 1
         if counter > limit:
             break
-        print(str(l[0])+'\t'+str(l[1]))
+        print(str(l[0]) + '\t' + str(l[1]))
     return 0
 
 

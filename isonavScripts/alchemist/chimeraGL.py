@@ -29,7 +29,7 @@ colors = (
     (1, 0, 0),
     (1, 1, 1),
     (0, 1, 1),
-    )
+)
 
 edges = (
     (0, 1),
@@ -43,18 +43,17 @@ edges = (
     (4, 5),
     (4, 7),
     (5, 6),
-    (6, 7)
-    )
+    (6, 7),
+)
 
 surfaces = (
     (0, 1, 2, 3),
     (0, 3, 7, 4),
     (0, 1, 5, 4),
-
     (6, 2, 3, 7),
     (6, 7, 4, 5),
     (6, 5, 1, 2),
-    )
+)
 
 # theta_min_val=math.radians(163)
 # theta_max_val=math.radians(176)
@@ -71,49 +70,103 @@ def getDetValues(detIdx, subIdx):
         theta_min_val = math.radians(bCC.theta_min[detIdx])
         theta_max_val = math.radians(bCC.theta_max[detIdx])
         delta_phi_val = math.radians(bCC.delta_phi[detIdx])
-        dDist = bCC.det_dist[detIdx]/50.0
-        shift = delta_phi_val*subIdx
-        detValDict[mySimpleStr] = theta_min_val, theta_max_val, \
-            delta_phi_val, dDist, shift
+        dDist = bCC.det_dist[detIdx] / 50.0
+        shift = delta_phi_val * subIdx
+        detValDict[mySimpleStr] = (
+            theta_min_val,
+            theta_max_val,
+            delta_phi_val,
+            dDist,
+            shift,
+        )
     return detValDict[mySimpleStr]
 
 
 vertValDict = {}
 
 
-def getVerticies4Telescope(dDist, theta_min_val, theta_max_val,
-                           delta_phi_val, shift):
-    myAwesomeStr = str([dDist, theta_min_val, theta_max_val,
-                        delta_phi_val, shift])
+def getVerticies4Telescope(
+    dDist, theta_min_val, theta_max_val, delta_phi_val, shift
+):
+    myAwesomeStr = str(
+        [dDist, theta_min_val, theta_max_val, delta_phi_val, shift]
+    )
     if myAwesomeStr not in vertValDict:
         delta_r = 0.1
-        dDDist = dDist+delta_r
+        dDDist = dDist + delta_r
         verticies = (
-            (dDist*math.sin(theta_max_val)*math.cos(delta_phi_val/2+shift),
-             dDist*math.sin(theta_max_val)*math.sin(delta_phi_val/2+shift),
-             dDist*math.cos(theta_max_val)),
-            (dDist*math.sin(theta_max_val)*math.cos(-delta_phi_val/2+shift),
-             dDist*math.sin(theta_max_val)*math.sin(-delta_phi_val/2+shift),
-             dDist*math.cos(theta_max_val)),
-            (dDist*math.sin(theta_min_val)*math.cos(-delta_phi_val/2+shift),
-             dDist*math.sin(theta_min_val)*math.sin(-delta_phi_val/2+shift),
-             dDist*math.cos(theta_min_val)),
-            (dDist*math.sin(theta_min_val)*math.cos(delta_phi_val/2+shift),
-             dDist*math.sin(theta_min_val)*math.sin(delta_phi_val/2+shift),
-             dDist*math.cos(theta_min_val)),
-
-            (dDDist*math.sin(theta_max_val)*math.cos(delta_phi_val/2+shift),
-             dDDist*math.sin(theta_max_val)*math.sin(delta_phi_val/2+shift),
-             dDDist*math.cos(theta_max_val)),
-            (dDDist*math.sin(theta_max_val)*math.cos(-delta_phi_val/2+shift),
-             dDDist*math.sin(theta_max_val)*math.sin(-delta_phi_val/2+shift),
-             dDDist*math.cos(theta_max_val)),
-            (dDDist*math.sin(theta_min_val)*math.cos(-delta_phi_val/2+shift),
-             dDDist*math.sin(theta_min_val)*math.sin(-delta_phi_val/2+shift),
-             dDDist*math.cos(theta_min_val)),
-            (dDDist*math.sin(theta_min_val)*math.cos(delta_phi_val/2+shift),
-             dDDist*math.sin(theta_min_val)*math.sin(delta_phi_val/2+shift),
-             dDDist*math.cos(theta_min_val)),
+            (
+                dDist
+                * math.sin(theta_max_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.sin(delta_phi_val / 2 + shift),
+                dDist * math.cos(theta_max_val),
+            ),
+            (
+                dDist
+                * math.sin(theta_max_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.sin(-delta_phi_val / 2 + shift),
+                dDist * math.cos(theta_max_val),
+            ),
+            (
+                dDist
+                * math.sin(theta_min_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.sin(-delta_phi_val / 2 + shift),
+                dDist * math.cos(theta_min_val),
+            ),
+            (
+                dDist
+                * math.sin(theta_min_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.sin(delta_phi_val / 2 + shift),
+                dDist * math.cos(theta_min_val),
+            ),
+            (
+                dDDist
+                * math.sin(theta_max_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.sin(delta_phi_val / 2 + shift),
+                dDDist * math.cos(theta_max_val),
+            ),
+            (
+                dDDist
+                * math.sin(theta_max_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.sin(-delta_phi_val / 2 + shift),
+                dDDist * math.cos(theta_max_val),
+            ),
+            (
+                dDDist
+                * math.sin(theta_min_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.sin(-delta_phi_val / 2 + shift),
+                dDDist * math.cos(theta_min_val),
+            ),
+            (
+                dDDist
+                * math.sin(theta_min_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.sin(delta_phi_val / 2 + shift),
+                dDDist * math.cos(theta_min_val),
+            ),
         )
         vertValDict[myAwesomeStr] = verticies
     return vertValDict[myAwesomeStr]
@@ -129,7 +182,7 @@ def drawSurfaces(verticies, t=0.999):
             # oGLGL.glColor3fv((1,0,0))
             # myColor=(math.cos(t*pi/2)**2,0,math.sin(t*pi/2)**2)
             # myColor=(random(),random(),random())
-            if t == "white":
+            if t == 'white':
                 myColor = (1, 1, 0)
             else:
                 myColor = misc.convert_to_rgb(0, 1, t)
@@ -154,10 +207,12 @@ def drawSurfacesWColor(verticies, myColor=()):
 
 
 def getVert4TelesSimple(detIdx, subIdx):
-    theta_min_val, theta_max_val, delta_phi_val, dDist, shift = \
-        getDetValues(detIdx, subIdx)
-    verticies = getVerticies4Telescope(dDist, theta_min_val,
-                                       theta_max_val, delta_phi_val, shift)
+    theta_min_val, theta_max_val, delta_phi_val, dDist, shift = getDetValues(
+        detIdx, subIdx
+    )
+    verticies = getVerticies4Telescope(
+        dDist, theta_min_val, theta_max_val, delta_phi_val, shift
+    )
     return verticies
 
 
@@ -204,10 +259,12 @@ def drawFromGLists(gVerts, gEdges, gSurf=[]):
 
 
 def drawChimTelesGL2(detIdx, subIdx, surfStat=False):
-    theta_min_val, theta_max_val, delta_phi_val, dDist, shift = \
-        getDetValues(detIdx, subIdx)
-    verticies = getVerticies4Telescope(dDist, theta_min_val,
-                                       theta_max_val, delta_phi_val, shift)
+    theta_min_val, theta_max_val, delta_phi_val, dDist, shift = getDetValues(
+        detIdx, subIdx
+    )
+    verticies = getVerticies4Telescope(
+        dDist, theta_min_val, theta_max_val, delta_phi_val, shift
+    )
     if surfStat:
         drawSurfaces(verticies, random())
 
@@ -289,13 +346,13 @@ def getTDict(rStr, sTel):
     for ringStr in aDict:
         tDict[ringStr] = []
         for subTel in aDict[ringStr]:
-            tVal = subTel/180
+            tVal = subTel / 180
             tDict[ringStr].append(tVal)
     return tDict
 
 
 def myRelAdd(i, myIntList):
-    return tuple([e+i for e in myIntList])
+    return tuple([e + i for e in myIntList])
 
 
 def getRotation(thing, x):
@@ -382,45 +439,51 @@ def getOptimizedRelList(telesCoordLists):
     # gReduVertL list.
     gReduEdgeList = []
     for gVEdge in gVertEdgeL:
-        gReduEdgeList.append((gReduVertL.index(gVEdge[0]),
-                              gReduVertL.index(gVEdge[1])))
+        gReduEdgeList.append(
+            (gReduVertL.index(gVEdge[0]), gReduVertL.index(gVEdge[1]))
+        )
 
     # Now for the surface points.
     gReduSurfList = []
     for gVSurf in gVertSurfL:
-        gReduSurfList.append((gReduVertL.index(gVSurf[0]),
-                              gReduVertL.index(gVSurf[1])))
+        gReduSurfList.append(
+            (gReduVertL.index(gVSurf[0]), gReduVertL.index(gVSurf[1]))
+        )
 
     return gReduVertL, gReduEdgeList, gReduSurfList
 
 
 def main():
     thAng = 120.0
-    print("Hangling the arguments here")
+    print('Hangling the arguments here')
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     # group.add_argument("-g", "--grid", help="draws chimera as a grid")
-    group.add_argument("-c", "--colorMap",
-                       help="creates a heatmap around a telescope",
-                       nargs=2)
+    group.add_argument(
+        '-c',
+        '--colorMap',
+        help='creates a heatmap around a telescope',
+        nargs=2,
+    )
 
-    group.add_argument("-g", "--grid",
-                       help="draws chimera as a grid",
-                       action='store_true')
+    group.add_argument(
+        '-g', '--grid', help='draws chimera as a grid', action='store_true'
+    )
 
-    parser.add_argument("--thRot",
-                        help="The theta angle to rotate chimera.",
-                        nargs=1, type=float)
+    parser.add_argument(
+        '--thRot',
+        help='The theta angle to rotate chimera.',
+        nargs=1,
+        type=float,
+    )
 
-    parser.add_argument("--eRing",
-                        help="Colors the ejectile ring.", nargs='+')
+    parser.add_argument('--eRing', help='Colors the ejectile ring.', nargs='+')
 
-    parser.add_argument("--rRing",
-                        help="Colors the recoil rings.", nargs='+')
+    parser.add_argument('--rRing', help='Colors the recoil rings.', nargs='+')
 
-    parser.add_argument("-t", "--teles",
-                        help="Colors the recoil rings.",
-                        nargs='+', type=int)
+    parser.add_argument(
+        '-t', '--teles', help='Colors the recoil rings.', nargs='+', type=int
+    )
 
     args = parser.parse_args()
 
@@ -428,38 +491,39 @@ def main():
     if args.teles:
         myTelStrAndSubTelL = []
         for aTel in args.teles:
-            print("aTel = %d " % (aTel))
+            print('aTel = %d ' % (aTel))
             myStr, mySubTel = bCC.getChimAddrFromTelesNum(aTel)
             print(myStr, mySubTel)
-            if myStr == "":
-                print("Error: " + str(aTel) +
-                      " is not a valid telescope")
+            if myStr == '':
+                print('Error: ' + str(aTel) + ' is not a valid telescope')
                 return
-            myTelStrAndSubTelL.append([bCC.ring_tags.index(myStr),
-                                       mySubTel])
+            myTelStrAndSubTelL.append([bCC.ring_tags.index(myStr), mySubTel])
 
     if args.thRot:
         thAng = args.thRot[0]
         # print("thAng = "+str(thAng))
 
-    if (args.colorMap):
-        print("The arguments where %s and %s" % (args.colorMap[0],
-                                                 args.colorMap[1]))
+    if args.colorMap:
+        print(
+            'The arguments where %s and %s'
+            % (args.colorMap[0], args.colorMap[1])
+        )
         rStr = args.colorMap[0]
         sTel = int(args.colorMap[1])
         if rStr not in bCC.ring_tags:
-            print("error ring tag not found")
+            print('error ring tag not found')
             return
         myIdx = bCC.ring_tags.index(rStr)
         colorL[bCC.ring_tags.index(rStr)] = (1, 0, 0.5)
         if sTel not in range(bCC.teles_num[myIdx]):
             maxNumOfTel = bCC.teles_num[myIdx]
-            print("error telescope out of range max number is %d"
-                  % maxNumOfTel)
+            print(
+                'error telescope out of range max number is %d' % maxNumOfTel
+            )
             return
         tDict = getTDict(rStr, sTel)
-    elif (args.grid):
-        print("Using the grid option")
+    elif args.grid:
+        print('Using the grid option')
     else:
         parser.print_help()
         return
@@ -468,13 +532,13 @@ def main():
         eRingL = args.eRing
         for ejectRing in eRingL:
             if ejectRing not in bCC.ring_tags:
-                print("Error "+ejectRing+" is not a valid ring")
+                print('Error ' + ejectRing + ' is not a valid ring')
                 return
     if args.rRing:
         rRingL = args.rRing
         for recRing in rRingL:
             if recRing not in bCC.ring_tags:
-                print("Error "+recRing+" is not a valid ring")
+                print('Error ' + recRing + ' is not a valid ring')
                 return
     # rStr="S26"
     # sTel=4
@@ -487,7 +551,7 @@ def main():
     display = (width, height)
     pygame.display.set_mode(display, pgL.DOUBLEBUF | pgL.OPENGL)
 
-    oGLU.gluPerspective(23.0, (display[0]/display[1]), 0.1, 80.0)
+    oGLU.gluPerspective(23.0, (display[0] / display[1]), 0.1, 80.0)
 
     oGLGL.glTranslatef(-1.3, 0.0, -5)
     # glRotatef(120, 0, 1, 0)
@@ -505,26 +569,27 @@ def main():
                 quit()
 
         # glRotatef(1, 0, 1, 0)
-        oGLGL.glClear(oGLGL.GL_COLOR_BUFFER_BIT |
-                      oGLGL.GL_DEPTH_BUFFER_BIT)
+        oGLGL.glClear(oGLGL.GL_COLOR_BUFFER_BIT | oGLGL.GL_DEPTH_BUFFER_BIT)
 
         # #THIS IS FUNCTIONAL ###
-        if (args.colorMap):
+        if args.colorMap:
             drawAllChimera(tDict)
             specialDrawChimTelesGL(bCC.ring_tags.index(rStr), sTel)
-        elif (args.grid):
+        elif args.grid:
             specialDrawAllChimera(colorL, False)
         # #THIS IS FUNCTIONAL END ###
 
         # specialDrawAllChimera(colorL)
         if args.eRing:
             for eRing in args.eRing:
-                specialDrawRing(bCC.ring_tags.index(eRing),
-                                colorBool=True)
+                specialDrawRing(bCC.ring_tags.index(eRing), colorBool=True)
         if args.rRing:
             for recRing in args.rRing:
-                specialDrawRing(bCC.ring_tags.index(recRing),
-                                myColor=(1, 0, 0), colorBool=True)
+                specialDrawRing(
+                    bCC.ring_tags.index(recRing),
+                    myColor=(1, 0, 0),
+                    colorBool=True,
+                )
 
         if args.teles:
             for rIndex, subTel in myTelStrAndSubTelL:
@@ -538,12 +603,12 @@ def main():
         pygame.time.wait(10)
 
         if myCount == 1:
-            print("Inside the if")
+            print('Inside the if')
             oGLGL.glPixelStorei(oGLGL.GL_PACK_ALIGNMENT, 1)
-            data = oGLGL.glReadPixels(0, 0, width, height,
-                                      oGLGL.GL_RGBA,
-                                      oGLGL.GL_UNSIGNED_BYTE)
-            image = Image.frombytes("RGBA", (width, height), data)
+            data = oGLGL.glReadPixels(
+                0, 0, width, height, oGLGL.GL_RGBA, oGLGL.GL_UNSIGNED_BYTE
+            )
+            image = Image.frombytes('RGBA', (width, height), data)
             image.save('output.png', 'PNG')
 
         myCount += 1

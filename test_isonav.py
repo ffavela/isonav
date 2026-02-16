@@ -49,7 +49,7 @@ def test_symbols():
     argv = ['-s', '22']
     out = get_output(argv)
     assert 'Ti' == out
-    #Put more here
+    # Put more here
 
 
 def test_protons():
@@ -177,6 +177,7 @@ def test_LDM_mass():
     out = get_output(argv)
     assert '20477.90454623588' == out
 
+
 def test_mirror():
     argv = ['--mirror', '22Ne']
     out = get_output(argv)
@@ -212,8 +213,7 @@ def test_redDeBroglie():
 
 
 def test_simple_reaction():
-    argv = ['--Elab', '3.0', '--angle', '35',
-            'd', '14N', 'a', '12C']
+    argv = ['--Elab', '3.0', '--angle', '35', 'd', '14N', 'a', '12C']
     out = get_output(argv)
     expOut = """4He\t12C
 13.929\t-130.521\t2.645
@@ -224,8 +224,17 @@ def test_simple_reaction():
 
 
 def test_xTreme_reaction():
-    argv = ['--Elab', '3.0', '--angle', '35',
-            '--xTreme', 'd', '14N', 'a', '12C']
+    argv = [
+        '--Elab',
+        '3.0',
+        '--angle',
+        '35',
+        '--xTreme',
+        'd',
+        '14N',
+        'a',
+        '12C',
+    ]
     out = get_output(argv)
     expOut = """*4He\t12C
 1\t0.000\t\t13.929\t-130.521\t2.645
@@ -304,8 +313,17 @@ def test_reactions():
 
 
 def test_coulomb_excitations():
-    argv = ['--Elab', '5.5', '--angle', '25',
-            '--xTreme', 'd', '14N', 'd', '14N']
+    argv = [
+        '--Elab',
+        '5.5',
+        '--angle',
+        '25',
+        '--xTreme',
+        'd',
+        '14N',
+        'd',
+        '14N',
+    ]
     out = get_output(argv)
     expOut = """*2H\t14N
 1\t0.000\t\t5.354\t-75.758\t0.146
@@ -337,8 +355,7 @@ def test_fussion_examples():
     out = get_output(argv)
     expOut = """15O\t7\t7.276\t0.021"""
     assert expOut == out
-    argv = ['--fussion', '--Elab', '0.1',
-            '-v', 'p', '14N']
+    argv = ['--fussion', '--Elab', '0.1', '-v', 'p', '14N']
     out = get_output(argv)
     expOut = """#Prints the fused element, if isotope exists.
 #Max populated level, and energy, and remaining KE in lab
@@ -390,8 +407,7 @@ def test_reactions_no_specified_exit_channel():
 
 
 def test_reactions_no_specified_exit_channel_xTreme():
-    argv = ['--Elab', '3.0', '--angle', '35',
-            '--xTreme', 'd', '14N']
+    argv = ['--Elab', '3.0', '--angle', '35', '--xTreme', 'd', '14N']
     out = get_output(argv)
     expOut = """*4He\t12C
 1\t0.000\t\t13.929\t-130.521\t2.645

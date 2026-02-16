@@ -5,7 +5,7 @@ import sys
 # print('Number of arguments:', len(sys.argv), 'arguments.')
 # print('Argument List:', str(sys.argv))
 
-myOptions = ["--getRelTheta", "--getDetInRange"]
+myOptions = ['--getRelTheta', '--getDetInRange']
 
 
 def checkArgs(argVar):
@@ -40,39 +40,39 @@ def checkIfValidAddr(r, t):
     return True
 
 
-if sys.argv[1] == "--getRelTheta":
+if sys.argv[1] == '--getRelTheta':
     myShift = 2
-    if len(sys.argv)-myShift == 4:
+    if len(sys.argv) - myShift == 4:
         # print("Enough number of variables")
-        r1 = sys.argv[0+myShift]
-        t1 = int(sys.argv[1+myShift])
+        r1 = sys.argv[0 + myShift]
+        t1 = int(sys.argv[1 + myShift])
         # if checkIfValidAddr(r1,t1) == False:
         #     print("Error 1 not a valid address")
-        r2 = sys.argv[2+myShift]
-        t2 = int(sys.argv[3+myShift])
+        r2 = sys.argv[2 + myShift]
+        t2 = int(sys.argv[3 + myShift])
         # if checkIfValidAddr(r2,t2) == False:
         #     print("Error 2 not a valid address")
         # print(r1,t1,r2,t2)
         myRNorm1 = bCC.getNormalVector(r1, t1)
         myRNorm2 = bCC.getNormalVector(r2, t2)
         thetaRel = bCC.getThetaRel(myRNorm1, myRNorm2)
-        print("%3.2f" % math.degrees(thetaRel))
+        print('%3.2f' % math.degrees(thetaRel))
     else:
-        print("Not enough number of variables")
+        print('Not enough number of variables')
 
 
 # To be implemented correctly in the future
-if sys.argv[1] == "--getDetInRange":
+if sys.argv[1] == '--getDetInRange':
     myShift = 2
-    if len(sys.argv)-myShift == 4:
+    if len(sys.argv) - myShift == 4:
         # print("Enough number of variables")
-        r = sys.argv[0+myShift]
-        t = int(sys.argv[1+myShift])
+        r = sys.argv[0 + myShift]
+        t = int(sys.argv[1 + myShift])
         # if checkIfValidAddr(r,t) == False:
         #     print("Error not a valid address")
 
-        relTheta = math.radians(float(sys.argv[2+myShift]))
-        myRange = math.radians(float(sys.argv[3+myShift]))
+        relTheta = math.radians(float(sys.argv[2 + myShift]))
+        myRange = math.radians(float(sys.argv[3 + myShift]))
 
 # print(getTagIndex("1i"))
 
