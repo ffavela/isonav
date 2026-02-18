@@ -40,7 +40,7 @@ chemPkl = os.path.join(DATA_PATH, 'matTab.pkl')
 
 # Isotope dictionary
 iDict = {}
-listStuff = [
+listStuff: list[str] = [
     'n',
     'H',
     'He',
@@ -162,7 +162,7 @@ listStuff = [
     'Ei',
 ]
 
-nameDict = {
+nameDict: dict[str, str] = {
     'n': 'neutron',
     'H': 'Hydrogen',
     'He': 'Helium',

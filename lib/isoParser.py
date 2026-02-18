@@ -152,7 +152,7 @@ onlySymbol = re.compile(r'[A-Z][a-z]?')
 # tuple. It returns None,None in case none of the above matches.
 
 
-def getIso(s):
+def getIso(s: str | int) -> tuple[int | None, str | None]:
     if isinstance(s, int):
         return s, None
     elif s == 'a' or s == 'alpha' or s == 'Alpha':
@@ -173,7 +173,7 @@ def getIso(s):
         isoVal = m.group()
         aValMatch = aValRe.match(isoVal)
         aVal = aValMatch.group()
-        elementSymbol = s[aValMatch.end() :]
+        elementSymbol = s[aValMatch.end():]
         if elementSymbol not in validSymbols:
             return None, None
         return int(aVal), elementSymbol
