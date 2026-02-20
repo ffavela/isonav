@@ -172,6 +172,8 @@ def getIso(s: str | int) -> tuple[int | None, str | None]:
     if m:
         isoVal = m.group()
         aValMatch = aValRe.match(isoVal)
+        if aValMatch is None:
+            raise RuntimeError("This should never happen.")
         aVal = aValMatch.group()
         elementSymbol = s[aValMatch.end() :]
         if elementSymbol not in validSymbols:

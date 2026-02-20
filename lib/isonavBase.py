@@ -65,6 +65,8 @@ def getPnum(iso: str) -> int | bool:
 
 def getNnum(iso: str) -> int:
     A, k = iP.getIso(iso)
+    if not isinstance(A, int) or not isinstance(k, str):
+        raise ValueError("Isotope could not be parsed")
     return A - getPnum(k)
 
 
@@ -118,7 +120,7 @@ def getInEcms(iso1: str, iso2: str, E1L: float) -> tuple[float, ...]:
 
 
 def getOutEcms(
-    iso1: str, iso2: str, isoE: float, isoR: float, E1L: float, exE: float
+    iso1: str, iso2: str, isoE: str, isoR: str, E1L: float, exE: float
 ) -> tuple[float, ...]:
     E1cm, E2cm, inEcmAvail, inEcmSys = getInEcms(iso1, iso2, E1L)
     mE1 = getEMass(iso1)
@@ -160,7 +162,7 @@ def getEcmsFromECM2(m1: float, m2: float, ECM: float) -> tuple[float, float]:
 
 
 def getAvailEnergy(
-    iso1: str, iso2: str, isoEject: float, isoRes: float, E1L: float, E2L: float = 0
+    iso1: str, iso2: str, isoEject: str, isoRes: str, E1L: float, E2L: float = 0
 ) -> float:
     E1cm, E2cm, inEcmAvail, EcmSys = getInEcms(iso1, iso2, E1L)
     Q = getIsoQVal(iso1, iso2, isoEject, isoRes)
@@ -206,6 +208,8 @@ def checkIsoExist1(iso: str) -> bool:
 def nRadius(iso: str) -> float:
     # In fermis
     A, k = iP.getIso(iso)
+    if not isinstance(A, int):
+        raise ValueError("Isotope could not be parsed")
     return 1.2 * A ** (1.0 / 3.0)
 
 
@@ -241,14 +245,22 @@ def thresholdE(iso1: str, iso2: str, iso3: str, iso4: str) -> float:
     return Ethres
 
 
-def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
+def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> list[Any]:
     # Think about meoizing
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     isoExist = checkIsoExistence(iso1, iso2)
     amuEx = Ex / eCoef
     if not isoExist or isoExist == 'Decay':
-        return False
+        raise ValueError("Isotope does not exist")
+
+    if (
+        not isinstance(a1, int)
+        or not isinstance(a2, int)
+        or key1 is None
+        or key2 is None
+    ):
+        raise ValueError("Isotope could not be parsed")
 
     aTot = a1 + a2
     pTot = getPnum(key1) + getPnum(key2)
@@ -266,7 +278,7 @@ def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
 
     reactionList: list[Any] = []
     rKey = getKey(pRes)
-    eKey: bool | str = 'None'
+    eKey: str | bool = 'None'
     maxLoop = 1000  # More than this and it should return
     iterator = 0
     while True:
@@ -284,8 +296,8 @@ def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
             # Maybe use getMass or getQval here?
             finalMass = iDict[eKey][1][aEject][0] + iDict[rKey][1][aRes][0]
             Q = (initialMass - finalMass) * eCoef
-            ejectIso = str(aEject) + eKey
-            resIso = str(aRes) + rKey
+            ejectIso = str(aEject) + str(eKey)
+            resIso = str(aRes) + str(rKey)
 
             if 'None' in [key1, key2, eKey, rKey]:
                 Ethres: str | float = 'None'
@@ -330,13 +342,10 @@ def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
         eKey = getKey(pEject)
 
 
-def nReaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
+def nReaction(iso1: str, iso2: str, Ex: float = 0.0) -> list[Any]:
     ls = reaction(iso1, iso2, Ex=Ex)
     if ls == []:
-        print('Nuclei might be too big')
-    if ls is False:
-        print('An error ocurred')
-        return False
+        raise ValueError('Nuclei might be too big')
     # Sort the list elements in terms of their
     # Q value
     ls.sort(key=lambda x: x[3], reverse=True)
@@ -365,11 +374,11 @@ def QDecay(iso1: str, Ex: float = 0.0) -> bool | list[Any]:
 # Note: only for the base state for now.
 
 
-def emitDecay(iso: str, emit: str = '4He') -> list[Any]:
-    qDecList = QDecay(iso)
-    for e in qDecList:
-        if emit in e[0:2]:
-            return e
+# def emitDecay(iso: str, emit: str = '4He') -> list[Any]:
+#     qDecList = QDecay(iso)
+#     for e in qDecList:
+#         if emit in e[0:2]:
+#             return e
 
 
 # This is the more careful solution###
