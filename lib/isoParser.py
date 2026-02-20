@@ -173,7 +173,7 @@ def getIso(s: str | int) -> tuple[int | None, str | None]:
         isoVal = m.group()
         aValMatch = aValRe.match(isoVal)
         aVal = aValMatch.group()
-        elementSymbol = s[aValMatch.end():]
+        elementSymbol = s[aValMatch.end() :]
         if elementSymbol not in validSymbols:
             return None, None
         return int(aVal), elementSymbol

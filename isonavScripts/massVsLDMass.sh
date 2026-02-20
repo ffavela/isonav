@@ -68,13 +68,13 @@ do
 
 	# ${diff#-} is like absolute value
 	if [ $(echo "${diff#-} < $minD" | bc) -eq 1 ]
-	then 
+	then
 	    minD=${diff#-}
 	    isoMin=$v
 	fi
 
 	if [ $(echo "${diff#-} > $maxD" | bc) -eq 1 ]
-	then 
+	then
 	    maxD=${diff#-}
 	    isoMax=$v
 	fi

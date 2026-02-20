@@ -21,13 +21,13 @@ do
 	echo -e "$v\t$val"
 
 	if [ $(echo "$val < $min" | bc) -eq 1 ]
-	then 
+	then
 	    min=$val
 	    isoMin=$v
 	fi
 
 	if [ $(echo "$val > $max" | bc) -eq 1 ]
-	then 
+	then
 	    max=$val
 	    isoMax=$v
 	fi
@@ -37,4 +37,3 @@ done
 echo "The most tightly bound isotope is $isoMin BE=$min"
 echo ""
 echo "The most loosely bound isotope is $isoMax BE=$max"
-

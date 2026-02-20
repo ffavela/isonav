@@ -82,4 +82,3 @@ echo ""
 echo "$ isonav n --compton -v"
 isonav n --compton -v
 echo ""
-

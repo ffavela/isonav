@@ -545,4 +545,3 @@ $ isonav d 14N --Elab=3.0 --angle=35 --xTreme
 $ isonav n --compton -v
 #The compton wavelength in fm
 1.3195908515350636
-

@@ -117,9 +117,9 @@ def getInEcms(iso1: str, iso2: str, E1L: float) -> tuple[float, ...]:
     return E1cm, E2cm, inEcmAvail, inEcmSys
 
 
-def getOutEcms(iso1: str, iso2: str,
-               isoE: float, isoR: float,
-               E1L: float, exE: float) -> tuple[float, ...]:
+def getOutEcms(
+    iso1: str, iso2: str, isoE: float, isoR: float, E1L: float, exE: float
+) -> tuple[float, ...]:
     E1cm, E2cm, inEcmAvail, inEcmSys = getInEcms(iso1, iso2, E1L)
     mE1 = getEMass(iso1)
     mE2 = getEMass(iso2)
@@ -130,18 +130,14 @@ def getOutEcms(iso1: str, iso2: str,
 
     outEcmSys = inEcmSys * (inMass / outMass)
     Q = getQVal(mE1, mE2, mEE, mER)
-    outEcmAvail = (
-        inEcmSys * (1.0 - 1.0 * (inMass / outMass)) + inEcmAvail + Q - exE
-    )
+    outEcmAvail = inEcmSys * (1.0 - 1.0 * (inMass / outMass)) + inEcmAvail + Q - exE
     if outEcmAvail < 0:
         return -1, -1, -1, -1
     EEcm, ERcm = getEcmsFromECM2(mEE, mER, outEcmAvail)
     return EEcm, ERcm, outEcmAvail, outEcmSys
 
 
-def getEcmsFromECM(iso1: str,
-                   iso2: str,
-                   ECM: float) -> tuple[float, float]:
+def getEcmsFromECM(iso1: str, iso2: str, ECM: float) -> tuple[float, float]:
     # For example, in a decay ECM=Q
     m1 = getEMass(iso1)
     m2 = getEMass(iso2)
@@ -152,9 +148,7 @@ def getEcmsFromECM(iso1: str,
     return E1, E2
 
 
-def getEcmsFromECM2(m1: float,
-                    m2: float,
-                    ECM: float) -> tuple[float, float]:
+def getEcmsFromECM2(m1: float, m2: float, ECM: float) -> tuple[float, float]:
     # For example, in a decay ECM=Q
     # m1=getEMass(iso1)
     # m2=getEMass(iso2)
@@ -165,18 +159,16 @@ def getEcmsFromECM2(m1: float,
     return E1, E2
 
 
-def getAvailEnergy(iso1: str, iso2: str,
-                   isoEject: float, isoRes: float,
-                   E1L: float, E2L: float = 0) -> float:
+def getAvailEnergy(
+    iso1: str, iso2: str, isoEject: float, isoRes: float, E1L: float, E2L: float = 0
+) -> float:
     E1cm, E2cm, inEcmAvail, EcmSys = getInEcms(iso1, iso2, E1L)
     Q = getIsoQVal(iso1, iso2, isoEject, isoRes)
     return inEcmAvail + Q
 
 
 # Just for testing
-def getAllVs(iso1: str, iso2: str,
-             isoE: str, isoR: str,
-             E1L: float) -> None:
+def getAllVs(iso1: str, iso2: str, isoE: str, isoR: str, E1L: float) -> None:
     v1cm, v2cm, Vcm = getVelcm(iso1, iso2, E1L)
     EcmAvail = getAvailEnergy(iso1, iso2, isoE, isoR, E1L)
     ejectE, resE = getEcmsFromECM(isoE, isoR, EcmAvail)
@@ -235,8 +227,7 @@ def coulombE(iso1: str, iso2: str) -> float:
     return z1 * z2 * alpha * hbc / rMin
 
 
-def thresholdE(iso1: str, iso2: str,
-               iso3: str, iso4: str) -> float:
+def thresholdE(iso1: str, iso2: str, iso3: str, iso4: str) -> float:
     mp = getMass(iso1)
     mt = getMass(iso2)
     mE = getMass(iso3)
@@ -250,8 +241,7 @@ def thresholdE(iso1: str, iso2: str,
     return Ethres
 
 
-def reaction(iso1: str, iso2: str,
-             Ex: float = 0.0) -> bool | list[Any]:
+def reaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
     # Think about meoizing
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
@@ -340,8 +330,7 @@ def reaction(iso1: str, iso2: str,
         eKey = getKey(pEject)
 
 
-def nReaction(iso1: str, iso2: str,
-              Ex: float = 0.0) -> bool | list[Any]:
+def nReaction(iso1: str, iso2: str, Ex: float = 0.0) -> bool | list[Any]:
     ls = reaction(iso1, iso2, Ex=Ex)
     if ls == []:
         print('Nuclei might be too big')
@@ -356,8 +345,7 @@ def nReaction(iso1: str, iso2: str,
 
 # Not yet perfect
 # Not any beta decays
-def QDecay(iso1: str,
-           Ex: float = 0.0) -> bool | list[Any]:
+def QDecay(iso1: str, Ex: float = 0.0) -> bool | list[Any]:
     decayCand = nReaction(iso1, '0None', Ex=Ex)
     if decayCand is False:
         return False
@@ -387,8 +375,7 @@ def emitDecay(iso: str, emit: str = '4He') -> list[Any]:
 # This is the more careful solution###
 
 
-def emitDecay2(iso: str, emit: str = '4He',
-               num: int = 1) -> bool | list[Any]:
+def emitDecay2(iso: str, emit: str = '4He', num: int = 1) -> bool | list[Any]:
     newIso = getNewIso(iso, emit, num)
     if not newIso:
         return False
@@ -401,8 +388,7 @@ def emitDecay2(iso: str, emit: str = '4He',
     return [nEmit, newIso, QVal]
 
 
-def emitDecayQVal(iso: str, emit: str = '4He',
-                  num: int = 1) -> bool | float:
+def emitDecayQVal(iso: str, emit: str = '4He', num: int = 1) -> bool | float:
     newIso = getNewIso(iso, emit, num)
     if not newIso:
         return False
@@ -420,8 +406,7 @@ def emitDecayQVal(iso: str, emit: str = '4He',
     return QVal
 
 
-def getNewIso(iso: str, emit: str = '4He',
-              num: int = 1) -> bool | str:
+def getNewIso(iso: str, emit: str = '4He', num: int = 1) -> bool | str:
     isoN = getNnum(iso)
     isoP = getPnum(iso)
 
@@ -461,6 +446,7 @@ def getNewIso(iso: str, emit: str = '4He',
 #     levsE=getPopLevels(isoE,Eavail)
 #     levsD=getPopLevels(isoR,Eavail)
 
+
 # Prints out all the possible neg Q's
 def QStable(iso1: str) -> bool | list[Any]:
     a1, key1 = iP.getIso(iso1)
@@ -471,9 +457,7 @@ def QStable(iso1: str) -> bool | list[Any]:
     return decays
 
 
-def checkReaction(iso1: str, iso2: str,
-                  isoEject: str,
-                  isoRes: str) -> bool:
+def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> bool:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
@@ -506,10 +490,13 @@ def checkReaction(iso1: str, iso2: str,
 
 
 def sReaction(
-    iso1: str, iso2: str, isoEject: str,
-        isoRes: str, ELab: float = 2.9,
-        ang: float = 30,
-        exList: list[float] = [0, 0, 0, 0]
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    ELab: float = 2.9,
+    ang: float = 30,
+    exList: list[float] = [0, 0, 0, 0],
 ) -> bool | list[float, float]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
@@ -520,12 +507,8 @@ def sReaction(
     if not checkArguments(ELab, react, eject, res):
         return False
 
-    s1 = analyticSol(
-        iso1, iso2, isoEject, isoRes, ELab, angle=ang, exList=exList
-    )
-    s2 = analyticSol(
-        iso1, iso2, isoRes, isoEject, ELab, angle=ang, exList=exList
-    )
+    s1 = analyticSol(iso1, iso2, isoEject, isoRes, ELab, angle=ang, exList=exList)
+    s2 = analyticSol(iso1, iso2, isoRes, isoEject, ELab, angle=ang, exList=exList)
 
     solution = [s1, s2]
     return solution
@@ -534,9 +517,9 @@ def sReaction(
 # This is now deprecated
 
 
-def checkSecSol(emp: float, emt: float,
-                emE: float, emR: float,
-                ELab: float) -> float | bool:
+def checkSecSol(
+    emp: float, emt: float, emE: float, emR: float, ELab: float
+) -> float | bool:
     Q = getQVal(emp, emt, emE, emR)
     if Q < 0:
         Ethres = -Q * (emR + emE) / (emR + emE - emp)
@@ -547,9 +530,7 @@ def checkSecSol(emp: float, emt: float,
             print('Possible second solution')
             thetaM = math.acos(
                 math.sqrt(
-                    -(emR + emE)
-                    * (emR * Q + (emR - emp) * ELab)
-                    / (emp * emE * ELab)
+                    -(emR + emE) * (emR * Q + (emR - emp) * ELab) / (emp * emE * ELab)
                 )
             )
             return thetaM
@@ -559,11 +540,15 @@ def checkSecSol(emp: float, emt: float,
 # This is now deprecated
 
 
-def solveNum(ang: float, vE: float,
-             vR: float, Vcm: float,
-             isoE: str, isoR: str,
-             exList: list[float, ...] = [0, 0, 0, 0]
-             ) -> bool | list[float, ...]:
+def solveNum(
+    ang: float,
+    vE: float,
+    vR: float,
+    Vcm: float,
+    isoE: str,
+    isoR: str,
+    exList: list[float, ...] = [0, 0, 0, 0],
+) -> bool | list[float, ...]:
     emE = getEMass(isoE) + exList[2]
     emR = getEMass(isoR) + exList[3]
     thEject = 0
@@ -610,9 +595,7 @@ def solveNum(ang: float, vE: float,
     ]
 
 
-def xTremeTest(iso1: float, iso2: float,
-               E: float = 10,
-               ang:float = 30) -> list[Any]:
+def xTremeTest(iso1: float, iso2: float, E: float = 10, ang: float = 30) -> list[Any]:
     reactions = nReaction(iso1, iso2)
     l = []
     for e in reactions:
@@ -635,9 +618,9 @@ def xTremeTest(iso1: float, iso2: float,
 # level and the corresponding remaining energy
 
 
-def fussionCase(iso1: str, iso2: str,
-                E1L: float, E2L: float = 0
-                ) -> bool | tuple[float, ...]:
+def fussionCase(
+    iso1: str, iso2: str, E1L: float, E2L: float = 0
+) -> bool | tuple[float, ...]:
     isof = getCompound(iso1, iso2)
     if isof is False:
         return False
@@ -672,8 +655,7 @@ def getCompound(iso1: str, iso2: str) -> bool | str:
     return False
 
 
-def getCorrespLevE(iso: str, E: float
-                   ) -> bool | tuple[float, float]:
+def getCorrespLevE(iso: str, E: float) -> bool | tuple[float, float]:
     aVal, eName = iP.getIso(iso)
     getMoreData(iso)
     if not checkDictIso(iso):
@@ -727,17 +709,14 @@ def getPopLevels(iso1: str, aE: float) -> list[float, ...]:
 # If the excitation data is needed then this loads it.
 
 
-def getMoreData(iso: str, xFile: str = None
-                ) -> None:
+def getMoreData(iso: str, xFile: str = None) -> None:
     # Careful with neutrons and Nones
     A, k = iP.getIso(iso)
     levDict = {}
     if len(iDict[k][1][A]) < 2:
         if xFile is None:
             t = (iso,)
-            cursor.execute(
-                'SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t
-            )
+            cursor.execute('SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t)
             # Creating subDictionary
             for exData in cursor.fetchall():
                 if int(exData[0]) not in levDict:
@@ -757,10 +736,14 @@ def getMoreData(iso: str, xFile: str = None
 
 
 # This is now deprecated
-def getCoef(iso1: str, iso2: str,
-            isoE: str, isoR: str, ELab: float,
-            exList: list[float] = [0, 0, 0, 0]
-            ) -> list[Any]:
+def getCoef(
+    iso1: str,
+    iso2: str,
+    isoE: str,
+    isoR: str,
+    ELab: float,
+    exList: list[float] = [0, 0, 0, 0],
+) -> list[Any]:
     emp, emt, emE, emR = getAllEMasses(iso1, iso2, isoE, isoR, exList)
     Q = getQVal(emp, emt, emE, emR)
     # Pi=sqrt(2*emp*ELab)/c
@@ -804,11 +787,16 @@ def getEMass(iso1: str) -> bool | float:
 # when the reaction occurs (no fission or gammas for now)
 
 
-def exLevReact(ang: float,
-               iso1: str, iso2: str,
-               isoEject: str, isoRes: str,
-               E1L: float, E2L: float,
-               eVal: float = 1) -> list[Any]:
+def exLevReact(
+    ang: float,
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    E1L: float,
+    E2L: float,
+    eVal: float = 1,
+) -> list[Any]:
     if eVal == 1:
         isoEX1 = isoRes
     else:
@@ -842,16 +830,14 @@ def exLevReact(ang: float,
     return levList
 
 
-def getQVal(m1: float, m2: float,
-            m3: float, m4: float) -> float:
+def getQVal(m1: float, m2: float, m3: float, m4: float) -> float:
     Q = m1 + m2 - m3 - m4
     return Q
 
 
-def getIsoQVal(iso1: str, iso2: str,
-               iso3: str, iso4: str,
-               exList: list[float] = [0, 0, 0, 0]
-               ) -> float:
+def getIsoQVal(
+    iso1: str, iso2: str, iso3: str, iso4: str, exList: list[float] = [0, 0, 0, 0]
+) -> float:
     if not checkReaction(iso1, iso2, iso3, iso4):
         return False
     m1 = getEMass(iso1) + exList[0]  # Adding mass excitations
@@ -862,8 +848,7 @@ def getIsoQVal(iso1: str, iso2: str,
     return Q
 
 
-def getIsoQValAMU(iso1: str, iso2: str,
-                  iso3: str, iso4: str) -> float:
+def getIsoQValAMU(iso1: str, iso2: str, iso3: str, iso4: str) -> float:
     return getIsoQVal(iso1, iso2, iso3, iso4) / eCoef
 
 
@@ -872,12 +857,14 @@ def iso2String(k: str, iso: str, eVal: str = '') -> str:
 
 
 def xReaction(
-        iso1: str, iso2: str,
-        isoEject: str, isoRes: str,
-        ELab: float = 2.9,
-        ang: float = 30,
-        xf1: float | None = None,
-        xf2: float | None = None
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    ELab: float = 2.9,
+    ang: float = 30,
+    xf1: float | None = None,
+    xf2: float | None = None,
 ) -> list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
@@ -929,9 +916,7 @@ def xReaction(
     return lL
 
 
-def xXTremeTest(iso1: str, iso2: str,
-                E: float = 10,
-                ang: float = 30) -> list[Any]:
+def xXTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[Any]:
     reactions = nReaction(iso1, iso2)
     rStuff = []
     for e in reactions:
@@ -959,8 +944,7 @@ def xXTremeTest(iso1: str, iso2: str,
     return rStuff
 
 
-def checkArguments(ELab: float, react: bool,
-                   eject: str, res: str) -> bool:
+def checkArguments(ELab: float, react: bool, eject: str, res: str) -> bool:
     if ELab <= 0:
         print('Lab energy has to be positive')
         return False
@@ -975,10 +959,9 @@ def checkArguments(ELab: float, react: bool,
     return True
 
 
-def getAllEMasses(iso1: str, iso2: str,
-                  isoEject: str, isoRes: str,
-                  exList: list[float] = [0, 0, 0, 0]
-                  ) -> list[float, float, float, float]:
+def getAllEMasses(
+    iso1: str, iso2: str, isoEject: str, isoRes: str, exList: list[float] = [0, 0, 0, 0]
+) -> list[float, float, float, float]:
     emp = getEMass(iso1)
     emt = getEMass(iso2)
 
@@ -997,9 +980,9 @@ def getAllEMasses(iso1: str, iso2: str,
 # tolerance it returns values to hint where it might be from
 
 
-def fReact(E: float, bE: float,
-           angle: float, rList: list[Any],
-           tol: float = 140) -> None:
+def fReact(
+    E: float, bE: float, angle: float, rList: list[Any], tol: float = 140
+) -> None:
     for iR in rList:
         print('######################')
         print(iR)
@@ -1010,8 +993,7 @@ def fReact(E: float, bE: float,
         pFReact(E, tol, XXList)
 
 
-def pFReact(E: float, tol: float,
-            XXList: list[Any]) -> None:
+def pFReact(E: float, tol: float, XXList: list[Any]) -> None:
     for e in XXList:
         for ee in e[1]:
             for states in ee[1]:
@@ -1021,8 +1003,7 @@ def pFReact(E: float, tol: float,
                     print(e[0], ee[0], states)
 
 
-def findOE(Eang: float, ang: float,
-           iso1: str, iso2: str) -> bool | float:
+def findOE(Eang: float, ang: float, iso1: str, iso2: str) -> bool | float:
     E = Eang
     Emax = 2.0 * Eang
     dE = 0.01
@@ -1044,22 +1025,17 @@ def findOE(Eang: float, ang: float,
 # It prints the CS in mb
 
 
-def rutherford0(iso1: str, iso2: str,
-                Ecm: float, theta: float
-                ) -> float:
+def rutherford0(iso1: str, iso2: str, Ecm: float, theta: float) -> float:
     theta = math.radians(theta)
     z1 = getPnum(iso1)
     z2 = getPnum(iso2)
-    dSigma = (z1 * z2 * alpha * hbc / (4 * Ecm)) ** 2 / math.sin(
-        theta / 2
-    ) ** 4
+    dSigma = (z1 * z2 * alpha * hbc / (4 * Ecm)) ** 2 / math.sin(theta / 2) ** 4
     # converting to mb
     dSigma *= 10
     return dSigma
 
 
-def rutherfordLab0(iso1: str, iso2: str,
-                   ELab: float, thetaL: float) -> float:
+def rutherfordLab0(iso1: str, iso2: str, ELab: float, thetaL: float) -> float:
     """Returns the rutherford value in the lab frame"""
     Ecm = getInEcms(iso1, iso2, ELab)[2]  # Taking the 3rd argument
     K = getMass(iso1) / getMass(iso2)
@@ -1073,8 +1049,7 @@ def rutherfordLab0(iso1: str, iso2: str,
     return dSigmaL
 
 
-def solveAng(thetaL: float, ratio: float,
-             direction: str = 'f') -> bool | float:
+def solveAng(thetaL: float, ratio: float, direction: str = 'f') -> bool | float:
     """Returns the CM angle"""
     thetaL = math.radians(thetaL)
     tgThetaL = math.tan(thetaL)
@@ -1113,10 +1088,15 @@ def solveAng(thetaL: float, ratio: float,
     return math.degrees(thetaCM)
 
 
-def getAngs(iso1: str, iso2: str,
-            isoE: str, isoR: str,
-            E1L: float, exList: list[Any],
-            thetaL: float) -> bool | tuple[float, float]:
+def getAngs(
+    iso1: str,
+    iso2: str,
+    isoE: str,
+    isoR: str,
+    E1L: float,
+    exList: list[Any],
+    thetaL: float,
+) -> bool | tuple[float, float]:
     vE, vR, Vcm, Ef = getCoef(iso1, iso2, isoE, isoR, E1L, exList)
     r = 1.0 * vE / Vcm
     ratio = 1.0 / r
@@ -1133,15 +1113,15 @@ def getAngs(iso1: str, iso2: str,
 
 
 def getEsAndAngs(
-        iso1: str,
-        iso2: str,
-        isoE: str,
-        isoR: str,
-        E1L: float,
-        E2L: float = 0,
-        thetaL: float = 0,
-        exList: list[float] = [0, 0, 0, 0],
-        direction: str = 'f',
+    iso1: str,
+    iso2: str,
+    isoE: str,
+    isoR: str,
+    E1L: float,
+    E2L: float = 0,
+    thetaL: float = 0,
+    exList: list[float] = [0, 0, 0, 0],
+    direction: str = 'f',
 ) -> list[float]:
     angMax = getMaxAng(iso1, iso2, isoE, isoR, E1L, E2L, exList)[0]
     # Keeping angles in degrees
@@ -1182,13 +1162,15 @@ def getEsAndAngs(
     ]
 
 
-def getMaxAng(iso1: str,
-              iso2: str,
-              isoE: str,
-              isoR: str,
-              E1L: float, E2L: float = 0,
-              exList: list[float] = [0, 0, 0, 0]
-              ) -> bool | list[float, float]:
+def getMaxAng(
+    iso1: str,
+    iso2: str,
+    isoE: str,
+    isoR: str,
+    E1L: float,
+    E2L: float = 0,
+    exList: list[float] = [0, 0, 0, 0],
+) -> bool | list[float, float]:
     emp, emt, emE, emR = getAllEMasses(iso1, iso2, isoE, isoR, exList)
     # v1=sqrt(2.0*E1L/emp)
     # v2=0 #Zero for now
@@ -1213,9 +1195,7 @@ def getMaxAng(iso1: str,
     return [math.degrees(maxAng1), math.degrees(maxAng2)]
 
 
-def nEvents(Ni: float, aDens: float,
-            dSigma: float, dOmega: float
-            ) -> float:
+def nEvents(Ni: float, aDens: float, dSigma: float, dOmega: float) -> float:
     return Ni * aDens * dSigma * dOmega
 
 
@@ -1235,22 +1215,19 @@ def current2Part(current: float) -> float:
 # in part/mb
 
 
-def getT(ps: float, ts: float,
-         E: float, angle: float,
-         Nr: float, dOmega: float) -> float:
+def getT(
+    ps: float, ts: float, E: float, angle: float, Nr: float, dOmega: float
+) -> float:
     return 1.0 * Nr / (rutherfordLab0(ps, ts, E, angle) * dOmega)
 
 
-def getdSigma(Nn: float,
-              dOmega: float,
-              T: float) -> float:
+def getdSigma(Nn: float, dOmega: float, T: float) -> float:
     return 1.0 * Nn / (dOmega * T)
 
 
-def getdSigma2(pIso: str,
-               tIso: str, Nruth: float,
-               Nnucl: float,
-               ELab: float, angle: float) -> float:
+def getdSigma2(
+    pIso: str, tIso: str, Nruth: float, Nnucl: float, ELab: float, angle: float
+) -> float:
     return 1.0 * Nnucl / Nruth * rutherfordLab0(pIso, tIso, ELab, angle)
 
 
@@ -1294,12 +1271,14 @@ def getBEperNucleon(iso: str) -> float:
 # Values taken from A. Das and T. Ferbel book
 
 
-def getLDBE(iso: str,
-            a1: float = 15.6,
-            a2: float = 16.8,
-            a3: float = 0.72,
-            a4: float = 23.3,
-            a5: float = 34) -> float:
+def getLDBE(
+    iso: str,
+    a1: float = 15.6,
+    a2: float = 16.8,
+    a3: float = 0.72,
+    a4: float = 23.3,
+    a5: float = 34,
+) -> float:
     # All the coefficients are in MeV
     A, s = iP.getIso(iso)
     Z = getPnum(s)
@@ -1400,8 +1379,7 @@ def hardSphereQTCS(iso: str) -> float:
 # soft sphere differential CS
 
 
-def softSphereDCS(isop: str, isot: str,
-                  V0: float = 50) -> float:
+def softSphereDCS(isop: str, isot: str, V0: float = 50) -> float:
     a = nRadius(isot)
     # iso=str(ap)+sp
     em = getEMass(isop)
@@ -1411,16 +1389,14 @@ def softSphereDCS(isop: str, isot: str,
 # soft sphere total CS
 
 
-def softSphereTCS(isop: str, isot: str,
-                  V0: float = 50)-> float:
+def softSphereTCS(isop: str, isot: str, V0: float = 50) -> float:
     return 4 * math.pi * softSphereDCS(isop, isot, V0)
 
 
 # soft sphere using the second Born approximation
 
 
-def softSphereDSBorn(isop: str, isot: str,
-                     V0: float = 50) -> float:
+def softSphereDSBorn(isop: str, isot: str, V0: float = 50) -> float:
     a = nRadius(isot)
     # iso=str(ap)+sp
     em = getEMass(isop)
@@ -1432,17 +1408,16 @@ def softSphereDSBorn(isop: str, isot: str,
 # soft sphere using the second Born approximation for total CS
 
 
-def softSphereTSBorn(isop: str, isot: str,
-                     V0: float = 50) -> float:
+def softSphereTSBorn(isop: str, isot: str, V0: float = 50) -> float:
     return 4 * math.pi * softSphereDSBorn(isop, isot, V0)
 
 
 # Using the Yukawa potential
 
 
-def yukawaDCS(isop: str, isot: str, E: float,
-              theta: float, beta: float,
-              mu: float) -> float:
+def yukawaDCS(
+    isop: str, isot: str, E: float, theta: float, beta: float, mu: float
+) -> float:
     # iso=str(ap)+sp
     eMass = getEMass(isop)
     theta = math.radians(theta)
@@ -1455,9 +1430,9 @@ def yukawaDCS(isop: str, isot: str, E: float,
 # this is still in testing
 
 
-def yukawaTCS(isop: str, isot: str, E: float,
-              theta: float, beta: float,
-              mu: float) -> float:
+def yukawaTCS(
+    isop: str, isot: str, E: float, theta: float, beta: float, mu: float
+) -> float:
     # iso=str(ap)+sp
     eMass = getEMass(isop)
     theta = math.radians(theta)
@@ -1503,13 +1478,7 @@ def gamowAlpha(iso1: str) -> str | float:
     x = 1.0 * Q / B
     # Both equations should give the same... but they don't!!
     # See Krane pg 253, eq. 8.16
-    G = (
-        math.sqrt(2 * em / Q)
-        * alpha
-        * z1
-        * z2
-        * (math.pi / 2 - 2 * math.sqrt(x))
-    )
+    G = math.sqrt(2 * em / Q) * alpha * z1 * z2 * (math.pi / 2 - 2 * math.sqrt(x))
     # G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
     return G
 
@@ -1564,9 +1533,7 @@ def getB(iso1: str, isoEject: str) -> float:
 
 
 # This is still in testing
-def stoppingPowerD(iso1: str, iso2: str,
-                   E: float,
-                   I: float) -> float:
+def stoppingPowerD(iso1: str, iso2: str, E: float, I: float) -> float:
     z1 = getPnum(iso1)
     z2 = getPnum(iso2)
     A = getMass(iso2)
@@ -1575,9 +1542,7 @@ def stoppingPowerD(iso1: str, iso2: str,
 
 
 # This is also still in testing
-def stoppingPowerI(iso1: str, iso2: str,
-                   E: float, I: float,
-                   L: float) -> float:
+def stoppingPowerI(iso1: str, iso2: str, E: float, I: float, L: float) -> float:
     # L in microns (10**-4 cm)
     x = 0
     L = L * 10 ** (-4)
@@ -1594,11 +1559,15 @@ def stoppingPowerI(iso1: str, iso2: str,
 
 
 # def getVcms(v1L,v2L,m1,m2):
-def getVcms(iso1: str, iso2: str,
-            isoEject: str, isoRes: str,
-            E1L: float, E2L: float = 0,
-            exList: list[float] = [0, 0, 0, 0]
-            ) -> tuple [bool] | tuple[float]:
+def getVcms(
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    E1L: float,
+    E2L: float = 0,
+    exList: list[float] = [0, 0, 0, 0],
+) -> tuple[bool] | tuple[float]:
     # In case the isos are excited b4 reaction
     m1 = getEMass(iso1) + exList[0]
     m2 = getEMass(iso2) + exList[1]
@@ -1629,10 +1598,9 @@ def getVcms(iso1: str, iso2: str,
     return vEcm, vRcm, Vcm
 
 
-def getVcmsFromEcm(iso1: str, iso2: str,
-                   Ecm: float,
-                   redXL: list[float] = [0, 0]
-                   ) -> tuple[bool, bool] | tuple[float, float]:
+def getVcmsFromEcm(
+    iso1: str, iso2: str, Ecm: float, redXL: list[float] = [0, 0]
+) -> tuple[bool, bool] | tuple[float, float]:
     m1 = getEMass(iso1) + redXL[0]
     m2 = getEMass(iso2) + redXL[1]
     if Ecm <= 0:
@@ -1643,8 +1611,7 @@ def getVcmsFromEcm(iso1: str, iso2: str,
     return v1cm, v2cm
 
 
-def getEFromV(iso: str, v: float,
-              xMass: float = 0):
+def getEFromV(iso: str, v: float, xMass: float = 0):
     em = getEMass(iso) + xMass
     return 0.5 * em * (v / c) ** 2
 
@@ -1653,11 +1620,14 @@ def getEFromV(iso: str, v: float,
 
 
 def analyticSol(
-        iso1: str, iso2: str,
-        isoEject: str, isoRes: str,
-        E1L: float, E2L: float = 0,
-        angle: float = 0,
-        exList: list[float] = [0, 0, 0, 0]
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    E1L: float,
+    E2L: float = 0,
+    angle: float = 0,
+    exList: list[float] = [0, 0, 0, 0],
 ) -> list[Any]:
     vEcm, vRcm, Vcm = getVcms(
         iso1, iso2, isoEject, isoRes, E1L, E2L, exList
@@ -1673,9 +1643,7 @@ def analyticSol(
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
     redExL = exList[2:]
-    sol1, sol2 = analyticDetails(
-        vEcm, vRcm, Vcm, angle, isoEject, isoRes, redExL
-    )
+    sol1, sol2 = analyticDetails(vEcm, vRcm, Vcm, angle, isoEject, isoRes, redExL)
     angLA1, Ea1, angLB1, Eb1 = sol1
     retVal2 = []
     if sol2 != []:
@@ -1685,11 +1653,15 @@ def analyticSol(
     return [retVal1, retVal2]
 
 
-def analyticDetails(vEcm: float, vRcm: float,
-                    Vcm: float, angle: float,
-                    isoEject: str, isoRes: str,
-                    redExL: list[float] = [0, 0]
-                    ) -> list[Any]:
+def analyticDetails(
+    vEcm: float,
+    vRcm: float,
+    Vcm: float,
+    angle: float,
+    isoEject: str,
+    isoRes: str,
+    redExL: list[float] = [0, 0],
+) -> list[Any]:
     angle = math.radians(angle)
     kAng = math.tan(angle)
     k1 = 1.0 * vEcm / Vcm
@@ -1794,10 +1766,13 @@ def analyticDetails(vEcm: float, vRcm: float,
 
 
 def getMaxAngles(
-    iso1: str, iso2: str, isoEject: str,
-        isoRes: str, E1L: float,
-        E2L: float = 0,
-        exList: list[float] = [0, 0, 0, 0]
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    E1L: float,
+    E2L: float = 0,
+    exList: list[float] = [0, 0, 0, 0],
 ) -> list[Any]:
     vEcm, vRcm, Vcm = getVcms(iso1, iso2, isoEject, isoRes, E1L, E2L, exList)
     if Vcm is False:
@@ -1857,8 +1832,7 @@ def gamowE(iso1: str, iso2: str):
     return GE
 
 
-def gamowPeak(iso1: str, iso2: str,
-              T: float) -> float:
+def gamowPeak(iso1: str, iso2: str, T: float) -> float:
     GE = gamowE(iso1, iso2)
     TE = temp2E(T) / 10**6  # Converting to MeV
     GP = (TE**2 * GE / 4) ** (1.0 / 3)
@@ -1887,8 +1861,7 @@ def getBeta(iso: str, E: float) -> float:
     return beta
 
 
-def getTOF(iso: str, E: float,
-           L: float) -> float:
+def getTOF(iso: str, E: float, L: float) -> float:
     # Here L is in meters
     beta = getBeta(iso, E)
     v = c * beta
@@ -1897,8 +1870,7 @@ def getTOF(iso: str, E: float,
     return t
 
 
-def getElectDensity(Z: int, A_r: float,
-                    rho: float) -> float:
+def getElectDensity(Z: int, A_r: float, rho: float) -> float:
     """Returns the electron density, in #e^-/cm^3"""
     # Properly is; n=(N_a*Z*rho)/(A*M_u), but M_u=1 g/mol
     n = (N_a * Z * rho) / A_r
@@ -1921,9 +1893,9 @@ def getBlochMeanExcE(Z: int) -> float:
 #               "copper":[29,63.54,8.96]}
 
 
-def checkMaterial(material: str,
-                  bloch: bool = False,
-                  density: float | None = None) -> bool:
+def checkMaterial(
+    material: str, bloch: bool = False, density: float | None = None
+) -> bool:
     # Calls get material properties to fill the cache only once
     vals = getMaterialProperties(material, bloch, density)
     if vals[-1] is False:
@@ -1932,10 +1904,9 @@ def checkMaterial(material: str,
 
 
 @lru_cache
-def getMaterialProperties(material: str,
-                          bloch: bool = False,
-                          density: float | None = None
-                          ) -> Sequence[Any]:
+def getMaterialProperties(
+    material: str, bloch: bool = False, density: float | None = None
+) -> Sequence[Any]:
     materialDict = lS.getChemDictFromFile()
     if material not in materialDict:
         return False, False, False, False
@@ -1949,8 +1920,7 @@ def getMaterialProperties(material: str,
     return materialDict[material]
 
 
-def getBetheLoss(iso: str, E: float,
-                 material: str) -> float:
+def getBetheLoss(iso: str, E: float, material: str) -> float:
     """Gets the Bethe energy loss differential of an ion through a
     material, it includes soft and hard scattering.
 
@@ -1983,8 +1953,7 @@ def getCBbetaCoef(iso: str, material: str) -> list[float, float]:
     return [C_beta, B_beta]
 
 
-def integrateELoss(iso: str, E: float,
-                   material: str, thick: float) -> float:
+def integrateELoss(iso: str, E: float, material: str, thick: float) -> float:
     """Gets the final energy of an ion going through a material with a
     certain thickness.
 
@@ -2023,8 +1992,7 @@ def integrateELoss(iso: str, E: float,
 # High energies might take a while
 
 
-def getParticleRange(iso: str, E: float,
-                     material: str) -> float:
+def getParticleRange(iso: str, E: float, material: str) -> float:
     """Gets the range (in microns) of a charged particle in a material."""
     dx = 10 ** (-2)  # TODO: make smarter selection 4 this
 

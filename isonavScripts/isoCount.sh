@@ -26,4 +26,3 @@ done
 
 echo "The max values are:"
 echo -e "$maxN\t$maxS\t$maxIsoC"
-

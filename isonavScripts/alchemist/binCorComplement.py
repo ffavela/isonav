@@ -539,9 +539,7 @@ def getMasterThetaDict(rStr, dNum, partition):
     masterThetaDict = {}
     for i in range(partition):
         theta += 2 * dTheta
-        masterThetaDict[theta] = getThetaDictWithRanges(
-            rStr, dNum, theta, dTheta
-        )
+        masterThetaDict[theta] = getThetaDictWithRanges(rStr, dNum, theta, dTheta)
     return masterThetaDict
 
 
