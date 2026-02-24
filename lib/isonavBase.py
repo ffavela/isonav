@@ -48,18 +48,18 @@ def checkDictIso(iso: str) -> bool:
         return True
 
 
-def getKey(pNum: int) -> bool | str:
+def getKey(pNum: int) -> str:
     if 0 <= pNum < len(lS.listStuff):
         return lS.listStuff[pNum]
-    return False
+    raise ValueError("Element not found")
 
 
-def getPnum(iso: str) -> int | bool:
+def getPnum(iso: str) -> int:
     A, k = iP.getIso(iso)
     if k == 'None' or k == '0None':
         return 0
     if k not in lS.listStuff:
-        return False
+        raise ValueError("Element not found")
     return lS.listStuff.index(k)
 
 
@@ -407,6 +407,7 @@ def emitDecayQVal(iso: str, emit: str = '4He', num: int = 1) -> bool | float:
     emitEMass = getEMass(emit)
     if not emitEMass:
         return False
+
     newIsoEMass = getEMass(newIso)
     if not newIsoEMass:
         return False
@@ -415,7 +416,7 @@ def emitDecayQVal(iso: str, emit: str = '4He', num: int = 1) -> bool | float:
     return QVal
 
 
-def getNewIso(iso: str, emit: str = '4He', num: int = 1) -> bool | str:
+def getNewIso(iso: str, emit: str = '4He', num: int = 1) -> str:
     isoN = getNnum(iso)
     isoP = getPnum(iso)
 
@@ -428,16 +429,16 @@ def getNewIso(iso: str, emit: str = '4He', num: int = 1) -> bool | str:
     # Still not sure about this condition, maybe neutron condition can be
     # loosened, check special cases such as deuteron
     if newIsoP <= 0 or newIsoP <= 0:
-        return False
+        raise ValueError("newIso not found")
 
     newA = newIsoP + newIsoN
     newKey = getKey(newIsoP)
     if not newKey:
-        return False
+        raise ValueError("newIso not found")
 
     newIso = str(newA) + newKey
     if not checkIsoExist1(newIso):
-        return False
+        raise ValueError("newIso not found")
 
     return newIso
 
@@ -506,15 +507,17 @@ def sReaction(
     ELab: float = 2.9,
     ang: float = 30,
     exList: list[float] = [0, 0, 0, 0],
-) -> bool | list[float, float]:
+) -> list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
     aRes, res = iP.getIso(isoRes)
 
     react = checkReaction(iso1, iso2, isoEject, isoRes)
+    if eject is None or res is None:
+        raise ValueError("Invalid arguments")
     if not checkArguments(ELab, react, eject, res):
-        return False
+        raise ValueError("Invalid arguments")
 
     s1 = analyticSol(iso1, iso2, isoEject, isoRes, ELab, angle=ang, exList=exList)
     s2 = analyticSol(iso1, iso2, isoRes, isoEject, ELab, angle=ang, exList=exList)
@@ -556,11 +559,11 @@ def solveNum(
     Vcm: float,
     isoE: str,
     isoR: str,
-    exList: list[float, ...] = [0, 0, 0, 0],
-) -> bool | list[float, ...]:
+    exList: list[float] = [0, 0, 0, 0],
+) -> bool | list[float]:
     emE = getEMass(isoE) + exList[2]
     emR = getEMass(isoR) + exList[3]
-    thEject = 0
+    thEject = 0.0
     dTh = 0.2
     ang = math.radians(ang)
     if ang > math.pi / 2:
@@ -604,7 +607,7 @@ def solveNum(
     ]
 
 
-def xTremeTest(iso1: float, iso2: float, E: float = 10, ang: float = 30) -> list[Any]:
+def xTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[Any]:
     reactions = nReaction(iso1, iso2)
     l = []
     for e in reactions:
@@ -627,12 +630,10 @@ def xTremeTest(iso1: float, iso2: float, E: float = 10, ang: float = 30) -> list
 # level and the corresponding remaining energy
 
 
-def fussionCase(
-    iso1: str, iso2: str, E1L: float, E2L: float = 0
-) -> bool | tuple[float, ...]:
+def fussionCase(iso1: str, iso2: str, E1L: float, E2L: float = 0) -> tuple[Any, ...]:
     isof = getCompound(iso1, iso2)
     if isof is False:
-        return False
+        raise ValueError("Compound isotope not found")
     Q = getIsoQVal(iso1, iso2, '0None', isof)
     E1cm, E2cm, Ecm, EcmSys = getInEcms(iso1, iso2, E1L)
     ETotcm = Q + Ecm
@@ -646,7 +647,7 @@ def fussionCase(
     return isof, maxLev, maxLE, rKE
 
 
-def getCompound(iso1: str, iso2: str) -> bool | str:
+def getCompound(iso1: str, iso2: str) -> str:
     a1, k1 = iP.getIso(iso1)
     a2, k2 = iP.getIso(iso2)
 
@@ -657,18 +658,18 @@ def getCompound(iso1: str, iso2: str) -> bool | str:
     af = a1 + a2
     kf = getKey(pf)
     if kf is False:
-        return False
+        raise ValueError("No compound nucleus found")
     isof = str(af) + kf
     if getPnum(isof):
         return isof
-    return False
+    raise ValueError("No compound nucleus found")
 
 
-def getCorrespLevE(iso: str, E: float) -> bool | tuple[float, float]:
+def getCorrespLevE(iso: str, E: float) -> tuple[float, float]:
     aVal, eName = iP.getIso(iso)
     getMoreData(iso)
     if not checkDictIso(iso):
-        return False
+        raise ValueError("Isotope not found")
     lev, lEMax = 0, 0
     for e in iDict[eName][1][aVal][1]:
         lE = iDict[eName][1][aVal][1][e][0]
@@ -1576,7 +1577,7 @@ def getVcms(
     E1L: float,
     E2L: float = 0,
     exList: list[float] = [0, 0, 0, 0],
-) -> tuple[bool] | tuple[float]:
+) -> tuple[Any, ...]:
     # In case the isos are excited b4 reaction
     m1 = getEMass(iso1) + exList[0]
     m2 = getEMass(iso2) + exList[1]

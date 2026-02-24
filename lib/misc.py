@@ -1,5 +1,5 @@
-from isonavBase import getKey, QStable, QDecay, nReaction
-from loadingStuff import iDict
+from lib.isonavBase import getKey, QStable, QDecay, nReaction  # type: ignore
+from lib.loadingStuff import iDict
 
 # Some miscellaneous functions
 # May need to update them
