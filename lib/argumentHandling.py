@@ -479,8 +479,7 @@ def argHand(args: dict[str, str]) -> int:
             print('Error; energy has to be a positive number')
             return 777
         Elab = float(Elab)
-        if not iB.checkReaction(isop, isot, isoE, isoR):
-            return 666
+        _ = iB.checkReaction(isop, isot, isoE, isoR)
         a = iB.getMaxAngles(isop, isot, isoE, isoR, Elab)
         print(a[0], a[1])
         return 0
@@ -502,8 +501,7 @@ def argHand(args: dict[str, str]) -> int:
         Elab = float(Elab)
         angle = float(angle)
 
-        if not iB.checkReaction(isop, isot, isoE, isoR):
-            return 666
+        _ = iB.checkReaction(isop, isot, isoE, isoR)
 
         isop, isot = oF.getRealIso(isop), oF.getRealIso(isot)
         isoE, isoR = oF.getRealIso(isoE), oF.getRealIso(isoR)

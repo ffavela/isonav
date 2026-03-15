@@ -467,24 +467,22 @@ def QStable(iso1: str) -> bool | list[Any]:
     return decays
 
 
-def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> bool | list[Any]:
+def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
     aRes, res = iP.getIso(isoRes)
     # Making sure that the cases 'n' are '1n' 'p' is '1H' etc
     if eject is None or res is None:
-        print('Reaction is invalid')
-        return False
+        raise ValueError('Reaction is invalid')
     isoEject = str(aEject) + eject
     isoRes = str(aRes) + res
     if not checkIsoExistence(iso1, iso2):
-        print('Entered first cond')
-        return False
+        raise ValueError('An initial isotope does not exist')
 
     if not checkIsoExistence(isoEject, isoRes):
-        print('Entered second cond')
-        return False
+        raise ValueError('A final isotope does not exist')
+
     reactionStuffa = [eject, aEject, res, aRes]
     reactionStuffb = [res, aRes, eject, aEject]
 
@@ -495,8 +493,7 @@ def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> bool | li
         # Excluding the threshold and the QValue
         if reactionStuffa == ret[:2] or reactionStuffb == ret[:2]:
             return ret
-    print('Reaction is invalid')
-    return False
+    raise ValueError('Reaction is invalid')
 
 
 def sReaction(
@@ -851,8 +848,7 @@ def getQVal(m1: float, m2: float, m3: float, m4: float) -> float:
 def getIsoQVal(
     iso1: str, iso2: str, iso3: str, iso4: str, exList: list[float] = [0, 0, 0, 0]
 ) -> float:
-    if not checkReaction(iso1, iso2, iso3, iso4):
-        return False
+    _ = checkReaction(iso1, iso2, iso3, iso4)
     m1 = getEMass(iso1) + exList[0]  # Adding mass excitations
     m2 = getEMass(iso2) + exList[1]
     m3 = getEMass(iso3) + exList[2]
@@ -865,7 +861,7 @@ def getIsoQValAMU(iso1: str, iso2: str, iso3: str, iso4: str) -> float:
     return getIsoQVal(iso1, iso2, iso3, iso4) / eCoef
 
 
-def iso2String(k: str, iso: str, eVal: str = '') -> str:
+def iso2String(k: str, iso: int, eVal: str = '') -> str:
     return eVal + str(iso) + k
 
 
@@ -876,8 +872,8 @@ def xReaction(
     isoRes: str,
     ELab: float = 2.9,
     ang: float = 30,
-    xf1: float | None = None,
-    xf2: float | None = None,
+    xf1: str | None = None,
+    xf2: str | None = None,
 ) -> list[Any] | bool:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
@@ -904,6 +900,8 @@ def xReaction(
     if xf2 is not None:
         getMoreData(isoRes, xf2)
 
+    if aEject is None or aRes is None:
+        raise ValueError('Invalid isotope')
     c = [iso2String(eject, aEject, '*'), iso2String(res, aRes, '')]
     # lL.append([c,exLevReact(ang,iso1,iso2,isoEject,isoRes,ELab,Ef,0)])
     exL1 = exLevReact(ang, iso1, iso2, isoEject, isoRes, E1L, E2L, 0)
@@ -959,7 +957,7 @@ def xXTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[An
     return rStuff
 
 
-def checkArguments(ELab: float, react: float, eject: str, res: str) -> bool:
+def checkArguments(ELab: float, react: list[Any], eject: str, res: str) -> bool:
     if ELab <= 0:
         print('Lab energy has to be positive')
         return False
