@@ -15,12 +15,14 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Utility functions for nuclear physics reactions"""
+
 import math
 import lib.loadingStuff as lS  # type: ignore
 import lib.isoParser as iP  # type: ignore
 from functools import lru_cache
 import sqlite3
-from typing import Any, Sequence
+from typing import Any, Sequence, Optional
 
 conn = sqlite3.connect(lS.isoDatadb)
 cursor = conn.cursor()
@@ -36,8 +38,6 @@ alpha: float = 1 / 137.036  # fine structure
 electEMass: float = 0.5109989461  # mass of the electron in MeV
 N_a: float = 6.022140857e23  # mol^-1, Avogadro constant
 # cfm=1 #in fm/s
-
-# utility functions for nuclear physics reactions
 
 
 def checkDictIso(iso: str) -> bool:
@@ -467,7 +467,7 @@ def QStable(iso1: str) -> bool | list[Any]:
     return decays
 
 
-def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> bool:
+def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> bool | list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
@@ -516,6 +516,7 @@ def sReaction(
     react = checkReaction(iso1, iso2, isoEject, isoRes)
     if eject is None or res is None:
         raise ValueError("Invalid arguments")
+
     if not checkArguments(ELab, react, eject, res):
         raise ValueError("Invalid arguments")
 
@@ -654,6 +655,8 @@ def getCompound(iso1: str, iso2: str) -> str:
     p1 = getPnum(iso1)
     p2 = getPnum(iso2)
 
+    if a1 is None or a2 is None:
+        raise ValueError("No compound nucleus found")
     pf = p1 + p2
     af = a1 + a2
     kf = getKey(pf)
@@ -690,7 +693,7 @@ def getLevelE(iso1: str, level: float) -> float:
     return iDict[k][1][A][1][level][0]
 
 
-def getAllLevels(iso: str) -> list[Any]:
+def getAllLevels(iso: str) -> list[Any] | int:
     A, k = iP.getIso(iso)
     getMoreData(iso)
     if not checkDictIso(iso):
@@ -701,8 +704,8 @@ def getAllLevels(iso: str) -> list[Any]:
     return lList
 
 
-def getPopLevels(iso1: str, aE: float) -> list[float, ...]:
-    levels = []
+def getPopLevels(iso1: str, aE: float) -> list[Any]:
+    levels: list[Any] = []
     iso, eName = iP.getIso(iso1)
 
     getMoreData(iso1)
@@ -719,7 +722,7 @@ def getPopLevels(iso1: str, aE: float) -> list[float, ...]:
 # If the excitation data is needed then this loads it.
 
 
-def getMoreData(iso: str, xFile: str = None) -> None:
+def getMoreData(iso: str, xFile: Optional[str] = None) -> None:
     # Careful with neutrons and Nones
     A, k = iP.getIso(iso)
     levDict = {}
@@ -753,7 +756,7 @@ def getCoef(
     isoR: str,
     ELab: float,
     exList: list[float] = [0, 0, 0, 0],
-) -> list[Any]:
+) -> tuple[Any, ...]:
     emp, emt, emE, emR = getAllEMasses(iso1, iso2, isoE, isoR, exList)
     Q = getQVal(emp, emt, emE, emR)
     # Pi=sqrt(2*emp*ELab)/c
@@ -817,7 +820,7 @@ def exLevReact(
         popLevels = [[1, 0.0]]
     levList = []
     # For sending the mass excitations into getCoef
-    exList = [0, 0, 0, 0]
+    exList: list[float] = [0, 0, 0, 0]
     for e in popLevels:
         # print e
         if e[1] is False and e[0] != 1:
@@ -875,13 +878,15 @@ def xReaction(
     ang: float = 30,
     xf1: float | None = None,
     xf2: float | None = None,
-) -> list[Any]:
+) -> list[Any] | bool:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
     aRes, res = iP.getIso(isoRes)
 
     react = checkReaction(iso1, iso2, isoEject, isoRes)
+    if eject is None or res is None:
+        raise ValueError("Invalid exit reaction")
     if not checkArguments(ELab, react, eject, res):
         return False
     Q = react[3]
@@ -954,7 +959,7 @@ def xXTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[An
     return rStuff
 
 
-def checkArguments(ELab: float, react: bool, eject: str, res: str) -> bool:
+def checkArguments(ELab: float, react: float, eject: str, res: str) -> bool:
     if ELab <= 0:
         print('Lab energy has to be positive')
         return False
@@ -1813,11 +1818,11 @@ def getMaxAngles(
     return [math.degrees(maxAng1), math.degrees(maxAng2)]
 
 
-def getIsotopes(s: str) -> bool | list[Any]:
+def getIsotopes(s: str) -> list[Any]:
     a, key = iP.getIso(s)
     l = []
     if key not in iDict:
-        return False
+        raise ValueError("Isotope not found")
     for e in iDict[key][1]:
         isoVar = str(e) + key
         l += [[isoVar, iDict[key][1][e][0]]]
