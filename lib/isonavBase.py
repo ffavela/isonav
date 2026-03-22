@@ -874,7 +874,7 @@ def xReaction(
     ang: float = 30,
     xf1: str | None = None,
     xf2: str | None = None,
-) -> list[Any] | bool:
+) -> list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
@@ -884,7 +884,7 @@ def xReaction(
     if eject is None or res is None:
         raise ValueError("Invalid exit reaction")
     if not checkArguments(ELab, react, eject, res):
-        return False
+        raise ValueError("Invalid reaction 2")
     Q = react[3]
 
     # vE,vR,Vcm,Ef=getCoef(iso1,iso2,isoEject,isoRes,ELab)
@@ -974,7 +974,7 @@ def checkArguments(ELab: float, react: list[Any], eject: str, res: str) -> bool:
 
 def getAllEMasses(
     iso1: str, iso2: str, isoEject: str, isoRes: str, exList: list[float] = [0, 0, 0, 0]
-) -> list[float, float, float, float]:
+) -> tuple[float, float, float, float]:
     emp = getEMass(iso1)
     emt = getEMass(iso2)
 
@@ -1068,7 +1068,7 @@ def solveAng(thetaL: float, ratio: float, direction: str = 'f') -> bool | float:
     tgThetaL = math.tan(thetaL)
     # "f" is for forward sol "b" for backward sol
     if direction == 'f':
-        thetaCM = 0
+        thetaCM = 0.0
         dTh = 0.05
         sign = 1
     else:
@@ -1109,7 +1109,7 @@ def getAngs(
     E1L: float,
     exList: list[Any],
     thetaL: float,
-) -> bool | tuple[float, float]:
+) -> tuple[float, float]:
     vE, vR, Vcm, Ef = getCoef(iso1, iso2, isoE, isoR, E1L, exList)
     r = 1.0 * vE / Vcm
     ratio = 1.0 / r
@@ -1183,14 +1183,13 @@ def getMaxAng(
     E1L: float,
     E2L: float = 0,
     exList: list[float] = [0, 0, 0, 0],
-) -> bool | list[float, float]:
+) -> list[float]:
     emp, emt, emE, emR = getAllEMasses(iso1, iso2, isoE, isoR, exList)
     # v1=sqrt(2.0*E1L/emp)
     # v2=0 #Zero for now
     vE, vR, Vcm, Ef = getCoef(iso1, iso2, isoE, isoR, E1L, exList)
     if vE is False:
-        print('Not enough energy to get angle')
-        return False
+        raise ValueError('Not enough energy to get angle')
 
     r1 = 1.0 * vE / Vcm
     r2 = 1.0 * vR / Vcm
