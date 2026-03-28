@@ -354,10 +354,10 @@ def nReaction(iso1: str, iso2: str, Ex: float = 0.0) -> list[Any]:
 
 # Not yet perfect
 # Not any beta decays
-def QDecay(iso1: str, Ex: float = 0.0) -> bool | list[Any]:
+def QDecay(iso1: str, Ex: float = 0.0) -> list[Any]:
     decayCand = nReaction(iso1, '0None', Ex=Ex)
-    if decayCand is False:
-        return False
+    if decayCand is bool:
+        raise ValueError("No decay candidates found")
     decays = [val[0:2] + [val[3]] for val in decayCand if val[3] > 0]
     ndec = []
     for d in decays:
@@ -1227,9 +1227,7 @@ def current2Part(current: float) -> float:
 # in part/mb
 
 
-def getT(
-    ps: float, ts: float, E: float, angle: float, Nr: float, dOmega: float
-) -> float:
+def getT(ps: str, ts: str, E: float, angle: float, Nr: float, dOmega: float) -> float:
     return 1.0 * Nr / (rutherfordLab0(ps, ts, E, angle) * dOmega)
 
 
@@ -1259,7 +1257,7 @@ def getDensityIncmSquare(T: float, current: float) -> float:
 # Binding Energy
 
 
-def getBE(iso: float) -> float:
+def getBE(iso: str) -> float:
     # iso=str(A)+s
     A, k = iP.getIso(iso)
     z = getPnum(iso)
@@ -1268,6 +1266,8 @@ def getBE(iso: float) -> float:
     pm = getEMass('1H')
     # neutron mass
     nm = getEMass('1n')
+    if A is None:
+        raise ValueError("A None 'A' cannot have a binding energy")
     return em - z * pm - (A - z) * nm
 
 
@@ -1276,6 +1276,8 @@ def getBE(iso: float) -> float:
 
 def getBEperNucleon(iso: str) -> float:
     A, k = iP.getIso(iso)
+    if A is None:
+        raise ValueError("A None 'A' cannot have a binding energy")
     return 1.0 * getBE(iso) / A
 
 
@@ -1293,6 +1295,8 @@ def getLDBE(
 ) -> float:
     # All the coefficients are in MeV
     A, s = iP.getIso(iso)
+    if s is None or A is None:
+        raise ValueError("Cannot calculate binding energy")
     Z = getPnum(s)
     N = getNnum(iso)
     if (N % 2) == 0 and (Z % 2) == 0:  # Even even case
@@ -1314,6 +1318,8 @@ def getLDBE(
 
 def getLDBEperNucleon(iso: str) -> float:
     A, s = iP.getIso(iso)
+    if A is None:
+        raise ValueError("A None 'A' cannot have a binding energy")
     return 1.0 * getLDBE(iso) / A
 
 
@@ -1327,6 +1333,8 @@ def getLDEMass(iso: str) -> float:
     pm = getEMass('1H')
     # neutron mass
     nm = getEMass('n')
+    if A is None:
+        raise ValueError("A None 'A' cannot have a binding energy")
     return Z * pm + (A - Z) * nm + getLDBE(iso)
 
 
@@ -1365,7 +1373,7 @@ def comptonW(iso: str) -> float:
 # Reduced Compton wavelength
 
 
-def rComptonW(iso: str) -> str:
+def rComptonW(iso: str) -> float:
     em = getEMass(iso)
     return hbc / em
 
@@ -1462,6 +1470,8 @@ def yukawaTCS(
 
 def getTAlpha(radIso: str) -> float:
     A, k = iP.getIso(radIso)
+    if A is None or k is None:
+        raise ValueError("Cannot alpha decay, Nones are present")
     daughterIso = str(A - 4) + getKey(getPnum(k) - 2)
     # print daughterIso
     Q = getIsoQVal('0None', radIso, '4He', daughterIso)
@@ -1472,16 +1482,12 @@ def getTAlpha(radIso: str) -> float:
 # Using gamow factor according to krane eq. 8.17
 
 
-def gamowAlpha(iso1: str) -> str | float:
+def gamowAlpha(iso1: str) -> float:
     isoEject = '4He'
-    # a1,s1=iP.getIso(iso1)
-    # aEject,sEject=iP.getIso(isoEject)
     decay = findDecay(iso1, isoEject)
-    if decay != 'None':
-        Q = decay[2]
-    else:
-        return 'None'
-
+    if decay == 'None':
+        raise ValueError("Cannot alpha decay")
+    Q = decay[2]
     B = getB(iso1, isoEject)
     em = getEMass(isoEject)  # Most probably alpha part mass
     z1 = getPnum(iso1)
@@ -1516,21 +1522,18 @@ def gamowHL(iso1: str) -> str | float:
     V0 = 35  # 50
     em = getEMass(iso1)
     G = gamowAlpha(iso1)
+    if G == 'None':
+        raise ValueError("Cannot compute Gamow Half Life")
     tHalf = ln2 * a / cfm * math.sqrt(em / (V0 + Q)) * math.e ** (2 * G)
     return tHalf
 
 
-def findDecay(iso1: str, ejectIso: str) -> str | list[Any]:
+def findDecay(iso1: str, ejectIso: str) -> list[Any]:
     rList = QDecay(iso1)
-    # aEject,sEject=iP.getIso(ejectIso)
-    # for e in rList:
-    #     if sEject==e[0] and aEject==e[1]:
-    #         return e
     for e in rList:
         if ejectIso in e:
             return e
-    # Take care of this case
-    return 'None'
+    raise ValueError("No decay found")
 
 
 # For alpha decay is the barrier penetration energy for decay (in MeV),
@@ -1556,7 +1559,7 @@ def stoppingPowerD(iso1: str, iso2: str, E: float, I: float) -> float:
 # This is also still in testing
 def stoppingPowerI(iso1: str, iso2: str, E: float, I: float, L: float) -> float:
     # L in microns (10**-4 cm)
-    x = 0
+    x = 0.0
     L = L * 10 ** (-4)
     dx = L / 10
     while x < L or E <= 0:
@@ -1649,7 +1652,7 @@ def analyticSol(
     # This part should be updated to out vals etc
     maxAng = getMaxAngles(iso1, iso2, isoEject, isoRes, E1L, E2L, exList)[0]
     if maxAng == 'NaN':
-        return 'NaN'
+        raise ValueError("Error; max angle is not a number")
     if angle >= maxAng:
         return [[False, False, False, False], []]
     # maxAng=radians(maxAng) #not sure about this
@@ -1818,7 +1821,7 @@ def getMaxAngles(
 def getIsotopes(s: str) -> list[Any]:
     a, key = iP.getIso(s)
     l = []
-    if key not in iDict:
+    if key not in iDict or key is None:
         raise ValueError("Isotope not found")
     for e in iDict[key][1]:
         isoVar = str(e) + key
@@ -1940,8 +1943,6 @@ def getBetheLoss(iso: str, E: float, material: str) -> float:
     beta = getBeta(iso, E)
     beta2 = beta**2
     coefs = getCBbetaCoef(iso, material)
-    if coefs is None:
-        return None
     C_beta, B_beta = coefs
     # remember dE/dx is negative, it is the relativistic formula
     dEx = C_beta / beta2 * (math.log((B_beta * beta2) / (1 - beta2)) - beta2)
@@ -1949,10 +1950,10 @@ def getBetheLoss(iso: str, E: float, material: str) -> float:
 
 
 @lru_cache
-def getCBbetaCoef(iso: str, material: str) -> list[float, float]:
+def getCBbetaCoef(iso: str, material: str) -> list[float]:
     Z, A_r, rho, I = getMaterialProperties(material)
     if rho is False:
-        return None
+        raise ValueError("Error: density needs to be defined")
     n = getElectDensity(Z, A_r, rho)
     # n has to be given in #e^-/fm^3
     n *= 10 ** (-39)
@@ -2020,7 +2021,7 @@ def getParticleRange(iso: str, E: float, material: str) -> float:
     dExMax = (C_beta * B_beta) / math.e
     fracCrit = 0.01
     ##############
-    thick = 0
+    thick = 0.0
     # The following is for when E is less than EM initially
     dEx = getBetheLoss(iso, E, material)
     while not (E < EM and dEx <= fracCrit * dExMax):
