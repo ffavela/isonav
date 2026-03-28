@@ -86,7 +86,7 @@ def argHand(args: dict[str, str]) -> int:
     thick: str | float = args['--thickness']
     ionRange: str | None = args['--range']
     deltaE: str | None = args['--depositedE']
-    bloch: str | None = args['--bloch']
+    bloch: bool = bool(args['--bloch'])
     density: str | float = args['--density']
     lsMat: str | None = args['--listMaterials']
     xEje: str | float = args['--xEje']
@@ -564,7 +564,7 @@ def argHand(args: dict[str, str]) -> int:
             print('Error; material not yet implemented :(')
             return 12347
         if deltaE is not False:
-            eLoss = iB.integrateELoss(ion, E, material, thick)
+            eLoss = iB.integrateELoss(ion, E, material, float(thick))
             if eLoss == -1.0:
                 val2Print = E
             else:
@@ -572,7 +572,7 @@ def argHand(args: dict[str, str]) -> int:
         elif ionRange:
             val2Print = iB.getParticleRange(ion, E, material)
         else:
-            val2Print = iB.integrateELoss(ion, E, material, thick)
+            val2Print = iB.integrateELoss(ion, E, material, float(thick))
         print('%.3f' % val2Print)
         return 0
 
