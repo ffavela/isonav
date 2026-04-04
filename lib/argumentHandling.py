@@ -23,7 +23,9 @@ from typing import Any
 from operator import itemgetter
 
 
-def getOrdMatList(matDict: dict[str, list[str | float]]) -> list[list[str | float]]:
+def getOrdMatList(
+    matDict: dict[str, list[str | float]],
+) -> list[list[str | float]]:
     newList: list[list[str | float]] = []
     for e in matDict:
         vl = matDict[e]
@@ -165,7 +167,9 @@ def argHand(args: dict[str, str]) -> int:
 
     if args['-r'] is True or args['--radius'] is True:
         if verbose:
-            print("#Returns the isotope's radius, in fermis, using r=1.2*A**(1.0/3)")
+            print(
+                "#Returns the isotope's radius, in fermis, using r=1.2*A**(1.0/3)"
+            )
         if not makeSureIso(iso):
             print('Not a valid isotope')
             return 1
@@ -359,7 +363,9 @@ def argHand(args: dict[str, str]) -> int:
             num = 1
 
         if verbose:
-            print('#Decay for the cases of alpha and proton or neutron emission')
+            print(
+                '#Decay for the cases of alpha and proton or neutron emission'
+            )
             print('#By default num=1')
         if alpha:
             oF.pDecay(iso, '4He', num)
@@ -421,7 +427,9 @@ def argHand(args: dict[str, str]) -> int:
         iso1, iso2 = oF.getRealIso(iso1), oF.getRealIso(iso2)
         if angle is not None:
             if verbose is True:
-                print('#Energy at given angle for the ejectile and the residue')
+                print(
+                    '#Energy at given angle for the ejectile and the residue'
+                )
             if not testVal(angle, 'angle'):
                 print('Error; 0<=angle<=180 has to be True ')
                 return 888
@@ -487,7 +495,9 @@ def argHand(args: dict[str, str]) -> int:
     if angle and args['<isoRes>']:
         if verbose:
             print("#Prints the energies that'll reach the detector")
-            print('If the --xF format is used then it takes the energy levels from')
+            print(
+                'If the --xF format is used then it takes the energy levels from'
+            )
             print('a single column txt file')
 
         if not testVal(Elab, 'E'):
@@ -512,7 +522,9 @@ def argHand(args: dict[str, str]) -> int:
 
         if xEje is not None:
             if not testVal(xEje, 'E'):
-                print('Error; ejectile excitation energy has to be a positive number')
+                print(
+                    'Error; ejectile excitation energy has to be a positive number'
+                )
                 return 798
             xEje = float(xEje)
         else:
@@ -520,7 +532,9 @@ def argHand(args: dict[str, str]) -> int:
 
         if xRes is not None:
             if not testVal(xRes, 'E'):
-                print('Error; residual excitation energy has to be a positive number')
+                print(
+                    'Error; residual excitation energy has to be a positive number'
+                )
                 return 799
             xRes = float(xRes)
         else:
@@ -532,11 +546,21 @@ def argHand(args: dict[str, str]) -> int:
 
     if args['--material'] and Elab is not None:
         if verbose:
-            print("Given the ion, it's energy, the material name and the material")
-            print('thickness (in microns) it prints the final energy of the ion.')
-            print('If the --depositedE flag is used, then the deposited energy in the')
-            print('material is given (deltaE). Use the format for --listMaterials to')
-            print('see a list of implemented materials. If --bloch flag is used then')
+            print(
+                "Given the ion, it's energy, the material name and the material"
+            )
+            print(
+                'thickness (in microns) it prints the final energy of the ion.'
+            )
+            print(
+                'If the --depositedE flag is used, then the deposited energy in the'
+            )
+            print(
+                'material is given (deltaE). Use the format for --listMaterials to'
+            )
+            print(
+                'see a list of implemented materials. If --bloch flag is used then'
+            )
             print("the Bloch mean iotization potential is used even if it's")
             print("reported as '-'. Density values can also be overriden.")
         if not makeSureIso(ion):

@@ -13,4 +13,4 @@ repos:
     rev: 26.1.0
     hooks:
       - id: black
-        args: ["--skip-string-normalization"]
+        args: ["--skip-string-normalization", "--line-length=79"]

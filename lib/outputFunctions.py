@@ -19,8 +19,12 @@ import lib.isonavBase as iB  # type: ignore
 import lib.isoParser as iP  # type: ignore
 
 
-def pSReaction(iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30, exList=[0, 0, 0, 0]):
-    react1, react2 = iB.sReaction(iso1, iso2, isoEject, isoRes, ELab, ang, exList)
+def pSReaction(
+    iso1, iso2, isoEject, isoRes, ELab=2.9, ang=30, exList=[0, 0, 0, 0]
+):
+    react1, react2 = iB.sReaction(
+        iso1, iso2, isoEject, isoRes, ELab, ang, exList
+    )
     if not react1:
         print('Reaction is invalid')
         return 0
@@ -196,7 +200,9 @@ def tNReaction(iso1, iso2):
             string1 = str(e[0]) + '\t' + str(e[1]) + '\t' + str(e[2]) + '\t'
             print(string1 + '{0:0.2f}'.format(float(e[3])) + '\tNone')
         else:
-            string2 = e[0] + '\t' + e[1] + '\t' + '{0:0.2f}'.format(float(e[2]))
+            string2 = (
+                e[0] + '\t' + e[1] + '\t' + '{0:0.2f}'.format(float(e[2]))
+            )
             string3 = '\t' + '{0:0.2f}'.format(float(e[3]))
             coulE = iB.coulombE(e[0], e[1])
             string4 = '\t' + '{0:0.2f}'.format(float(coulE))

@@ -47,6 +47,11 @@ def levelParseOne(stringLine):
     else:
         line = stringLine.split()
     # line=stringLine.split()
-    if len(line) >= 3 and isNumeric(line[0]) and line[1] == 'L' and isNumeric(line[2]):
+    if (
+        len(line) >= 3
+        and isNumeric(line[0])
+        and line[1] == 'L'
+        and isNumeric(line[2])
+    ):
         return line
     return False

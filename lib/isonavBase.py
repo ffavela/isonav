@@ -132,7 +132,9 @@ def getOutEcms(
 
     outEcmSys = inEcmSys * (inMass / outMass)
     Q = getQVal(mE1, mE2, mEE, mER)
-    outEcmAvail = inEcmSys * (1.0 - 1.0 * (inMass / outMass)) + inEcmAvail + Q - exE
+    outEcmAvail = (
+        inEcmSys * (1.0 - 1.0 * (inMass / outMass)) + inEcmAvail + Q - exE
+    )
     if outEcmAvail < 0:
         return -1, -1, -1, -1
     EEcm, ERcm = getEcmsFromECM2(mEE, mER, outEcmAvail)
@@ -162,7 +164,12 @@ def getEcmsFromECM2(m1: float, m2: float, ECM: float) -> tuple[float, float]:
 
 
 def getAvailEnergy(
-    iso1: str, iso2: str, isoEject: str, isoRes: str, E1L: float, E2L: float = 0
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    E1L: float,
+    E2L: float = 0,
 ) -> float:
     E1cm, E2cm, inEcmAvail, EcmSys = getInEcms(iso1, iso2, E1L)
     Q = getIsoQVal(iso1, iso2, isoEject, isoRes)
@@ -467,7 +474,9 @@ def QStable(iso1: str) -> bool | list[Any]:
     return decays
 
 
-def checkReaction(iso1: str, iso2: str, isoEject: str, isoRes: str) -> list[Any]:
+def checkReaction(
+    iso1: str, iso2: str, isoEject: str, isoRes: str
+) -> list[Any]:
     a1, key1 = iP.getIso(iso1)
     a2, key2 = iP.getIso(iso2)
     aEject, eject = iP.getIso(isoEject)
@@ -517,8 +526,12 @@ def sReaction(
     if not checkArguments(ELab, react, eject, res):
         raise ValueError("Invalid arguments")
 
-    s1 = analyticSol(iso1, iso2, isoEject, isoRes, ELab, angle=ang, exList=exList)
-    s2 = analyticSol(iso1, iso2, isoRes, isoEject, ELab, angle=ang, exList=exList)
+    s1 = analyticSol(
+        iso1, iso2, isoEject, isoRes, ELab, angle=ang, exList=exList
+    )
+    s2 = analyticSol(
+        iso1, iso2, isoRes, isoEject, ELab, angle=ang, exList=exList
+    )
 
     solution = [s1, s2]
     return solution
@@ -540,7 +553,9 @@ def checkSecSol(
             print('Possible second solution')
             thetaM = math.acos(
                 math.sqrt(
-                    -(emR + emE) * (emR * Q + (emR - emp) * ELab) / (emp * emE * ELab)
+                    -(emR + emE)
+                    * (emR * Q + (emR - emp) * ELab)
+                    / (emp * emE * ELab)
                 )
             )
             return thetaM
@@ -605,7 +620,9 @@ def solveNum(
     ]
 
 
-def xTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[Any]:
+def xTremeTest(
+    iso1: str, iso2: str, E: float = 10, ang: float = 30
+) -> list[Any]:
     reactions = nReaction(iso1, iso2)
     l = []
     for e in reactions:
@@ -628,7 +645,9 @@ def xTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[Any
 # level and the corresponding remaining energy
 
 
-def fussionCase(iso1: str, iso2: str, E1L: float, E2L: float = 0) -> tuple[Any, ...]:
+def fussionCase(
+    iso1: str, iso2: str, E1L: float, E2L: float = 0
+) -> tuple[Any, ...]:
     isof = getCompound(iso1, iso2)
     if isof is False:
         raise ValueError("Compound isotope not found")
@@ -726,7 +745,9 @@ def getMoreData(iso: str, xFile: Optional[str] = None) -> None:
     if len(iDict[k][1][A]) < 2:
         if xFile is None:
             t = (iso,)
-            cursor.execute('SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t)
+            cursor.execute(
+                'SELECT levNum,xEnergy,extra FROM isoLevels WHERE iso=?', t
+            )
             # Creating subDictionary
             for exData in cursor.fetchall():
                 if int(exData[0]) not in levDict:
@@ -846,7 +867,11 @@ def getQVal(m1: float, m2: float, m3: float, m4: float) -> float:
 
 
 def getIsoQVal(
-    iso1: str, iso2: str, iso3: str, iso4: str, exList: list[float] = [0, 0, 0, 0]
+    iso1: str,
+    iso2: str,
+    iso3: str,
+    iso4: str,
+    exList: list[float] = [0, 0, 0, 0],
 ) -> float:
     _ = checkReaction(iso1, iso2, iso3, iso4)
     m1 = getEMass(iso1) + exList[0]  # Adding mass excitations
@@ -929,7 +954,9 @@ def xReaction(
     return lL
 
 
-def xXTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[Any]:
+def xXTremeTest(
+    iso1: str, iso2: str, E: float = 10, ang: float = 30
+) -> list[Any]:
     reactions = nReaction(iso1, iso2)
     rStuff = []
     for e in reactions:
@@ -957,7 +984,9 @@ def xXTremeTest(iso1: str, iso2: str, E: float = 10, ang: float = 30) -> list[An
     return rStuff
 
 
-def checkArguments(ELab: float, react: list[Any], eject: str, res: str) -> bool:
+def checkArguments(
+    ELab: float, react: list[Any], eject: str, res: str
+) -> bool:
     if ELab <= 0:
         print('Lab energy has to be positive')
         return False
@@ -973,7 +1002,11 @@ def checkArguments(ELab: float, react: list[Any], eject: str, res: str) -> bool:
 
 
 def getAllEMasses(
-    iso1: str, iso2: str, isoEject: str, isoRes: str, exList: list[float] = [0, 0, 0, 0]
+    iso1: str,
+    iso2: str,
+    isoEject: str,
+    isoRes: str,
+    exList: list[float] = [0, 0, 0, 0],
 ) -> tuple[float, float, float, float]:
     emp = getEMass(iso1)
     emt = getEMass(iso2)
@@ -1042,7 +1075,9 @@ def rutherford0(iso1: str, iso2: str, Ecm: float, theta: float) -> float:
     theta = math.radians(theta)
     z1 = getPnum(iso1)
     z2 = getPnum(iso2)
-    dSigma = (z1 * z2 * alpha * hbc / (4 * Ecm)) ** 2 / math.sin(theta / 2) ** 4
+    dSigma = (z1 * z2 * alpha * hbc / (4 * Ecm)) ** 2 / math.sin(
+        theta / 2
+    ) ** 4
     # converting to mb
     dSigma *= 10
     return dSigma
@@ -1062,7 +1097,9 @@ def rutherfordLab0(iso1: str, iso2: str, ELab: float, thetaL: float) -> float:
     return dSigmaL
 
 
-def solveAng(thetaL: float, ratio: float, direction: str = 'f') -> bool | float:
+def solveAng(
+    thetaL: float, ratio: float, direction: str = 'f'
+) -> bool | float:
     """Returns the CM angle"""
     thetaL = math.radians(thetaL)
     tgThetaL = math.tan(thetaL)
@@ -1227,7 +1264,9 @@ def current2Part(current: float) -> float:
 # in part/mb
 
 
-def getT(ps: str, ts: str, E: float, angle: float, Nr: float, dOmega: float) -> float:
+def getT(
+    ps: str, ts: str, E: float, angle: float, Nr: float, dOmega: float
+) -> float:
     return 1.0 * Nr / (rutherfordLab0(ps, ts, E, angle) * dOmega)
 
 
@@ -1496,7 +1535,13 @@ def gamowAlpha(iso1: str) -> float:
     x = 1.0 * Q / B
     # Both equations should give the same... but they don't!!
     # See Krane pg 253, eq. 8.16
-    G = math.sqrt(2 * em / Q) * alpha * z1 * z2 * (math.pi / 2 - 2 * math.sqrt(x))
+    G = (
+        math.sqrt(2 * em / Q)
+        * alpha
+        * z1
+        * z2
+        * (math.pi / 2 - 2 * math.sqrt(x))
+    )
     # G=sqrt(2*em/Q)*alpha*z1*z2*(acos(x)-sqrt(x*(1-x)))
     return G
 
@@ -1557,7 +1602,9 @@ def stoppingPowerD(iso1: str, iso2: str, E: float, I: float) -> float:
 
 
 # This is also still in testing
-def stoppingPowerI(iso1: str, iso2: str, E: float, I: float, L: float) -> float:
+def stoppingPowerI(
+    iso1: str, iso2: str, E: float, I: float, L: float
+) -> float:
     # L in microns (10**-4 cm)
     x = 0.0
     L = L * 10 ** (-4)
@@ -1658,7 +1705,9 @@ def analyticSol(
     # maxAng=radians(maxAng) #not sure about this
     # angLA1,Ea1,angLB1,Eb1=getEsAndAngs(iso1,iso2,isoEject,isoRes,E1L,E2L,angle,exList)
     redExL = exList[2:]
-    sol1, sol2 = analyticDetails(vEcm, vRcm, Vcm, angle, isoEject, isoRes, redExL)
+    sol1, sol2 = analyticDetails(
+        vEcm, vRcm, Vcm, angle, isoEject, isoRes, redExL
+    )
     angLA1, Ea1, angLB1, Eb1 = sol1
     retVal2 = []
     if sol2 != []:

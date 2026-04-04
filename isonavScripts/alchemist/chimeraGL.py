@@ -85,50 +85,86 @@ def getDetValues(detIdx, subIdx):
 vertValDict = {}
 
 
-def getVerticies4Telescope(dDist, theta_min_val, theta_max_val, delta_phi_val, shift):
-    myAwesomeStr = str([dDist, theta_min_val, theta_max_val, delta_phi_val, shift])
+def getVerticies4Telescope(
+    dDist, theta_min_val, theta_max_val, delta_phi_val, shift
+):
+    myAwesomeStr = str(
+        [dDist, theta_min_val, theta_max_val, delta_phi_val, shift]
+    )
     if myAwesomeStr not in vertValDict:
         delta_r = 0.1
         dDDist = dDist + delta_r
         verticies = (
             (
-                dDist * math.sin(theta_max_val) * math.cos(delta_phi_val / 2 + shift),
-                dDist * math.sin(theta_max_val) * math.sin(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.sin(delta_phi_val / 2 + shift),
                 dDist * math.cos(theta_max_val),
             ),
             (
-                dDist * math.sin(theta_max_val) * math.cos(-delta_phi_val / 2 + shift),
-                dDist * math.sin(theta_max_val) * math.sin(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_max_val)
+                * math.sin(-delta_phi_val / 2 + shift),
                 dDist * math.cos(theta_max_val),
             ),
             (
-                dDist * math.sin(theta_min_val) * math.cos(-delta_phi_val / 2 + shift),
-                dDist * math.sin(theta_min_val) * math.sin(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.sin(-delta_phi_val / 2 + shift),
                 dDist * math.cos(theta_min_val),
             ),
             (
-                dDist * math.sin(theta_min_val) * math.cos(delta_phi_val / 2 + shift),
-                dDist * math.sin(theta_min_val) * math.sin(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDist
+                * math.sin(theta_min_val)
+                * math.sin(delta_phi_val / 2 + shift),
                 dDist * math.cos(theta_min_val),
             ),
             (
-                dDDist * math.sin(theta_max_val) * math.cos(delta_phi_val / 2 + shift),
-                dDDist * math.sin(theta_max_val) * math.sin(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.sin(delta_phi_val / 2 + shift),
                 dDDist * math.cos(theta_max_val),
             ),
             (
-                dDDist * math.sin(theta_max_val) * math.cos(-delta_phi_val / 2 + shift),
-                dDDist * math.sin(theta_max_val) * math.sin(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_max_val)
+                * math.sin(-delta_phi_val / 2 + shift),
                 dDDist * math.cos(theta_max_val),
             ),
             (
-                dDDist * math.sin(theta_min_val) * math.cos(-delta_phi_val / 2 + shift),
-                dDDist * math.sin(theta_min_val) * math.sin(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.cos(-delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.sin(-delta_phi_val / 2 + shift),
                 dDDist * math.cos(theta_min_val),
             ),
             (
-                dDDist * math.sin(theta_min_val) * math.cos(delta_phi_val / 2 + shift),
-                dDDist * math.sin(theta_min_val) * math.sin(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.cos(delta_phi_val / 2 + shift),
+                dDDist
+                * math.sin(theta_min_val)
+                * math.sin(delta_phi_val / 2 + shift),
                 dDDist * math.cos(theta_min_val),
             ),
         )
@@ -403,12 +439,16 @@ def getOptimizedRelList(telesCoordLists):
     # gReduVertL list.
     gReduEdgeList = []
     for gVEdge in gVertEdgeL:
-        gReduEdgeList.append((gReduVertL.index(gVEdge[0]), gReduVertL.index(gVEdge[1])))
+        gReduEdgeList.append(
+            (gReduVertL.index(gVEdge[0]), gReduVertL.index(gVEdge[1]))
+        )
 
     # Now for the surface points.
     gReduSurfList = []
     for gVSurf in gVertSurfL:
-        gReduSurfList.append((gReduVertL.index(gVSurf[0]), gReduVertL.index(gVSurf[1])))
+        gReduSurfList.append(
+            (gReduVertL.index(gVSurf[0]), gReduVertL.index(gVSurf[1]))
+        )
 
     return gReduVertL, gReduEdgeList, gReduSurfList
 
@@ -464,7 +504,10 @@ def main():
         # print("thAng = "+str(thAng))
 
     if args.colorMap:
-        print('The arguments where %s and %s' % (args.colorMap[0], args.colorMap[1]))
+        print(
+            'The arguments where %s and %s'
+            % (args.colorMap[0], args.colorMap[1])
+        )
         rStr = args.colorMap[0]
         sTel = int(args.colorMap[1])
         if rStr not in bCC.ring_tags:
@@ -474,7 +517,9 @@ def main():
         colorL[bCC.ring_tags.index(rStr)] = (1, 0, 0.5)
         if sTel not in range(bCC.teles_num[myIdx]):
             maxNumOfTel = bCC.teles_num[myIdx]
-            print('error telescope out of range max number is %d' % maxNumOfTel)
+            print(
+                'error telescope out of range max number is %d' % maxNumOfTel
+            )
             return
         tDict = getTDict(rStr, sTel)
     elif args.grid:
