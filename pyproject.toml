@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isonav"
+version = "1.6.8"
+description = "Command line nuclear reactions calculator"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Francisco Favela", email = "ffavela@gmail.com" }]
+requires-python = ">=3.9"
+dependencies = ["docopt==0.6.2"]
+
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Environment :: Console",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.scripts]
+isonav = "isonav:main"
+
+[tool.setuptools.packages.find]
+include = ["lib*"]
+
+[tool.setuptools.package-data]
+"" = ["data1p4p5/*"]
