@@ -26,4 +26,4 @@ isonav = "isonav:main"
 include = ["lib*"]
 
 [tool.setuptools.package-data]
-"" = ["data1p4p5/*"]
+"*" = ["data1p4p5/*"]
