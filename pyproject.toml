@@ -22,6 +22,9 @@ classifiers = [
 [project.scripts]
 isonav = "isonav:main"
 
+[tool.setuptools]
+py-modules = ["isonav"]
+
 [tool.setuptools.packages.find]
 include = ["lib*"]
 

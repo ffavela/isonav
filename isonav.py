@@ -48,7 +48,7 @@ from lib.argumentHandling import argHand
 import sys
 
 
-def main(argv):
+def main(argv=None):
     args = docopt(__doc__, argv, version='v1.6.8')
     argHand(args)
 
