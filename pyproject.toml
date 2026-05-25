@@ -29,4 +29,4 @@ py-modules = ["isonav"]
 include = ["lib*"]
 
 [tool.setuptools.package-data]
-"*" = ["data1p4p5/*"]
+"lib" = ["data1p4p5/*"]

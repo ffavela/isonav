@@ -13,46 +13,30 @@ program is callable either from a user or from another program. This
 is very attractive for various applications. See the "isonavScripts/"
 directory for just a few script examples made for BaSH.
 
-Works with python 3.x python 2.x support has been dropped.
+Works with Python >= 3.9.
 
-INSTALLATION:
-
-The installation process was tested only on Ubuntu 24.04 machines.
-
-Requirements:
-
-The python package docopt is REQUIRED. In ubuntu the package can be
-installed via (for the moment this is the only package that needs sudo
-powers):
+## Installation
 
 ```bash
-$ sudo apt install python3-docopt
+pip install isonav
 ```
 
-Or for linux in general via:
+Or, if you prefer an isolated environment (recommended):
 
 ```bash
-$ pip install docopt==0.6.2
+pipx install isonav
 ```
 
-To install;
+To install from source for development:
 
-    mkdir -p $HOME/.myPrograms
-    cd $HOME/.myPrograms
-    ln -s route/directory/for/isonav.py isonav #PAY ATTENTION HERE!
+```bash
+git clone <repo>
+cd isonav
+pip install -e .
+```
 
-Add the following line at the end of your .bashrc (or .zshrc ...):
-
-    export PATH=$PATH:$HOME/.myPrograms
-
-To uninstall simply remove the symlink. In case the is empty then you
-can remove it too as well as the export on your `rc` file.
-
-If there is a previous installation and it was done via the deprecated
-installScript.sh please review [LEGACY](LEGACY.md) for instructions to
-uninstall it and some reasons for deprecating that method. TLDR: If
-there is a legacy install present then run `sudo ./uninstallLegacy.sh`
-to remove it.
+If you have a previous installation done via the deprecated
+installScript.sh, see [LEGACY](LEGACY.md) for uninstall instructions.
 
 Resources:
 

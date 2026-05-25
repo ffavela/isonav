@@ -15,28 +15,23 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from importlib.resources import files
 from os import listdir
 from os.path import isfile, join
 import pickle
 import os.path
 import lib.enxParser as enx  # type: ignore
 
-if os.path.dirname(__file__) == '/usr/share/isonav':
-    DATA_PATH = '/usr/share/isonav/data1p4p5'
-    print('#You have a legacy installation of isonav')
-    print('#See the new installation procedure in the README file')
-else:
-    fileName = os.path.dirname(__file__)
-    DATA_PATH = fileName + '/../data1p4p5'  # `/..` should be improved
+_DATA = files('lib').joinpath('data1p4p5')
 
-isoDictLoc = os.path.join(DATA_PATH, 'isoDict.pkl')
-isoMassesLoc = os.path.join(DATA_PATH, 'isoMasses.txt')
-isoDictMassLoc = os.path.join(DATA_PATH, 'isoDictMass.pkl')
-isoDatadb = os.path.join(DATA_PATH, 'isoData.db')
-isonavQR = os.path.join(DATA_PATH, 'isonavQR.png')
-wMLoc = os.path.join(DATA_PATH, 'webMasses.txt')
-chemTxt = os.path.join(DATA_PATH, 'materialTable.txt')
-chemPkl = os.path.join(DATA_PATH, 'matTab.pkl')
+isoDictLoc = str(_DATA.joinpath('isoDict.pkl'))
+isoMassesLoc = str(_DATA.joinpath('isoMasses.txt'))
+isoDictMassLoc = str(_DATA.joinpath('isoDictMass.pkl'))
+isoDatadb = str(_DATA.joinpath('isoData.db'))
+isonavQR = str(_DATA.joinpath('isonavQR.png'))
+wMLoc = str(_DATA.joinpath('webMasses.txt'))
+chemTxt = str(_DATA.joinpath('materialTable.txt'))
+chemPkl = str(_DATA.joinpath('matTab.pkl'))
 
 # Isotope dictionary
 iDict = {}
