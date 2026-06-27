@@ -17,14 +17,19 @@ Works with Python >= 3.9.
 
 ## Installation
 
+Using `uv` (recommended):
+
 ```bash
-pip install isonav
+uv tool install isonav
 ```
 
-Or, if you prefer an isolated environment (recommended):
+This installs `isonav` as an isolated CLI tool, available system-wide without
+activating any environment. Equivalent to the old `pipx install isonav`.
+
+Alternatively, with plain pip:
 
 ```bash
-pipx install isonav
+pip install isonav
 ```
 
 To install from source for development:
@@ -32,7 +37,7 @@ To install from source for development:
 ```bash
 git clone <repo>
 cd isonav
-pip install -e .
+uv sync
 ```
 
 If you have a previous installation done via the deprecated

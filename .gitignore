@@ -40,3 +40,4 @@ isonavScripts/*.cor
 isonavScripts/binCor/*.cor
 isonavScripts/alchemist/*.cor
 isonav.egg-info/
+dist/
