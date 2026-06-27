@@ -49,7 +49,7 @@ import sys
 
 
 def main(argv=None):
-    args = docopt(__doc__, argv, version='v1.6.8')
+    args = docopt(__doc__, argv, version='v1.7.1')
     argHand(args)
 
 

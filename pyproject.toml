@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "isonav"
-version = "1.6.8"
+version = "1.7.1"
 description = "Command line nuclear reactions calculator"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
