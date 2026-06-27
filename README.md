@@ -17,22 +17,32 @@ Works with Python >= 3.9.
 
 ## Installation
 
-Using `uv` (recommended):
+### Homebrew (recommended)
+
+```bash
+brew trust ffavela/isonav
+brew tap ffavela/isonav
+brew install isonav
+```
+
+### uv
+
+If you prefer not to use Homebrew:
 
 ```bash
 uv tool install isonav
 ```
 
-This installs `isonav` as an isolated CLI tool, available system-wide without
-activating any environment. Equivalent to the old `pipx install isonav`.
+This installs `isonav` as an isolated CLI tool available system-wide,
+without needing to activate any environment.
 
-Alternatively, with plain pip:
+### pip
 
 ```bash
 pip install isonav
 ```
 
-To install from source for development:
+### From source (development)
 
 ```bash
 git clone <repo>
@@ -40,8 +50,8 @@ cd isonav
 uv sync
 ```
 
-If you have a previous installation done via the deprecated
-installScript.sh, see [LEGACY](LEGACY.md) for uninstall instructions.
+For previous installation methods (symlink or installScript.sh),
+see [LEGACY](LEGACY.md) for uninstall instructions.
 
 Resources:
 

@@ -43,13 +43,17 @@ isonav [-v] --listMaterials [--material=matName]
 isonav -h | --version
 """
 
-from docopt import docopt
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", SyntaxWarning)
+    from docopt import docopt
 from lib.argumentHandling import argHand
 import sys
 
 
 def main(argv=None):
-    args = docopt(__doc__, argv, version='v1.7.1')
+    args = docopt(__doc__, argv, version='v1.7.2')
     argHand(args)
 
 
