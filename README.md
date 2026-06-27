@@ -45,7 +45,7 @@ pip install isonav
 ### From source (development)
 
 ```bash
-git clone <repo>
+git clone https://github.com/ffavela/isonav.git # or use the ssh version
 cd isonav
 uv sync
 ```
